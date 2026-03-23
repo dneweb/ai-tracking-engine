@@ -40,7 +40,7 @@ async def create_document(document: DocumentCreate, _: dict = Depends(get_admin_
     1. Frontend sends: {"title": "...", "content": "...", "category": "..."}
     2. FastAPI validates input against DocumentCreate schema
     3. Generate embedding from content (text → 384 numbers)
-    4. Store document + embedding in Supabase
+    4. Store document + embedding in MongoDB Atlas
     5. Return created document with auto-generated ID and timestamps
     
     The embedding is generated automatically - user doesn't need to provide it.

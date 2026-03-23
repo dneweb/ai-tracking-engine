@@ -41,7 +41,7 @@ class DocumentQuery(BaseModel):
     threshold: float = Field(default=0.0, ge=0.0, le=1.0, description="Minimum similarity score (0.0-1.0)")
 
 # ============================================================================
-# NEW MODELS (API contracts - match Supabase database schema)
+# NEW MODELS (API contracts - match MongoDB database schema)
 # ============================================================================
 
 class DocumentCreate(BaseModel):
@@ -101,7 +101,7 @@ class DocumentResponse(BaseModel):
     Schema for returning document data via API.
     Used in: GET /api/documents, POST /api/documents responses
     
-    This matches the exact structure of documents in Supabase.
+    This matches the exact structure of documents in MongoDB.
     When we fetch from database, we convert to this format.
     """
     id: str  # Updated for MongoDB string IDs
@@ -112,7 +112,7 @@ class DocumentResponse(BaseModel):
     updated_at: datetime
     
     class Config:
-        # Allows Pydantic to convert from Supabase response dict
+        # Allows Pydantic to convert from MongoDB response dict
         from_attributes = True
         json_schema_extra = {
             "example": {

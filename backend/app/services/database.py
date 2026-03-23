@@ -1,5 +1,5 @@
 """
-MongoDB database service — replaces Supabase REST client.
+MongoDB database service.
 Provides both sync PyMongo collections (for reports) and async functions (for API routes).
 """
 from pymongo import MongoClient, DESCENDING

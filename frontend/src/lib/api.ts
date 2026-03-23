@@ -135,11 +135,11 @@ export async function getQueries(userEmail?: string, token?: string): Promise<Qu
     const data = await res.json();
     console.log("[API] getQueries raw response:", data);
 
-    // Supabase rows come back with schema-like keys.
+    // MongoDB rows come back with schema-like keys.
     // Expected fields include: id, question, category, confidence_score, retrieved_doc_title, created_at
     const rows = (data?.queries ?? []) as Array<Record<string, unknown>>;
     return rows.map((r) => ({
-        // Supabase may use UUID (string) or bigint; ensure we always produce a unique, stable string.
+        // MongoDB may use UUID (string) or bigint; ensure we always produce a unique, stable string.
         id: String(r.id ?? r.created_at ?? `${r.question ?? ""}-${r.retrieved_doc_title ?? ""}`),
         question: String(r.question ?? ""),
         category: String(r.category ?? "Uncategorized"),

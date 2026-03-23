@@ -191,7 +191,7 @@ Background: pure white → Text: pure black → Accent: single saturated color
 | Card           | Elevated content surfaces       | Pure white OR slightly darker than bg            |
 | Raised element | Modals, popovers, tooltips      | Lightest surface                                 |
 
-- **Light mode is flexible:** dark sidebar + light cards (Vercel style) OR light bg + slightly darker cards (Notion style) OR monochromatic layers (Supabase style) — all work
+- **Light mode is flexible:** dark sidebar + light cards (Vercel style) OR light bg + slightly darker cards (Notion style) OR monochromatic layers (Modern SaaS style) — all work
 - **Pure white IS acceptable** for product UI backgrounds — the key is that cards need to be distinguishable from the background, so don't use pure white for both
 - Card borders: use `rgba(0,0,0,0.08)` — approximately 85% white — to define card edges without overpowering. **Never use a solid black border on cards in light mode.**
 

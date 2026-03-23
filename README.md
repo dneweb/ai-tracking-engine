@@ -1,21 +1,21 @@
 # AI Tracking Engine
 
-A professional SaaS dashboard for tracking AI-driven activities, featuring a modern Next.js frontend and a powerhouse FastAPI backend. The project integrates Retrieval-Augmented Generation (RAG) capabilities with Supabase and Groq for intelligent querying and analysis.
+A professional SaaS dashboard for tracking AI-driven activities, featuring a modern Next.js frontend and a powerhouse FastAPI backend. The project integrates Retrieval-Augmented Generation (RAG) capabilities with MongoDB Atlas and Ollama for intelligent querying and analysis.
 
 ## 🚀 Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 16 (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Auth**: NextAuth.js with Supabase adapter
+- **Styling**: Vanilla CSS (Premium Micro-animations)
+- **Auth**: Clerk (Secure User Management)
 
 ### Backend
-- **Framework**: FastAPI (Python 3.10+)
-- **Database**: Supabase (PostgreSQL + Vector)
-- **AI/LLM**: Groq (Llama-3), SentenceTransformers (Embeddings)
-- **Utilities**: Pydantic, NumPy, Scikit-learn
+- **Framework**: FastAPI (Python 3.9+)
+- **Database**: MongoDB Atlas (Vector Search enabled)
+- **AI/LLM**: Ollama (Llama 3 - Local & Private)
+- **Embeddings**: Sentence-Transformers (all-MiniLM-L6-v2 - Local)
+- **Utilities**: Pydantic, Motor (Async MongoDB), NumPy
 
 ## ✨ Key Features
 

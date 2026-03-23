@@ -1,3 +1,4 @@
+# Migration script to move data FROM Supabase TO MongoDB Atlas
 from supabase import create_client
 from pymongo import MongoClient
 import os
