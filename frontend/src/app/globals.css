@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Premium Dark Mode HSB-based */
+  --color-background: #0A0A0B; /* Extremely dark neutral */
+  --color-foreground: #F8F9FA;
+  
+  --color-sidebar: #0F0F11; /* Slightly lighter than bg */
+  --color-card: #161618;    /* Surface layer */
+  --color-border: rgba(255, 255, 255, 0.08);
+  
+  --color-primary: #8B5CF6; /* Saturated Violet */
+  --color-primary-hover: #7C3AED;
+  
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  
+  --color-muted: #121214;
+  --color-muted-foreground: #949499;
+
+  /* Typography */
+  --font-syne: var(--font-syne);
+  --font-outfit: var(--font-outfit);
+  
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /* Spacing Scale (8pt grid) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+  --spacing-8: 64px;
+  --spacing-9: 96px;
+}
+
+/* Base styles */
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-outfit), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.text-xs {
+  font-size: 12px;
+}
+
+/* Micro-interactions */
+@layer base {
+  button, a, .interactive {
+    transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+  }
+  
+  button:active, a:active, .interactive:active {
+    transform: scale(0.97);
+    transition-duration: 0.08s;
+  }
+}
+
+/* Glassmorphism utility */
+@layer utilities {
+  .glass {
+    @apply bg-white/[0.02] backdrop-blur-2xl border border-white/[0.05] shadow-[0_8px_32px_rgba(0,0,0,0.4)];
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .clerk-container-premium {
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  /* Ensure Clerk Turnstile isn't hidden by global styles */
+  .clerk-bot-detection, 
+  iframe[src*="cloudflare"] {
+     display: block !important;
+     visibility: visible !important;
+  }
+}

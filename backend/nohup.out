@@ -1,0 +1,229 @@
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [17174]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:51123 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51123 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51123 - "OPTIONS /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+🔍 Report params: days=30, threshold=0.6, min_cluster=2
+🔍 Date range: 2026-02-14 → 2026-03-16
+🔍 Clustering 17 questions with min_cluster_size=2
+Error parsing date 2026-02-17 07:33:30.749746+00: Invalid isoformat string: '2026-02-17 07:33:30.749746+00'
+Error parsing date 2026-02-26 10:19:47.068758+00: Invalid isoformat string: '2026-02-26 10:19:47.068758+00'
+Error parsing date 2026-02-17 10:15:41.457881+00: Invalid isoformat string: '2026-02-17 10:15:41.457881+00'
+Error parsing date 2026-02-25 07:00:30.304018+00: Invalid isoformat string: '2026-02-25 07:00:30.304018+00'
+Error parsing date 2026-02-17 09:59:21.382198+00: Invalid isoformat string: '2026-02-17 09:59:21.382198+00'
+Error parsing date 2026-02-17 07:33:59.116686+00: Invalid isoformat string: '2026-02-17 07:33:59.116686+00'
+Error parsing date 2026-02-27 13:22:12.822+00: Invalid isoformat string: '2026-02-27 13:22:12.822+00'
+Error parsing date 2026-02-17 07:31:01.019161+00: Invalid isoformat string: '2026-02-17 07:31:01.019161+00'
+Error parsing date 2026-02-17 07:27:01.522498+00: Invalid isoformat string: '2026-02-17 07:27:01.522498+00'
+Error parsing date 2026-02-17 07:25:42.547814+00: Invalid isoformat string: '2026-02-17 07:25:42.547814+00'
+🔍 Produced 4 clusters
+   📦 [HIGH] How do I reset my password — 4 questions, urgency=65.1/100
+   📦 [MEDIUM] What should I do on my first day — 2 questions, urgency=57.6/100
+   📦 [MEDIUM] what is your leave policy — 4 questions, urgency=56.3/100
+   📦 [MEDIUM] How do I get a replacement badge — 2 questions, urgency=47.2/100
+INFO:     127.0.0.1:51125 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51162 - "POST /api/users/sync HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51175 - "POST /api/users/sync HTTP/1.1" 200 OK
+🔍 Report params: days=30, threshold=0.6, min_cluster=2
+🔍 Date range: 2026-02-14 → 2026-03-16
+🔍 Clustering 17 questions with min_cluster_size=2
+Error parsing date 2026-02-17 07:33:30.749746+00: Invalid isoformat string: '2026-02-17 07:33:30.749746+00'
+Error parsing date 2026-02-26 10:19:47.068758+00: Invalid isoformat string: '2026-02-26 10:19:47.068758+00'
+Error parsing date 2026-02-17 10:15:41.457881+00: Invalid isoformat string: '2026-02-17 10:15:41.457881+00'
+Error parsing date 2026-02-25 07:00:30.304018+00: Invalid isoformat string: '2026-02-25 07:00:30.304018+00'
+Error parsing date 2026-02-17 09:59:21.382198+00: Invalid isoformat string: '2026-02-17 09:59:21.382198+00'
+Error parsing date 2026-02-17 07:33:59.116686+00: Invalid isoformat string: '2026-02-17 07:33:59.116686+00'
+Error parsing date 2026-02-27 13:22:12.822+00: Invalid isoformat string: '2026-02-27 13:22:12.822+00'
+Error parsing date 2026-02-17 07:31:01.019161+00: Invalid isoformat string: '2026-02-17 07:31:01.019161+00'
+Error parsing date 2026-02-17 07:27:01.522498+00: Invalid isoformat string: '2026-02-17 07:27:01.522498+00'
+Error parsing date 2026-02-17 07:25:42.547814+00: Invalid isoformat string: '2026-02-17 07:25:42.547814+00'
+🔍 Produced 4 clusters
+   📦 [HIGH] How do I reset my password — 4 questions, urgency=65.1/100
+   📦 [MEDIUM] What should I do on my first day — 2 questions, urgency=57.6/100
+   📦 [MEDIUM] what is your leave policy — 4 questions, urgency=56.3/100
+   📦 [MEDIUM] How do I get a replacement badge — 2 questions, urgency=47.2/100
+INFO:     127.0.0.1:51177 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51182 - "OPTIONS /api/reports/sop-updates?days=14&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+🔍 Report params: days=14, threshold=0.6, min_cluster=2
+🔍 Date range: 2026-03-02 → 2026-03-16
+🔍 Clustering 2 questions with min_cluster_size=2
+🔍 Produced 0 clusters
+INFO:     127.0.0.1:51182 - "GET /api/reports/sop-updates?days=14&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51184 - "OPTIONS /api/reports/sop-updates?days=14&confidence_threshold=0.6&min_cluster_size=1 HTTP/1.1" 200 OK
+🔍 Report params: days=14, threshold=0.6, min_cluster=1
+🔍 Date range: 2026-03-02 → 2026-03-16
+🔍 Clustering 2 questions with min_cluster_size=1
+🔍 Produced 2 clusters
+   📦 [MEDIUM] i am a new joinee what should i do on first day — 1 questions, urgency=45.5/100
+   📦 [LOW] How do I reset my password — 1 questions, urgency=39.0/100
+INFO:     127.0.0.1:51184 - "GET /api/reports/sop-updates?days=14&confidence_threshold=0.6&min_cluster_size=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51188 - "OPTIONS /api/reports/sop-updates?days=7&confidence_threshold=0.6&min_cluster_size=1 HTTP/1.1" 200 OK
+🔍 Report params: days=7, threshold=0.6, min_cluster=1
+🔍 Date range: 2026-03-09 → 2026-03-16
+🔍 Clustering 2 questions with min_cluster_size=1
+🔍 Produced 2 clusters
+   📦 [MEDIUM] i am a new joinee what should i do on first day — 1 questions, urgency=45.5/100
+   📦 [LOW] How do I reset my password — 1 questions, urgency=39.0/100
+INFO:     127.0.0.1:51188 - "GET /api/reports/sop-updates?days=7&confidence_threshold=0.6&min_cluster_size=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51207 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51209 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51213 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51214 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51207 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51210 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51207 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51214 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51214 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51210 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51213 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51207 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51209 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51214 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51209 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51207 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51210 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51195 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51210 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51265 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51268 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51265 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51271 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51271 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "GET /api/documents/ HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51265 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51272 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51288 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51286 - "GET /api/documents/ HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51290 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51314 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51317 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51316 - "GET /api/documents/ HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51319 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51319 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51316 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51314 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51317 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51319 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51316 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51323 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51317 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51314 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51322 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51317 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51323 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51314 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51316 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51331 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51328 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51332 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51332 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51328 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51355 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51354 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51352 - "GET /api/queries HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51357 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51355 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51354 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51357 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51355 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51352 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51354 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51357 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51355 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51373 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51393 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51395 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51396 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51395 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51398 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51396 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51393 - "GET /api/queries HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:51395 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51398 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51400 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51398 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51400 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51396 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51393 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51393 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51398 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51582 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51584 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51582 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51584 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51584 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51582 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51586 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51582 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51647 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51647 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51656 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51657 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51656 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51657 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51664 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51666 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51662 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51664 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51666 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51666 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51662 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51668 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51664 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51662 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51670 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51666 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51662 - "GET /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51670 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51664 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51664 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51659 - "OPTIONS /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+🔍 Report params: days=30, threshold=0.6, min_cluster=2
+🔍 Date range: 2026-02-14 → 2026-03-16
+🔍 Clustering 17 questions with min_cluster_size=2
+Error parsing date 2026-02-17 07:33:30.749746+00: Invalid isoformat string: '2026-02-17 07:33:30.749746+00'
+Error parsing date 2026-02-26 10:19:47.068758+00: Invalid isoformat string: '2026-02-26 10:19:47.068758+00'
+Error parsing date 2026-02-17 10:15:41.457881+00: Invalid isoformat string: '2026-02-17 10:15:41.457881+00'
+Error parsing date 2026-02-25 07:00:30.304018+00: Invalid isoformat string: '2026-02-25 07:00:30.304018+00'
+Error parsing date 2026-02-17 09:59:21.382198+00: Invalid isoformat string: '2026-02-17 09:59:21.382198+00'
+Error parsing date 2026-02-17 07:33:59.116686+00: Invalid isoformat string: '2026-02-17 07:33:59.116686+00'
+Error parsing date 2026-02-27 13:22:12.822+00: Invalid isoformat string: '2026-02-27 13:22:12.822+00'
+Error parsing date 2026-02-17 07:31:01.019161+00: Invalid isoformat string: '2026-02-17 07:31:01.019161+00'
+Error parsing date 2026-02-17 07:27:01.522498+00: Invalid isoformat string: '2026-02-17 07:27:01.522498+00'
+Error parsing date 2026-02-17 07:25:42.547814+00: Invalid isoformat string: '2026-02-17 07:25:42.547814+00'
+🔍 Produced 4 clusters
+   📦 [HIGH] How do I reset my password — 4 questions, urgency=65.1/100
+   📦 [MEDIUM] What should I do on my first day — 2 questions, urgency=57.6/100
+   📦 [MEDIUM] what is your leave policy — 4 questions, urgency=56.3/100
+   📦 [MEDIUM] How do I get a replacement badge — 2 questions, urgency=47.2/100
+INFO:     127.0.0.1:51664 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK

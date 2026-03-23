@@ -1,0 +1,461 @@
+INFO:     Will watch for changes in these directories: ['/Users/commerciaxinfotech/Desktop/ai-tracking-engine']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [44756] using WatchFiles
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [44816]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:52973 - "POST /users/sync HTTP/1.1" 404 Not Found
+✅ User synced: test@example.com (test123)
+INFO:     127.0.0.1:52995 - "POST /api/users/sync HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'backend/app/api/queries.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [44816]
+WARNING:  WatchFiles detected changes in 'backend/app/api/queries.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [45294]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/multiprocessing/resource_tracker.py:216: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+INFO:     Will watch for changes in these directories: ['/Users/commerciaxinfotech/Desktop/ai-tracking-engine']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [46340] using WatchFiles
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [46400]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:53071 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53072 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53072 - "GET /api/queries HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53071 - "POST /api/users/sync HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53074 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53076 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53108 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53110 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53110 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53108 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "OPTIONS /api/analytics/stats?days=NaN HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "OPTIONS /api/analytics/stats?days=NaN HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /api/analytics/stats?days=NaN HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:53122 - "GET /api/analytics/stats?days=NaN HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:53118 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53126 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53128 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53128 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53118 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53126 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53133 - "GET /api/analytics/stats?days=NaN HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:53133 - "GET /api/analytics/stats?days=NaN HTTP/1.1" 403 Forbidden
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53138 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53138 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53121 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53133 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53138 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53136 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53133 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53139 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53139 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [46400]
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [46429]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:53185 - "GET /api/analytics/stats?days=NaN HTTP/1.1" 403 Forbidden
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53191 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53191 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53191 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53181 - "GET /api/queries HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53185 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53190 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53185 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53191 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53184 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53189 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53189 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53189 - "OPTIONS /api/analytics/timeline?days=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53184 - "GET /api/analytics/timeline?days=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53250 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53249 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53250 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53247 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53270 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53286 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53287 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53286 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53287 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53288 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53288 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53287 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53286 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53290 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53292 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53288 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53287 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53292 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53292 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53286 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53294 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53286 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53290 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53292 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53290 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53303 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53301 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53304 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53311 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53312 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53309 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53321 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53322 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53319 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53330 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53331 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53328 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53340 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53341 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53338 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53350 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53348 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53427 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53429 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53426 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53424 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53427 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53426 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53426 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53431 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53427 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53431 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53424 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53427 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53431 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53429 - "POST /api/users/sync HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [46429]
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [46498]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:53490 - "GET /api/queries HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53495 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53491 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53493 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53495 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53495 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53493 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53491 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53493 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53495 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53490 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53490 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53535 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53532 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53534 - "GET /api/documents/ HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53535 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:53535 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53540 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53532 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53534 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53540 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53535 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53534 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:53537 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53543 - "OPTIONS /api/reports/sop-updates?days=30&confidence_threshold=0.55&min_cluster_size=2 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 395, in get_sop_updates
+    clusters = _cluster_questions(queries, min_cluster_size)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 219, in _cluster_questions
+    avg_age = _calculate_avg_age_days(member_queries)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 117, in _calculate_avg_age_days
+    ages.append((now - dt).total_seconds() / 86400)
+TypeError: can't subtract offset-naive and offset-aware datetimes
+🔍 Report params: days=30, threshold=0.55, min_cluster=2
+🔍 Date range: 2026-02-11 → 2026-03-13
+Found 11 unique low-confidence questions
+🔍 Clustering 11 questions with min_cluster_size=2
+INFO:     127.0.0.1:53543 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.55&min_cluster_size=2 HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 395, in get_sop_updates
+    clusters = _cluster_questions(queries, min_cluster_size)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 219, in _cluster_questions
+    avg_age = _calculate_avg_age_days(member_queries)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 117, in _calculate_avg_age_days
+    ages.append((now - dt).total_seconds() / 86400)
+TypeError: can't subtract offset-naive and offset-aware datetimes
+🔍 Report params: days=30, threshold=0.55, min_cluster=2
+🔍 Date range: 2026-02-11 → 2026-03-13
+Found 11 unique low-confidence questions
+🔍 Clustering 11 questions with min_cluster_size=2
+INFO:     127.0.0.1:53543 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.55&min_cluster_size=2 HTTP/1.1" 500 Internal Server Error
+WARNING:  WatchFiles detected changes in 'backend/app/api/auth.py', 'backend/app/main.py', 'backend/app/api/reports.py', 'backend/app/services/database.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [46498]
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py', 'backend/app/services/rag_service.py', 'backend/app/services/database.py', 'backend/app/api/queries.py', 'backend/app/api/auth.py', 'backend/app/api/reports.py', 'backend/app/main.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [47069]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py', 'backend/app/services/rag_service.py', 'backend/app/services/database.py', 'backend/app/api/queries.py', 'backend/app/api/auth.py', 'backend/app/api/reports.py', 'backend/app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47069]
+WARNING:  WatchFiles detected changes in 'backend/app/api/analytics.py', 'backend/app/services/rag_service.py', 'backend/app/services/database.py', 'backend/app/api/queries.py', 'backend/app/api/auth.py', 'backend/app/api/reports.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [47580]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:59783 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59785 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59787 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59789 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59791 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59793 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59785 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59783 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59793 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59785 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59787 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59785 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59793 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59783 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59791 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:59793 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:59787 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:59793 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:59783 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59785 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59789 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59783 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59793 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59789 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'backend/app/api/reports.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47580]
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+WARNING:  WatchFiles detected changes in 'backend/app/api/reports.py'. Reloading...
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Loading embedding model...
+INFO:     Started server process [49469]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:60060 - "OPTIONS /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60061 - "OPTIONS /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60063 - "OPTIONS /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60063 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60065 - "GET /api/documents/ HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:60063 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60060 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60061 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60061 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60060 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60063 - "OPTIONS /api/analytics/document-usage HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60065 - "OPTIONS /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60067 - "OPTIONS /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60060 - "OPTIONS /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60065 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60065 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:60061 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60063 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60061 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60065 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60090 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60090 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+✅ User synced: dthacker550@rku.ac.in (user_3Amr8uU0SYhCZhruuavhgoHEs61)
+INFO:     127.0.0.1:60100 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60100 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60103 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60104 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60106 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60100 - "GET /api/documents/ HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60108 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60108 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:60103 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60110 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60106 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60104 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60110 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60106 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60103 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60117 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60119 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60124 - "GET /api/documents/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60126 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60122 - "GET /api/queries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60124 - "GET /api/queries HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60132 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:60128 - "GET /api/documents/ HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/analytics.py", line 211, in get_document_usage
+    results = list(async_queries.aggregate(pipeline))
+TypeError: 'AsyncIOMotorLatentCommandCursor' object is not iterable
+INFO:     127.0.0.1:60124 - "GET /api/analytics/document-usage HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:60126 - "GET /api/analytics/stats?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60122 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60131 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60122 - "GET /api/analytics/timeline?days=30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60126 - "GET /api/analytics/low-confidence?limit=10&threshold=0.6&offset=0&sort_by=confidence&sort_order=asc HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60132 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60132 - "GET /api/analytics/document-confidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60132 - "OPTIONS /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 200 OK
+Traceback (most recent call last):
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 303, in get_sop_updates
+    clusters = _cluster_questions(queries, min_cluster_size)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 216, in _cluster_questions
+    avg_age = _calculate_avg_age_days(member_queries)
+  File "/Users/commerciaxinfotech/Desktop/ai-tracking-engine/backend/app/api/reports.py", line 116, in _calculate_avg_age_days
+    ages.append((now - dt).total_seconds() / 86400)
+TypeError: can't subtract offset-naive and offset-aware datetimes
+🔍 Report params: days=30, threshold=0.6, min_cluster=2
+🔍 Date range: 2026-02-11 → 2026-03-13
+Found 14 unique low-confidence questions
+🔍 Clustering 14 questions with min_cluster_size=2
+INFO:     127.0.0.1:60126 - "GET /api/reports/sop-updates?days=30&confidence_threshold=0.6&min_cluster_size=2 HTTP/1.1" 500 Internal Server Error

@@ -1,0 +1,54 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/analytics/page.tsx
+   13:5   warning  'BarChart2' is defined but never used     @typescript-eslint/no-unused-vars
+   15:5   warning  'Zap' is defined but never used           @typescript-eslint/no-unused-vars
+   19:5   warning  'Minus' is defined but never used         @typescript-eslint/no-unused-vars
+   24:5   warning  'Search' is defined but never used        @typescript-eslint/no-unused-vars
+  271:11  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/documents/page.tsx
+   6:67  warning  'MoreVertical' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+  80:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/history/page.tsx
+  233:78  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/page.tsx
+    5:10  warning  'Send' is defined but never used          @typescript-eslint/no-unused-vars
+    8:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+   41:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  201:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/reports/page.tsx
+    5:5   warning  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+  102:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/sign-in/[[...sign-in]]/page.tsx
+  2:8  warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/app/sign-up/[[...sign-up]]/page.tsx
+  2:8   warning  'Image' is defined but never used     @typescript-eslint/no-unused-vars
+  3:10  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+  3:33  warning  'Zap' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/components/Sidebar.tsx
+   8:3  warning  'HelpCircle' is defined but never used       @typescript-eslint/no-unused-vars
+  10:3  warning  'LayoutDashboard' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/components/Toast.tsx
+   4:40  warning  'Info' is defined but never used          @typescript-eslint/no-unused-vars
+   6:10  warning  'useEffect' is defined but never used     @typescript-eslint/no-unused-vars
+  22:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/components/reports/FailureAnalysisChart.tsx
+  2:10  warning  'PieChart' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/commerciaxinfotech/Desktop/ai-tracking-engine/frontend/src/components/reports/TopicClusterCard.tsx
+  57:12  warning  'contentHeight' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 25 problems (6 errors, 19 warnings)
+
