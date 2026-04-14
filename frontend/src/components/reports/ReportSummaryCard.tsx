@@ -19,26 +19,29 @@ function StatCard({
     value,
     label,
     sublabel,
-    colorClass,
+    color,
 }: {
     icon: LucideIcon;
     value: string | number;
     label: string;
     sublabel?: string;
-    colorClass?: string;
+    color: string;
 }) {
     return (
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 flex items-center gap-4 min-w-0">
-            <div className={`p-3 rounded-lg shrink-0 ${colorClass ? colorClass.replace("text-", "bg-").replace("400", "500/10") : "bg-white/5"}`}>
-                <Icon className={`w-5 h-5 ${colorClass || "text-white"}`} />
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-xl p-5 flex items-center gap-4 min-w-0">
+            <div 
+                className="p-3 rounded-lg shrink-0 flex items-center justify-center" 
+                style={{ backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)` }}
+            >
+                <Icon className="w-5 h-5" style={{ color }} />
             </div>
             <div className="min-w-0">
-                <div className={`text-2xl font-bold ${colorClass || "text-white"}`}>
+                <div className="text-2xl font-bold text-[var(--text-primary)]" style={{ color }}>
                     {value}
                 </div>
-                <div className="text-sm text-gray-400 truncate">{label}</div>
+                <div className="text-sm text-[var(--text-muted)] truncate">{label}</div>
                 {sublabel && (
-                    <div className="text-xs text-gray-500 mt-0.5 truncate">{sublabel}</div>
+                    <div className="text-xs text-[var(--text-muted)]/50 mt-0.5 truncate">{sublabel}</div>
                 )}
             </div>
         </div>
@@ -57,31 +60,31 @@ export default function ReportSummaryCard({ summary }: ReportSummaryCardProps) {
                 value={summary.total_low_confidence}
                 label="Low Confidence"
                 sublabel={`${lowConfPct}% of ${summary.total_queries_in_period} total`}
-                colorClass="text-orange-400"
+                color="var(--warning)"
             />
             <StatCard
                 icon={Layers}
                 value={summary.clusters_identified}
                 label="Topics Found"
-                colorClass="text-blue-400"
+                color="var(--brand)"
             />
             <StatCard
                 icon={Flame}
                 value={summary.high_priority_count}
                 label="High Priority"
-                colorClass="text-red-400"
+                color="var(--danger)"
             />
             <StatCard
                 icon={AlertCircle}
                 value={summary.medium_priority_count}
                 label="Medium Priority"
-                colorClass="text-yellow-400"
+                color="var(--warning)"
             />
             <StatCard
                 icon={ShieldCheck}
                 value={summary.low_priority_count}
                 label="Low Priority"
-                colorClass="text-gray-400"
+                color="var(--success)"
             />
         </div>
     );

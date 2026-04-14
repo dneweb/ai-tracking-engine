@@ -29,7 +29,7 @@ from app.services.ai_service import get_embedding
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 
-@router.post("/", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def create_document(document: DocumentCreate, _: dict = Depends(get_admin_user)):
     """
     Upload a new document (SOP) with automatic embedding generation.
@@ -105,7 +105,7 @@ async def create_document(document: DocumentCreate, _: dict = Depends(get_admin_
         )
 
 
-@router.get("/", response_model=DocumentList)
+@router.get("", response_model=DocumentList)
 async def list_documents(_: dict = Depends(get_current_user)):
     """
     Get all documents (without embeddings for efficiency).

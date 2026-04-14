@@ -10,6 +10,7 @@ import json
 import numpy as np
 from bson import ObjectId
 from dotenv import load_dotenv
+import certifi
 from datetime import datetime
 from typing import List, Optional
 import uuid
@@ -19,8 +20,11 @@ load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb+srv://deep_db_user:kZNVJJI89KHJsbLA@deep.yjgn8aa.mongodb.net/?appName=Deep")
 MONGODB_DATABASE = os.getenv("MONGODB_DATABASE", "ai_tracking")
 
+# Get CA file from certifi to fix [SSL: CERTIFICATE_VERIFY_FAILED] on macOS
+ca = certifi.where()
+
 # ── Synchronous client (used by reports clustering, etc.) ──────────────────
-_sync_client = MongoClient(MONGODB_URI)
+_sync_client = MongoClient(MONGODB_URI, tlsCAFile=ca)
 _sync_db = _sync_client[MONGODB_DATABASE]
 
 documents_collection: Collection = _sync_db["documents"]
@@ -29,7 +33,7 @@ resolved_topics_collection: Collection = _sync_db["resolved_topics"]
 users_collection: Collection = _sync_db["users"]
 
 # ── Async Motor client (used by FastAPI route handlers) ─────────────────────
-_async_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
+_async_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI, tlsCAFile=ca)
 _async_db = _async_client[MONGODB_DATABASE]
 
 async_documents = _async_db["documents"]

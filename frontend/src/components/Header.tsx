@@ -1,61 +1,127 @@
 "use client";
 
-import { Bell, Search, Command } from "lucide-react";
+import { Bell, Search, Command, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { ThemeToggle } from "./ThemeToggle";
+import { useState, useEffect } from "react";
+import { CommandPalette } from "./CommandPalette";
+import { motion } from "framer-motion";
 
-export default function Header() {
-    const pathname = usePathname();
-    const { user, isLoaded } = useUser();
+const PAGE_META: Record<string, { title: string; subtitle: string }> = {
+  "/":          { title: "Ask Intelligence",  subtitle: "Query the neural knowledge base" },
+  "/history":   { title: "Query History",     subtitle: "Neural network traversal log" },
+  "/documents": { title: "Knowledge Assets",  subtitle: "Manage core intelligence assets" },
+  "/analytics": { title: "Intelligence Insights", subtitle: "Temporal metrics & system efficiency" },
+  "/reports":   { title: "Deep Reports",      subtitle: "Automated analysis of knowledge efficiency" },
+};
 
-    const getPageTitle = (path: string) => {
-        if (path === "/" || path === "/ask-question") return { title: "Ask Question", subtitle: "Query our AI on company intelligence" };
-        if (path === "/history") return { title: "Nexus History", subtitle: "Archive of deep-intelligence queries" };
-        if (path === "/documents") return { title: "Knowledge Base", subtitle: "Manage core company intelligence sources" };
-        if (path === "/analytics") return { title: "Intelligence Insights", subtitle: "Performance metrics and gap analysis" };
-        if (path === "/reports") return { title: "Deep Reports", subtitle: "Automated analysis of knowledge efficiency" };
-        return { title: "Nexus Dashboard", subtitle: "System Overview" };
+interface HeaderProps {
+  /** Called when the hamburger button is pressed on mobile */
+  onMobileMenuClick?: () => void;
+}
+
+export default function Header({ onMobileMenuClick }: HeaderProps) {
+  const pathname = usePathname();
+  const { user, isLoaded } = useUser();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((v) => !v);
+      }
     };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
-    const { title, subtitle } = getPageTitle(pathname);
+  const meta = PAGE_META[pathname] ?? { title: "Nexus AI", subtitle: "Neural Intelligence Platform" };
 
-    return (
-        <header className="h-20 px-10 sticky top-4 z-40 mx-6 rounded-2xl glass mb-4 flex items-center justify-center">
-            <div className="max-w-5xl w-full flex items-center justify-between">
-                <div className="flex flex-col">
-                    <h1 className="text-xl font-bold text-foreground tracking-tight">{title}</h1>
-                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-[0.15em] opacity-80">{subtitle}</p>
-                </div>
+  return (
+    <header className="topbar px-4 sm:px-6">
+      <CommandPalette open={open} setOpen={setOpen} />
 
-                <div className="flex items-center gap-6">
-                    {/* Search Bar - Aesthetic Only */}
-                    <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-muted-foreground group hover:border-white/10 transition-colors cursor-text">
-                        <Search className="w-4 h-4 group-hover:text-foreground transition-colors" />
-                        <span className="text-xs font-medium pr-8">Search system...</span>
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-white/[0.05] border border-white/[0.1] rounded text-[10px] font-bold">
-                            <Command className="w-2.5 h-2.5" />
-                            <span>K</span>
-                        </div>
-                    </div>
+      {/* ── Left Zone: Navigation & Breadcrumbs ── */}
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+        <button
+          id="mobile-menu-toggle"
+          className="hamburger-btn"
+          onClick={onMobileMenuClick}
+          aria-label="Open navigation menu"
+        >
+          <Menu className="w-5 h-5 text-[var(--text-primary)]" />
+        </button>
 
-                    <div className="flex items-center gap-3">
-                        <button className="p-2.5 text-muted-foreground hover:text-foreground hover:bg-white/[0.05] rounded-xl transition-all relative group">
-                            <Bell className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-[#161618] shadow-[0_0_8px_rgba(139,92,246,0.5)]"></span>
-                        </button>
-                        
-                        {isLoaded && user && (
-                            <div className="flex items-center gap-3 pl-3 border-l border-white/[0.05]">
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-xs border border-primary/20 overflow-hidden shadow-inner">
-                                    <span>
-                                        {(user.fullName || user.primaryEmailAddress?.emailAddress || "U").charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="hidden sm:flex flex-col min-w-0"
+        >
+          <h1 className="text-[14px] font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-1.5">
+            {meta.title.split(" ").slice(0, -1).join(" ")}{" "}
+            <span className="text-[var(--brand)]">
+              {meta.title.split(" ").at(-1)}
+            </span>
+          </h1>
+          <p className="text-[10px] font-medium text-[var(--text-muted)] tracking-wider uppercase mt-0.5 truncate max-w-[200px]">
+            {meta.subtitle}
+          </p>
+        </motion.div>
+      </div>
+
+      {/* ── Center Zone: Search Utility ── */}
+      <div className="flex-[2] max-w-lg hidden md:block">
+        <button
+          onClick={() => setOpen(true)}
+          className="w-full flex items-center gap-3 px-4 py-2 rounded-2xl text-[var(--text-muted)] bg-[var(--input-bg)] border border-[var(--border-subtle)] hover:border-[var(--brand)] hover:shadow-sm transition-all group/search"
+        >
+          <Search className="w-3.5 h-3.5 group-hover/search:text-[var(--brand)] transition-colors" />
+          <span className="text-[12px] font-medium flex-1 text-left">
+            Search neural documentation...
+          </span>
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
+            <Command className="w-2.5 h-2.5" />
+            <span className="text-[9px] font-bold">K</span>
+          </div>
+        </button>
+      </div>
+
+      {/* ── Right Zone: System Actions ── */}
+      <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1">
+        {/* Status — refined */}
+        <div className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-[var(--brand-glow)] bg-[var(--brand-soft)] shadow-sm">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] animate-pulse-dot" />
+          <span className="label-caps !text-[9px] !font-bold !tracking-[0.16em] text-[var(--brand)]">
+            Neural Sync
+          </span>
+        </div>
+
+        <div className="h-4 w-px bg-[var(--border-default)] hidden sm:block mx-1" />
+
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <ThemeToggle />
+
+          <button
+            className="p-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors group/bell relative"
+            aria-label="Notifications"
+          >
+            <Bell className="w-4 h-4 text-[var(--text-secondary)] group-hover/bell:text-[var(--text-primary)] transition-colors" />
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[var(--brand)] ring-2 ring-[var(--bg-secondary)]" />
+          </button>
+
+          {isLoaded && user && (
+            <div className="flex items-center gap-3 pl-1 sm:pl-2">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-md bg-[var(--brand)] ring-2 ring-[var(--bg-primary)]">
+                {(user.fullName || user.primaryEmailAddress?.emailAddress || "U").charAt(0).toUpperCase()}
+              </div>
             </div>
-        </header>
-    );
+          )}
+        </div>
+      </div>
+    </header>
+  );
 }

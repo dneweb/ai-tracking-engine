@@ -207,10 +207,10 @@ async def analyze_topic(
     """
     try:
         # Health check guard
-        if not await _check_ollama_health():
+        if not await _check_mistral_health():
             return JSONResponse(
                 status_code=503,
-                content={"status": "error", "message": "AI Service (Ollama) is currently unavailable."}
+                content={"status": "error", "message": "AI Service (Mistral/Groq) is currently unavailable."}
             )
 
         topic = payload.get("topic", "Unknown Topic")
@@ -270,15 +270,32 @@ async def analyze_topic(
         )
 
 
-async def _check_ollama_health() -> bool:
-    """Check if Ollama service is reachable."""
+async def _check_mistral_health() -> bool:
+    """Check if Mistral or Groq API is reachable."""
     try:
         import httpx
         from app.config import get_settings
         settings = get_settings()
         async with httpx.AsyncClient() as client:
-            # Check Ollama tags/version as a proxy for health
-            response = await client.get(f"{settings.ollama_host}/api/tags", timeout=2.0)
+            response = await client.get(
+                "https://api.mistral.ai/v1/models",
+                headers={"Authorization": f"Bearer {settings.mistral_api_key}"},
+                timeout=5.0,
+            )
+            if response.status_code == 200:
+                return True
+    except Exception as e:
+        print(f"Mistral health check failed: {e}")
+    try:
+        import httpx
+        from app.config import get_settings
+        settings = get_settings()
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {settings.groq_api_key}"},
+                timeout=5.0,
+            )
             return response.status_code == 200
     except Exception as e:
         print(f"⚠️ AI Service Health Check Failed: {e}")
@@ -356,7 +373,7 @@ async def get_sop_updates(
 ):
     try:
         # Health check guard
-        if not await _check_ollama_health():
+        if not await _check_mistral_health():
              background_tasks.add_task(print, "⚠️ Warning: Report requested but AI Service is offline.")
              # We can still cluster, but AI recommendations might be generic or fail later
 

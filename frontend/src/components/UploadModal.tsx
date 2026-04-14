@@ -1,8 +1,13 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, FilePlus2, Sparkles, Hash, LayoutGrid, Type, ShieldCheck, Zap, Navigation } from "lucide-react";
 import { uploadDocument, updateDocument, Document } from "@/lib/api";
 import { useToast } from "@/context/ToastContext";
 import { useAuth } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface Props {
     isOpen: boolean;
@@ -34,12 +39,10 @@ export default function UploadModal({ isOpen, onClose, onSuccess, initialData }:
         }
     }, [initialData, isOpen]);
 
-    if (!isOpen) return null;
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title || !category || !content) {
-            setError("All fields are required");
+            setError("All neural clusters must be populated.");
             return;
         }
 
@@ -50,21 +53,20 @@ export default function UploadModal({ isOpen, onClose, onSuccess, initialData }:
             const token = await getToken();
             if (initialData?.id) {
                 await updateDocument(initialData.id, title, content, category, token || undefined);
-                showToast("Document updated successfully", "success");
+                showToast(`Asset "${title}" synchronization complete.`, "success");
             } else {
                 await uploadDocument(title, content, category, token || undefined);
-                showToast("Document uploaded successfully", "success");
+                showToast(`Asset "${title}" successfully injected into neural base.`, "success");
             }
             onSuccess();
             onClose();
-            // Reset form if it was an upload
             if (!initialData) {
                 setTitle("");
                 setCategory("");
                 setContent("");
             }
         } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to save document";
+            const msg = err instanceof Error ? err.message : "Neural injection sequence failed.";
             setError(msg);
             showToast(msg, "error");
         } finally {
@@ -73,77 +75,152 @@ export default function UploadModal({ isOpen, onClose, onSuccess, initialData }:
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-[#1A1A1A] border border-border w-full max-w-lg rounded-xl shadow-lg p-6 animate-in fade-in zoom-in-95 duration-200">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-white">
-                        {initialData ? "Edit SOP" : "Upload New SOP"}
-                    </h2>
-                    <button onClick={onClose} className="text-muted-foreground hover:text-white transition-colors">
-                        <X className="w-5 h-5" />
-                    </button>
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 md:p-12 overflow-y-auto custom-scrollbar pt-[10vh]">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-[var(--bg-overlay)] backdrop-blur-xl pointer-events-auto"
+                    />
+                    
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0, y: 40 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                        transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
+                        className="w-full max-w-3xl relative pointer-events-auto"
+                    >
+                        <div className="rounded-[48px] bg-[var(--card-bg)] border border-[var(--border-strong)] shadow-[0_40px_100px_rgba(0,0,0,0.4)] overflow-hidden relative">
+                            {/* Decorative Background */}
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-[var(--brand-glow)] blur-[100px] opacity-20 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--success-soft)] blur-[100px] opacity-10 pointer-events-none" />
+
+                            <form onSubmit={handleSubmit} className="relative z-10">
+                                {/* Header */}
+                                <div className="px-10 py-10 md:px-14 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-secondary)]/30">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-3xl bg-[var(--brand-soft)] border border-[var(--brand-glow)] flex items-center justify-center text-[var(--brand)] shadow-sm">
+                                                <Sparkles className="w-7 h-7" />
+                                            </div>
+                                            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+                                                {initialData ? "Recalibrate Asset" : "Inject Knowledge"}
+                                            </h2>
+                                        </div>
+                                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.3em] ml-2">Neural Asset Synchronization v3.0</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="w-12 h-12 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-all"
+                                    >
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+
+                                <div className="p-10 md:p-14 space-y-10">
+                                    {error && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className="p-5 bg-[var(--danger-soft)] border border-[var(--danger-ring)] text-[var(--danger)] text-[11px] font-bold uppercase tracking-widest flex items-center gap-4 rounded-[20px]"
+                                        >
+                                            <ShieldCheck className="w-5 h-5 flex-shrink-0 animate-pulse" />
+                                            {error}
+                                        </motion.div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                        <div className="space-y-4">
+                                            <label className="text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.3em] ml-2">Knowledge Title</label>
+                                            <div className="relative group">
+                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors">
+                                                    <Type className="w-5 h-5" />
+                                                </div>
+                                                <input
+                                                    value={title}
+                                                    onChange={(e) => setTitle(e.target.value)}
+                                                    placeholder="Assign neural label..."
+                                                    className="w-full h-16 bg-[var(--input-bg)] border border-[var(--border-default)] rounded-[24px] pl-16 pr-6 py-4 text-base font-semibold text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/30 focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <label className="text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.3em] ml-2">Sector Domain</label>
+                                            <div className="relative group">
+                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors">
+                                                    <LayoutGrid className="w-5 h-5" />
+                                                </div>
+                                                <select
+                                                    value={category}
+                                                    onChange={(e) => setCategory(e.target.value)}
+                                                    className="w-full h-16 bg-[var(--input-bg)] border border-[var(--border-default)] rounded-[24px] pl-16 pr-10 text-base font-bold text-[var(--text-primary)] appearance-none focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all outline-none cursor-pointer"
+                                                >
+                                                    <option value="" className="bg-[var(--card-bg)]">Unassigned Domain</option>
+                                                    {CATEGORIES.map(c => <option key={c} value={c} className="bg-[var(--card-bg)] text-base">{c}</option>)}
+                                                </select>
+                                                <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
+                                                    <ChevronDown className="w-5 h-5" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between px-2">
+                                            <label className="text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.3em] flex items-center gap-3">
+                                                <Hash className="w-4 h-4 text-[var(--brand)]" />
+                                                Substrate Content Data
+                                            </label>
+                                            <span className="text-[9px] font-bold text-[var(--text-muted)] opacity-30 uppercase">Vector Encoding Active</span>
+                                        </div>
+                                        <textarea
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            placeholder="Synthesize or paste intelligence dataset here..."
+                                            rows={8}
+                                            className="w-full bg-[var(--input-bg)] border border-[var(--border-default)] rounded-[32px] px-8 py-8 text-base font-medium text-[var(--text-secondary)] placeholder:text-[var(--text-muted)]/30 focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] outline-none resize-none tracking-tight leading-relaxed transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-10 border-t border-[var(--border-subtle)]">
+                                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest italic max-w-xs text-center sm:text-left opacity-60">
+                                           * Synchronization process includes recursive indexing and vector substrate validation.
+                                        </p>
+                                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                onClick={onClose}
+                                                className="flex-1 sm:flex-none h-14 px-10 rounded-2xl text-[11px] font-bold tracking-widest uppercase border-2"
+                                            >
+                                                Abort
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                className="flex-1 sm:flex-none h-14 px-12 rounded-2xl bg-[var(--brand)] text-white text-[11px] font-bold tracking-widest uppercase hover:bg-[var(--brand-hover)] shadow-2xl shadow-[var(--brand-soft)] gap-3"
+                                            >
+                                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5 text-white" />}
+                                                {initialData ? "Update Asset" : "Inject Substrate"}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </motion.div>
                 </div>
+            )}
+        </AnimatePresence>
+    );
+}
 
-                {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg mb-4 text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">Title *</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="e.g., Password Reset Procedure"
-                            className="w-full bg-[#0F0F0F] border border-border rounded-lg px-3 py-2 text-white placeholder:text-muted-foreground focus:ring-1 focus:ring-primary outline-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">Category *</label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="w-full bg-[#0F0F0F] border border-border rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-primary appearance-none"
-                        >
-                            <option value="">Select category...</option>
-                            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-muted-foreground mb-1">Content *</label>
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Paste your SOP content here..."
-                            rows={6}
-                            className="w-full bg-[#0F0F0F] border border-border rounded-lg px-3 py-2 text-white placeholder:text-muted-foreground focus:ring-1 focus:ring-primary outline-none resize-none"
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-end gap-3 mt-6">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
-                        >
-                            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                            {initialData ? "Save Changes" : "Upload Document"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+function ChevronDown({className}: {className?: string}) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>
     );
 }

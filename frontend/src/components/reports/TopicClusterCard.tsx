@@ -1,11 +1,35 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, Copy, Check, FileText, Lightbulb, BadgeCheck, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { 
+    ChevronDown, 
+    Copy, 
+    Check, 
+    FileText, 
+    Lightbulb, 
+    BadgeCheck, 
+    Loader2, 
+    Zap, 
+    ShieldAlert, 
+    Activity, 
+    ArrowRight,
+    MessageSquare,
+    Layers,
+    ShieldCheck,
+    Target,
+    Navigation,
+    Scale
+} from "lucide-react";
 import type { TopicCluster } from "@/lib/api";
 import { resolveTopic, analyzeTopicWithAI } from "@/lib/api";
+import { useAuth } from "@clerk/nextjs";
 import FailureAnalysisChart from "./FailureAnalysisChart";
 import InsightsAndSOPCard from "./InsightsAndSOPCard";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface TopicClusterCardProps {
     cluster: TopicCluster;
@@ -17,28 +41,22 @@ interface TopicClusterCardProps {
 
 const PRIORITY_CONFIG = {
     high: {
-        border: "border-l-4 border-l-red-500",
-        headerBg: "bg-red-950/20",
-        badge: "bg-red-500/15 text-red-400 ring-1 ring-red-500/20",
-        label: "HIGH",
-        meterColor: "bg-red-500",
-        meterTrack: "bg-red-500/10",
+        color: "var(--danger)",
+        label: "CRITICAL VOID",
+        icon: ShieldAlert,
+        bg: "var(--danger-soft)"
     },
     medium: {
-        border: "border-l-4 border-l-yellow-500",
-        headerBg: "bg-yellow-950/20",
-        badge: "bg-yellow-500/15 text-yellow-400 ring-1 ring-yellow-500/20",
-        label: "MEDIUM",
-        meterColor: "bg-yellow-500",
-        meterTrack: "bg-yellow-500/10",
+        color: "var(--warning)",
+        label: "STANDARD GAP",
+        icon: Activity,
+        bg: "var(--warning-soft)"
     },
     low: {
-        border: "border-l-4 border-l-gray-500",
-        headerBg: "bg-gray-800/50",
-        badge: "bg-gray-500/15 text-gray-400 ring-1 ring-gray-500/20",
-        label: "LOW",
-        meterColor: "bg-gray-500",
-        meterTrack: "bg-gray-500/10",
+        color: "var(--success)",
+        label: "TRACE FLUCTUATION",
+        icon: Layers,
+        bg: "var(--success-soft)"
     },
 };
 
@@ -53,344 +71,387 @@ export default function TopicClusterCard({
     const expanded = forceExpanded !== undefined ? forceExpanded : localExpanded;
 
     const [copied, setCopied] = useState(false);
-    const contentRef = useRef<HTMLDivElement>(null);
-
     const [showResolve, setShowResolve] = useState(false);
     const [resolveNotes, setResolveNotes] = useState("");
     const [resolving, setResolving] = useState(false);
     const [resolveError, setResolveError] = useState<string | null>(null);
 
-    // Lazy loading state for AI analysis
     const [internalAnalysis, setInternalAnalysis] = useState(cluster.llm_analysis);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [analysisError, setAnalysisError] = useState<string | null>(null);
 
-    useEffect(() => {
-        // No-op for now
-    }, [cluster]);
-
-    const config = PRIORITY_CONFIG[cluster.priority];
-    const confidencePct = Math.round(cluster.avg_confidence * 100);
-    const urgencyClamped = Math.max(0, Math.min(100, cluster.urgency_score));
+    const config = PRIORITY_CONFIG[cluster.priority] || PRIORITY_CONFIG.low;
+    const confidencePct = Math.round(cluster.avg_confidence < 1 ? cluster.avg_confidence * 100 : cluster.avg_confidence);
 
     const handleCopy = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const lines = [
             `Topic: ${cluster.topic}`,
-            `Priority: ${config.label}`,
+            `Urgency: ${cluster.urgency_score}/100`,
             `Questions: ${cluster.question_count}`,
             `Avg Confidence: ${confidencePct}%`,
-            `Urgency Score: ${cluster.urgency_score}/100`,
             "",
             "Sample Questions:",
-            ...(cluster.sample_questions?.length
-                ? cluster.sample_questions.map((q) => `  - ${q}`)
-                : ["  (none)"]),
+            ...(cluster.sample_questions?.map(q => `  - ${q}`) || []),
             "",
-            cluster.related_documents?.length
-                ? `Related Documents: ${cluster.related_documents.join(", ")}`
-                : "No related documents",
-            "",
-            `Recommendation: ${cluster.recommendation || "None"}`,
+            `Recommendation: ${cluster.recommendation || "Pending"}`
         ];
-
         try {
             await navigator.clipboard.writeText(lines.join("\n"));
             setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch {
-            /* clipboard unavailable */
-        }
+            setTimeout(() => setCopied(false), 1500);
+        } catch {}
     };
+
+    const { getToken } = useAuth();
 
     const triggerAIAnalysis = async () => {
         if (internalAnalysis || isAnalyzing) return;
-
         setIsAnalyzing(true);
-        setAnalysisError(null);
         try {
+            const token = await getToken();
             const result = await analyzeTopicWithAI({
                 topic: cluster.topic,
                 samples: cluster.sample_questions,
                 question_count: cluster.question_count,
                 related_documents: cluster.related_documents
-            });
+            }, token || undefined);
             setInternalAnalysis(result);
         } catch (err) {
-            setAnalysisError(err instanceof Error ? err.message : "Failed to analyze topic");
+            console.error(err);
         } finally {
             setIsAnalyzing(false);
         }
     };
 
-    const toggleExpand = () => {
-        if (forceExpanded !== undefined) return;
-        const nextExpanded = !localExpanded;
-        setLocalExpanded(nextExpanded);
-
-        if (nextExpanded) {
-            triggerAIAnalysis();
-        }
-    };
-
-    const openResolve = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setResolveError(null);
-        setShowResolve(true);
-    };
+    useEffect(() => {
+        if (expanded) triggerAIAnalysis();
+    }, [expanded]);
 
     const confirmResolve = async () => {
         setResolving(true);
         setResolveError(null);
         try {
-            await resolveTopic({
-                topic_name: cluster.topic,
-                notes: resolveNotes,
-            });
+            await resolveTopic({ topic_name: cluster.topic, notes: resolveNotes });
             onResolved?.(cluster, resolveNotes);
             setShowResolve(false);
-            setResolveNotes("");
         } catch (err) {
-            setResolveError(err instanceof Error ? err.message : "Failed to resolve topic");
+            setResolveError("Resolution synchronization failed.");
         } finally {
             setResolving(false);
         }
     };
 
     return (
-        <div
-            className={`bg-card border border-border rounded-xl overflow-hidden ${config.border} transition-all`}
-        >
-            {/* Header */}
-            <div
-                role="button"
-                tabIndex={0}
-                onClick={toggleExpand}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        toggleExpand();
-                    }
-                }}
-                className={`w-full flex items-center justify-between p-5 text-left transition-colors cursor-pointer select-none ${config.headerBg} hover:brightness-110`}
+        <div className="group relative">
+            <motion.div 
+                layout
+                className={cn(
+                    "rounded-[40px] overflow-hidden transition-all duration-700 border border-[var(--border-subtle)] bg-[var(--card-bg)] shadow-[var(--card-shadow)]",
+                    expanded ? "shadow-[var(--card-shadow-lg)] border-[var(--brand)]" : "hover:border-[var(--brand-glow)]"
+                )}
             >
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <h4 className="text-base font-semibold text-white">
-                            {cluster.topic}
-                        </h4>
-                        <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider ${config.badge}`}
-                        >
-                            {config.label}
-                        </span>
-                    </div>
-
-                    <p className="text-sm text-gray-400 mb-2.5">
-                        {cluster.question_count}{" "}
-                        {cluster.question_count === 1 ? "question" : "questions"}{" "}
-                        &middot; {confidencePct}% avg confidence
-                    </p>
-
-                    <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 shrink-0 w-24">
-                            Urgency: {cluster.urgency_score}/100
-                        </span>
-                        <div
-                            className={`flex-1 h-1.5 rounded-full ${config.meterTrack} max-w-[200px]`}
-                        >
-                            <div
-                                className={`h-full rounded-full transition-all duration-500 ${config.meterColor}`}
-                                style={{ width: `${urgencyClamped}%` }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2 ml-4 shrink-0">
-                    {showResolveAction && (
-                        <button
-                            onClick={openResolve}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-xs text-gray-200"
-                            title="Mark topic as resolved"
-                        >
-                            <BadgeCheck className="w-4 h-4 text-green-400" />
-                            ✓ Mark Resolved
-                        </button>
-                    )}
-                    <button
-                        onClick={handleCopy}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
-                        title="Copy details"
-                    >
-                        {copied ? (
-                            <Check className="w-4 h-4 text-green-400" />
-                        ) : (
-                            <Copy className="w-4 h-4" />
-                        )}
-                    </button>
-                    {expanded ? (
-                        <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
-                </div>
-            </div>
-
-            {showResolve && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-                    onClick={() => {
-                        if (!resolving) setShowResolve(false);
-                    }}
+                {/* Header Zone */}
+                <div 
+                    onClick={() => setLocalExpanded(!localExpanded)}
+                    className="p-8 md:p-10 cursor-pointer flex flex-col lg:flex-row lg:items-center gap-8 relative overflow-hidden"
                 >
-                    <div
-                        className="w-full max-w-md bg-card border border-border rounded-xl p-5"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className="text-white font-semibold text-base mb-1">
-                            Mark as Resolved
-                        </h3>
-                        <p className="text-sm text-gray-400 mb-4">
-                            Topic: <span className="text-gray-200">{cluster.topic}</span>
-                        </p>
+                    {/* Background Subtle Accent */}
+                    <div 
+                        className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity pointer-events-none"
+                        style={{ backgroundColor: config.color }}
+                    />
 
-                        <label className="block text-xs text-gray-500 mb-1.5">
-                            Notes (optional)
-                        </label>
-                        <textarea
-                            value={resolveNotes}
-                            onChange={(e) => setResolveNotes(e.target.value)}
-                            rows={3}
-                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-success/40 focus:border-success resize-none"
-                            placeholder="What changed? Link to updated SOP, etc."
-                            disabled={resolving}
-                        />
+                    {/* Left Zone: Topic & Priority */}
+                    <div className="flex-1 flex items-start gap-6 min-w-0">
+                        <div 
+                            className="w-16 h-16 rounded-[24px] flex items-center justify-center flex-shrink-0 transition-all duration-700 group-hover:scale-110 group-hover:rotate-3 shadow-sm bg-[var(--bg-secondary)]" 
+                            style={{ color: config.color, borderColor: `color-mix(in srgb, ${config.color} 20%, transparent)`, borderWidth: '1px' }}
+                        >
+                            <config.icon className="w-8 h-8" />
+                        </div>
+                        
+                        <div className="space-y-3 min-w-0">
+                            <h4 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] tracking-tight truncate group-hover:text-[var(--brand)] transition-colors duration-500" style={{ fontFamily: "var(--font-display)" }}>
+                                {cluster.topic}
+                            </h4>
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div 
+                                    className="px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase border"
+                                    style={{ 
+                                        backgroundColor: `color-mix(in srgb, ${config.color} 8%, transparent)`, 
+                                        color: config.color, 
+                                        borderColor: `color-mix(in srgb, ${config.color} 15%, transparent)` 
+                                    }}
+                                >
+                                    {config.label}
+                                </div>
+                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+                                    <Target className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                                    <span className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider">{cluster.question_count} Traces</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                        {resolveError && (
-                            <p className="text-sm text-red-400 mt-3">{resolveError}</p>
+                    {/* Middle Zone: Metrics */}
+                    <div className="flex flex-wrap items-center gap-10 lg:px-10 lg:border-x border-[var(--border-subtle)]">
+                        <div className="space-y-2">
+                            <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em]">Reliability</p>
+                            <div className="flex items-center gap-3">
+                                <span className={cn(
+                                    "text-2xl font-bold tracking-tight",
+                                    confidencePct >= 80 ? "text-[var(--success)]" : confidencePct >= 60 ? "text-[var(--warning)]" : "text-[var(--danger)]"
+                                )}>
+                                    {confidencePct}%
+                                </span>
+                                <div className="w-12 h-1.5 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-subtle)]">
+                                    <div className="h-full rounded-full" style={{ width: `${confidencePct}%`, backgroundColor: confidencePct >= 80 ? "var(--success)" : confidencePct >= 60 ? "var(--warning)" : "var(--danger)" }} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2 min-w-[120px]">
+                            <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em]">Urgency Score</p>
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl font-bold text-[var(--text-primary)] tracking-tight tabular-nums">{cluster.urgency_score}</span>
+                                <div className="flex-1 h-1.5 rounded-full bg-[var(--bg-secondary)] overflow-hidden border border-[var(--border-subtle)]">
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${cluster.urgency_score}%` }}
+                                        transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.2 }}
+                                        className="h-full rounded-full" 
+                                        style={{ backgroundColor: config.color }} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Zone: Actions */}
+                    <div className="flex items-center gap-4">
+                        {showResolveAction && (
+                            <Button 
+                                onClick={(e) => { e.stopPropagation(); setShowResolve(true); e.preventDefault(); }}
+                                className="rounded-2xl px-6 py-6 h-auto text-[10px] font-bold uppercase tracking-widest bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white shadow-lg active:scale-95 gap-2"
+                            >
+                                <BadgeCheck className="w-4 h-4" /> Resolve Gap
+                            </Button>
                         )}
-
-                        <div className="flex justify-end gap-2 mt-4">
-                            <button
-                                onClick={() => setShowResolve(false)}
-                                disabled={resolving}
-                                className="px-4 py-2 rounded-lg text-sm text-gray-200 bg-white/5 hover:bg-white/10 disabled:opacity-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmResolve}
-                                disabled={resolving}
-                                className="px-4 py-2 rounded-lg text-sm text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
-                            >
-                                {resolving ? "Saving..." : "Confirm"}
-                            </button>
+                        <button 
+                            onClick={handleCopy}
+                            className="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--brand)] transition-all active:scale-90"
+                        >
+                            {copied ? <Check className="w-5 h-5 text-[var(--success)]" /> : <Copy className="w-5 h-5 text-[var(--text-muted)]" />}
+                        </button>
+                        <div className={cn("p-2 transition-transform duration-700", expanded ? "rotate-180" : "")}>
+                            <ChevronDown className="w-6 h-6 text-[var(--text-muted)]" />
                         </div>
                     </div>
                 </div>
-            )}
 
-            {/* Expandable Content with smooth animation */}
-            <div
-                className="overflow-hidden transition-all duration-300 ease-in-out"
-                style={{ maxHeight: expanded ? "20000px" : "0px" }}
-            >
-                <div ref={contentRef} className="px-5 pb-5 pt-4 space-y-5 border-t border-dashed border-border">
-                    {/* Sample Questions */}
-                    <div>
-                        <h5 className="text-sm font-medium text-gray-300 mb-2">
-                            Sample Questions
-                        </h5>
-                        {cluster.sample_questions?.length > 0 ? (
-                            <ul className="space-y-1.5">
-                                {cluster.sample_questions.map((q, i) => (
-                                    <li
-                                        key={i}
-                                        className="text-sm text-gray-300 flex items-start gap-2"
-                                    >
-                                        <span className="text-gray-500 mt-0.5 shrink-0">
-                                            &bull;
-                                        </span>
-                                        <span>&ldquo;{q}&rdquo;</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-sm text-gray-500 italic">
-                                Questions not available
-                            </p>
-                        )}
-                    </div>
+                {/* Expanded Content Area */}
+                <AnimatePresence>
+                    {expanded && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+                            className="border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]/30 backdrop-blur-md"
+                        >
+                            <div className="p-10 md:p-16 space-y-16">
+                                
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+                                    {/* Interaction Samples */}
+                                    <section className="space-y-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-[20px] bg-[var(--brand-soft)] border border-[var(--brand-glow)] flex items-center justify-center text-[var(--brand)]">
+                                                <MessageSquare className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h5 className="text-[12px] font-extrabold text-[var(--text-primary)] uppercase tracking-[0.2em]">Interaction Samples</h5>
+                                                <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Direct traces from anomalous queries</p>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {cluster.sample_questions?.map((q, i) => (
+                                                <motion.div 
+                                                    key={i} 
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: i * 0.1 }}
+                                                    className="p-6 rounded-[28px] bg-[var(--card-bg)] border border-[var(--border-subtle)] group/item hover:border-[var(--brand-glow)] transition-all"
+                                                >
+                                                    <div className="flex gap-5">
+                                                        <span className="text-[11px] font-bold text-[var(--brand)] opacity-20 group-hover/item:opacity-100 transition-opacity">0{i+1}</span>
+                                                        <p className="text-[15px] text-[var(--text-secondary)] font-medium leading-relaxed italic">&ldquo;{q}&rdquo;</p>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </section>
 
-                    {/* Related Documents */}
-                    <div>
-                        <h5 className="text-sm font-medium text-gray-300 mb-2">
-                            Related Documents
-                        </h5>
-                        {cluster.related_documents?.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                {cluster.related_documents.map((doc) => (
-                                    <span
-                                        key={doc}
-                                        className="inline-flex items-center gap-1.5 text-xs bg-blue-900/40 text-blue-300 px-3 py-1 rounded-full"
-                                    >
-                                        <FileText className="w-3 h-3" />
-                                        {doc}
-                                    </span>
-                                ))}
+                                    {/* AI Analysis & Recommendation */}
+                                    <section className="space-y-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-[20px] bg-[var(--warning-soft)] border border-[var(--warning-ring)] flex items-center justify-center text-[var(--warning)]">
+                                                <Lightbulb className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h5 className="text-[12px] font-extrabold text-[var(--text-primary)] uppercase tracking-[0.2em]">Neural Recommendation</h5>
+                                                <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Synthesized mitigation strategy</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-8 md:p-10 rounded-[40px] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)] relative overflow-hidden group/rec">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--warning-soft)] blur-3xl opacity-30 group-hover/rec:opacity-60 transition-opacity" />
+                                            <div className="relative z-10 space-y-8">
+                                                <p className="text-lg md:text-xl text-[var(--text-primary)] leading-relaxed font-semibold italic" style={{ fontFamily: "var(--font-display)" }}>
+                                                    {cluster.recommendation || "Synthesizing mitigation strategy..." }
+                                                </p>
+                                                <Button size="lg" className="rounded-2xl px-10 h-auto py-5 text-[11px] font-bold uppercase tracking-widest bg-[var(--warning)] hover:bg-[var(--warning)]/90 text-white shadow-xl shadow-[var(--warning-soft)] gap-2">
+                                                    <Navigation className="w-4 h-4" /> Draft Correction SOP
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        {/* Vector Assets */}
+                                        <div className="space-y-4 pt-4">
+                                            <div className="flex items-center gap-3">
+                                                <ShieldCheck className="w-4 h-4 text-[var(--success)]" />
+                                                <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Affiliated Vector Assets</span>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {cluster.related_documents?.length ? cluster.related_documents.map(doc => (
+                                                    <Badge key={doc} className="rounded-xl px-4 py-2 bg-[var(--bg-secondary)] border-[var(--border-subtle)] text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-wider gap-2">
+                                                        <FileText className="w-3.5 h-3.5 text-[var(--brand)]" />
+                                                        {doc}
+                                                    </Badge>
+                                                )) : (
+                                                    <p className="text-[11px] text-[var(--text-muted)] italic px-2">No existing documentation vectors identified for this void.</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {/* Advanced AI Deep-Dive */}
+                                <div className="pt-16 border-t border-[var(--border-subtle)]">
+                                    <div className="flex items-center gap-4 mb-10">
+                                        <div className="w-12 h-12 rounded-[20px] bg-[var(--brand-soft)] border border-[var(--brand-glow)] flex items-center justify-center text-[var(--brand)]">
+                                            <Zap className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-[12px] font-extrabold text-[var(--text-primary)] uppercase tracking-[0.2em]">Neural Deep Dive</h5>
+                                            <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Multi-modal failure analysis & SOP generation</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="min-h-[200px] relative">
+                                        {isAnalyzing ? (
+                                            <div className="py-20 flex flex-col items-center justify-center gap-8">
+                                                <div className="relative">
+                                                    <div className="w-20 h-20 border-4 border-[var(--brand-soft)] border-t-[var(--brand)] rounded-full animate-spin" />
+                                                    <div className="absolute inset-0 bg-[var(--brand)] blur-[40px] opacity-10 animate-pulse" />
+                                                </div>
+                                                <div className="text-center space-y-2">
+                                                    <p className="text-[11px] font-bold text-[var(--brand)] uppercase tracking-[0.4em] animate-pulse">Analyzing Patterns</p>
+                                                    <p className="text-[12px] text-[var(--text-muted)] font-semibold uppercase tracking-widest">Applying recursive failure logic...</p>
+                                                </div>
+                                            </div>
+                                        ) : internalAnalysis ? (
+                                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-16">
+                                                <FailureAnalysisChart cluster={{ ...cluster, llm_analysis: internalAnalysis }} />
+                                                <InsightsAndSOPCard cluster={{ ...cluster, llm_analysis: internalAnalysis }} />
+                                            </motion.div>
+                                        ) : (
+                                            <div className="py-20 text-center rounded-[40px] border-2 border-dashed border-[var(--border-subtle)] bg-[var(--bg-secondary)]/30">
+                                                <div className="flex flex-col items-center gap-6 opacity-30">
+                                                    <Scale className="w-12 h-12" />
+                                                    <p className="text-[11px] font-bold uppercase tracking-[0.3em] max-w-xs leading-relaxed">System parameters ready for recursive analysis</p>
+                                                    <Button variant="outline" onClick={triggerAIAnalysis} className="rounded-xl px-10 h-auto py-3 text-[10px] font-extrabold uppercase tracking-[0.2em] border-2">Initialize Deep Scan</Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        ) : (
-                            <p className="text-sm text-gray-500 italic">
-                                No documents linked (tracking not enabled)
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Recommendation */}
-                    <div className="bg-white/[0.02] border border-border rounded-lg p-4">
-                        <div className="flex items-start gap-2">
-                            <Lightbulb className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                            <div>
-                                <h5 className="text-sm font-medium text-yellow-400 mb-1">
-                                    Recommendation
-                                </h5>
-                                {cluster.recommendation ? (
-                                    <p className="text-sm text-gray-300 leading-relaxed">
-                                        {cluster.recommendation}
-                                    </p>
-                                ) : (
-                                    <p className="text-sm text-gray-500 italic">
-                                        No recommendation generated
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* LLM Advanced Insights */}
-                    {isAnalyzing ? (
-                        <div className="mt-6 border-t border-[#3a3a3a] pt-12 pb-12 flex flex-col items-center justify-center gap-3 text-gray-400">
-                            <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-                            <div className="text-sm font-medium">Llama 3 is analyzing root causes & drafting SOPs...</div>
-                        </div>
-                    ) : analysisError ? (
-                        <div className="mt-6 border-t border-[#3a3a3a] pt-6 text-sm text-red-400 flex items-center gap-2">
-                            <Lightbulb className="w-4 h-4" />
-                            AI Analysis Failed: {analysisError}
-                        </div>
-                    ) : internalAnalysis ? (
-                        <>
-                            <FailureAnalysisChart cluster={{ ...cluster, llm_analysis: internalAnalysis }} />
-                            <InsightsAndSOPCard cluster={{ ...cluster, llm_analysis: internalAnalysis }} />
-                        </>
-                    ) : (
-                        <div className="mt-6 border-t border-[#3a3a3a] pt-6 text-sm text-gray-500 italic">
-                            Expand to trigger AI Deep Discovery.
-                        </div>
+                        </motion.div>
                     )}
-                </div>
-            </div>
+                </AnimatePresence>
+            </motion.div>
+
+            {/* Resolution Modal Override with God-Level UI */}
+            <AnimatePresence>
+                {showResolve && (
+                    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-[var(--bg-overlay)] backdrop-blur-xl" 
+                            onClick={() => !resolving && setShowResolve(false)} 
+                        />
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 40 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            className="w-full max-w-2xl relative"
+                        >
+                            <div className="p-10 md:p-14 rounded-[48px] bg-[var(--card-bg)] border border-[var(--border-strong)] shadow-[0_40px_100px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--brand-glow)] blur-[100px] opacity-20 pointer-events-none" />
+                                
+                                <div className="flex items-center gap-6 mb-12 relative z-10">
+                                    <div className="w-16 h-16 rounded-[24px] bg-[var(--brand-soft)] border border-[var(--brand-glow)] flex items-center justify-center text-[var(--brand)]">
+                                        <BadgeCheck className="w-8 h-8" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight" style={{ fontFamily: "var(--font-display)" }}>Finalize Trace Closure</h3>
+                                        <p className="text-[12px] text-[var(--text-muted)] font-bold uppercase tracking-[0.2em] mt-1 italic">Closing Gap: {cluster.topic}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-8 relative z-10">
+                                    <div className="space-y-3">
+                                        <label className="text-[11px] font-extrabold text-[var(--text-muted)] uppercase tracking-[0.3em] ml-2">Audit Mitigation Notes</label>
+                                        <textarea
+                                            value={resolveNotes}
+                                            onChange={(e) => setResolveNotes(e.target.value)}
+                                            rows={5}
+                                            className="w-full bg-[var(--input-bg)] border border-[var(--border-default)] rounded-[32px] px-8 py-6 text-base text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/30 focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all resize-none font-medium leading-[1.8]"
+                                            placeholder="Document the corrective measures or neural state updates implemented to resolve this intelligence void..."
+                                            disabled={resolving}
+                                        />
+                                    </div>
+
+                                    {resolveError && (
+                                        <div className="p-4 bg-[var(--danger-soft)] border border-[var(--danger-ring)] rounded-2xl text-center">
+                                            <p className="text-[11px] font-extrabold text-[var(--danger)] uppercase tracking-widest">{resolveError}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-end gap-5 pt-4">
+                                        <Button 
+                                            variant="secondary" 
+                                            onClick={() => setShowResolve(false)} 
+                                            disabled={resolving}
+                                            className="h-14 px-10 rounded-2xl text-[11px] font-bold tracking-widest uppercase border-2"
+                                        >
+                                            Abort
+                                        </Button>
+                                        <Button 
+                                            onClick={confirmResolve} 
+                                            disabled={resolving}
+                                            className="h-14 px-12 rounded-2xl bg-[var(--brand)] text-white text-[11px] font-bold tracking-widest uppercase hover:bg-[var(--brand-hover)] shadow-2xl shadow-[var(--brand-soft)]"
+                                        >
+                                            {resolving ? <Loader2 className="w-5 h-5 animate-spin" /> : "Authorize Trace Closure"}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

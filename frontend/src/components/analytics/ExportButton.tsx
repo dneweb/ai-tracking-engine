@@ -165,18 +165,33 @@ export default function ExportButton({ queries, documents }: ExportButtonProps) 
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setOpen(!open)}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary/20 active:scale-95"
+                className="inline-flex items-center gap-2 px-6 py-2.5 font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95 text-[11px]"
+                style={{
+                    background: "var(--accent-primary)",
+                    color: "var(--bg-base)",
+                    boxShadow: "0 0 20px var(--glow-primary)",
+                    letterSpacing: "0.1em"
+                }}
             >
                 <Download className="w-4 h-4" />
                 Export
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-xl z-50 overflow-hidden">
+                <div 
+                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl z-50 overflow-hidden backdrop-blur-md"
+                    style={{
+                        background: "var(--color-background-secondary)",
+                        border: "0.5px solid var(--color-border-secondary)"
+                    }}
+                >
                     <button
                         onClick={exportCSV}
                         disabled={!!exporting}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors disabled:opacity-50"
+                        style={{ color: "var(--color-text-secondary)" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--glow-primary)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                     >
                         <FileSpreadsheet className="w-4 h-4 text-green-400" />
                         {exporting === "csv" ? "Exporting..." : "Export as CSV"}
@@ -184,7 +199,10 @@ export default function ExportButton({ queries, documents }: ExportButtonProps) 
                     <button
                         onClick={exportPDF}
                         disabled={!!exporting}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors disabled:opacity-50"
+                        style={{ color: "var(--color-text-secondary)" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--glow-primary)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                     >
                         <FileText className="w-4 h-4 text-red-400" />
                         {exporting === "pdf" ? "Exporting..." : "Export as PDF"}
@@ -192,7 +210,10 @@ export default function ExportButton({ queries, documents }: ExportButtonProps) 
                     <button
                         onClick={exportJSON}
                         disabled={!!exporting}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors disabled:opacity-50"
+                        style={{ color: "var(--color-text-secondary)" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "var(--glow-primary)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                     >
                         <FileJson className="w-4 h-4 text-blue-400" />
                         {exporting === "json" ? "Exporting..." : "Export as JSON"}

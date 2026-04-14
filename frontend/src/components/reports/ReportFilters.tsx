@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Calendar, Target, Layers, ChevronDown, Zap, Shield } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ReportFiltersProps {
     days: number;
@@ -14,10 +16,10 @@ interface ReportFiltersProps {
 }
 
 const TIME_OPTIONS = [
-    { value: 7, label: "Last 7 days" },
-    { value: 14, label: "Last 14 days" },
-    { value: 30, label: "Last 30 days" },
-    { value: 90, label: "Last 90 days" },
+    { value: 7, label: "07 DAY SCAN" },
+    { value: 14, label: "14 DAY SCAN" },
+    { value: 30, label: "30 DAY SCAN" },
+    { value: 90, label: "90 DAY SCAN" },
 ];
 
 export default function ReportFilters({
@@ -29,13 +31,11 @@ export default function ReportFilters({
     onMinClusterSizeChange,
     disabled = false,
 }: ReportFiltersProps) {
-    // We use local state for string values to allow backspacing/clearing during typing
-    const [localThreshold, setLocalThreshold] = useState(String(Math.round(confidenceThreshold * 100)));
+    const [localThreshold, setLocalThreshold] = useState(String(Math.round(confidenceThreshold < 1 ? confidenceThreshold * 100 : confidenceThreshold)));
     const [localMinSize, setLocalMinSize] = useState(String(minClusterSize));
 
-    // Sync local state when external props change (e.g. from a reset)
     useEffect(() => {
-        setLocalThreshold(String(Math.round(confidenceThreshold * 100)));
+        setLocalThreshold(String(Math.round(confidenceThreshold < 1 ? confidenceThreshold * 100 : confidenceThreshold)));
     }, [confidenceThreshold]);
 
     useEffect(() => {
@@ -43,72 +43,86 @@ export default function ReportFilters({
     }, [minClusterSize]);
 
     return (
-        <div className={`bg-card border border-border rounded-xl p-5 transition-opacity ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
-            <div className="flex items-center gap-2 mb-4">
-                <SlidersHorizontal className="w-4 h-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-300">Report Filters</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {/* Time Period */}
-                <div>
-                    <label className="block text-xs text-gray-500 mb-1.5">
-                        Analyze questions from
+        <div className={cn(
+            "grid grid-cols-1 md:grid-cols-3 gap-10",
+            disabled && "opacity-40 pointer-events-none grayscale transition-all duration-700"
+        )}>
+            {/* Time Period */}
+            <div className="space-y-4 group">
+                <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                        <Calendar className="w-3.5 h-3.5 text-[var(--brand)]" />
+                        Temporal Window
                     </label>
+                    <span className="text-[9px] font-bold text-[var(--brand)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Configured</span>
+                </div>
+                <div className="relative">
                     <select
                         value={days}
                         onChange={(e) => onDaysChange(Number(e.target.value))}
-                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] px-6 py-5 text-sm font-bold text-[var(--text-primary)] appearance-none focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all uppercase tracking-widest cursor-pointer"
                     >
                         {TIME_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
+                            <option key={opt.value} value={opt.value} className="bg-[var(--card-bg)] text-[var(--text-primary)] py-4 font-bold">
                                 {opt.label}
                             </option>
                         ))}
                     </select>
+                    <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none group-focus-within:text-[var(--brand)] transition-colors" />
                 </div>
+            </div>
 
-                {/* Confidence Threshold */}
-                <div>
-                    <label className="block text-xs text-gray-500 mb-1.5">
-                        Show questions with confidence below (%)
+            {/* Confidence Threshold */}
+            <div className="space-y-4 group">
+                <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                        <Target className="w-3.5 h-3.5 text-[var(--warning)]" />
+                        Precision Limit (%)
                     </label>
-                    <div className="relative group">
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            value={localThreshold}
-                            onChange={(e) => {
-                                const val = e.target.value.replace(/[^0-9]/g, "");
-                                if (val === "") {
-                                    setLocalThreshold("");
-                                    return;
-                                }
-                                const num = parseInt(val);
-                                if (!isNaN(num) && num <= 100) {
-                                    setLocalThreshold(val);
-                                    onThresholdChange(num / 100);
-                                }
-                            }}
-                            onBlur={() => {
-                                if (localThreshold === "") {
-                                    setLocalThreshold("0");
-                                    onThresholdChange(0);
-                                }
-                            }}
-                            className="w-full bg-background border border-border rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all group-hover:border-white/10"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none">
-                            %
-                        </span>
+                    <span className="text-[9px] font-bold text-[var(--warning)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Dynamic</span>
+                </div>
+                <div className="relative">
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        value={localThreshold}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
+                            if (val === "") {
+                                setLocalThreshold("");
+                                return;
+                            }
+                            const num = parseInt(val);
+                            if (!isNaN(num) && num <= 100) {
+                                setLocalThreshold(val);
+                                onThresholdChange(num / 100);
+                            }
+                        }}
+                        onBlur={() => {
+                            if (localThreshold === "") {
+                                setLocalThreshold("0");
+                                onThresholdChange(0);
+                            }
+                        }}
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--warning)] focus:ring-4 focus:ring-[var(--warning-soft)] transition-all tabular-nums"
+                    />
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)]/40 uppercase">Match</span>
+                        <Zap className="w-3.5 h-3.5 text-[var(--warning)] opacity-40" />
                     </div>
                 </div>
+            </div>
 
-                {/* Min Cluster Size */}
-                <div>
-                    <label className="block text-xs text-gray-500 mb-1.5">
-                        Minimum questions per topic
+            {/* Min Cluster Size */}
+            <div className="space-y-4 group">
+                <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                        <Layers className="w-3.5 h-3.5 text-[var(--success)]" />
+                        Recurrence Min
                     </label>
+                    <span className="text-[9px] font-bold text-[var(--success)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Sensitivity</span>
+                </div>
+                <div className="relative">
                     <input
                         type="text"
                         inputMode="numeric"
@@ -135,8 +149,12 @@ export default function ReportFilters({
                                 onMinClusterSizeChange(1);
                             }
                         }}
-                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all hover:border-white/10"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--success)] focus:ring-4 focus:ring-[var(--success-soft)] transition-all tabular-nums"
                     />
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                        <span className="text-[10px] font-bold text-[var(--text-muted)]/40 uppercase">Hits</span>
+                        <Shield className="w-3.5 h-3.5 text-[var(--success)] opacity-40" />
+                    </div>
                 </div>
             </div>
         </div>

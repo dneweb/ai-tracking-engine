@@ -12,14 +12,14 @@ export function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Check for session cookie set by AuthContext after login
-    const user = request.cookies.get("ai_tracking_user");
+    // CHECKPOINT: Legacy cookie auth check disabled to allow Clerk middleware to handle auth
+    // const user = request.cookies.get("ai_tracking_user");
 
-    if (!user) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("from", pathname);
-        return NextResponse.redirect(loginUrl);
-    }
+    // if (!user) {
+    //     const loginUrl = new URL("/login", request.url);
+    //     loginUrl.searchParams.set("from", pathname);
+    //     return NextResponse.redirect(loginUrl);
+    // }
 
     return NextResponse.next();
 }

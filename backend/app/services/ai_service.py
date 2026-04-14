@@ -1,16 +1,83 @@
-import ollama
+import json
+import httpx
 from sentence_transformers import SentenceTransformer
 from app.config import get_settings
 import numpy as np
-from typing import List
+from typing import List, Any, Dict, Optional, Tuple
 
 settings = get_settings()
 
-# Ollama runs locally - no API key needed!
+MISTRAL_CHAT_URL = "https://api.mistral.ai/v1/chat/completions"
+GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # Initialize local embedding model (for vectors)
 print("Loading embedding model...", flush=True)
 embedding_model = SentenceTransformer(settings.embedding_model)
+
+def _completion_mistral(
+    messages: List[Dict[str, str]],
+    temperature: float,
+    response_format: Optional[Dict[str, str]] = None,
+) -> str:
+    s = get_settings()
+    body: Dict[str, Any] = {
+        "model": s.mistral_model,
+        "messages": messages,
+        "temperature": temperature,
+    }
+    if response_format is not None:
+        body["response_format"] = response_format
+    r = httpx.post(
+        MISTRAL_CHAT_URL,
+        headers={
+            "Authorization": f"Bearer {s.mistral_api_key}",
+            "Content-Type": "application/json",
+        },
+        json=body,
+        timeout=120.0,
+    )
+    r.raise_for_status()
+    data = r.json()
+    return data["choices"][0]["message"]["content"]
+
+def _completion_groq(
+    messages: List[Dict[str, str]],
+    temperature: float,
+    response_format: Optional[Dict[str, str]] = None,
+) -> str:
+    s = get_settings()
+    body: Dict[str, Any] = {
+        "model": s.groq_model,
+        "messages": messages,
+        "temperature": temperature,
+    }
+    if response_format is not None:
+        body["response_format"] = response_format
+    r = httpx.post(
+        GROQ_CHAT_URL,
+        headers={
+            "Authorization": f"Bearer {s.groq_api_key}",
+            "Content-Type": "application/json",
+        },
+        json=body,
+        timeout=120.0,
+    )
+    r.raise_for_status()
+    data = r.json()
+    return data["choices"][0]["message"]["content"]
+
+def _chat_with_fallback(
+    messages: List[Dict[str, str]],
+    temperature: float,
+    response_format: Optional[Dict[str, str]] = None,
+) -> Tuple[str, str]:
+    try:
+        content = _completion_mistral(messages, temperature, response_format)
+        return content, get_settings().mistral_model
+    except Exception as e:
+        print(f"Mistral failed: {e}, using Groq instead")
+        content = _completion_groq(messages, temperature, response_format)
+        return content, get_settings().groq_model
 
 def get_embedding(text: str) -> List[float]:
     """
@@ -37,7 +104,7 @@ def get_embeddings_batch(texts: List[str]) -> List[List[float]]:
 
 def chat_completion(prompt: str, context: str = "") -> dict:
     """
-    Generate answer using local Ollama Llama 3 (FREE, PRIVATE & FAST!)
+    Generate answer using Mistral, or Groq if Mistral fails.
     
     Args:
         prompt: User's question
@@ -66,18 +133,11 @@ def chat_completion(prompt: str, context: str = "") -> dict:
             "content": prompt
         })
         
-        # Call local Ollama API
-        response = ollama.chat(
-            model=settings.chat_model,
-            messages=messages,
-            options={"temperature": 0.3}  # Lower = more factual
-        )
-        
-        answer = response['message']['content']
+        answer, model_used = _chat_with_fallback(messages, temperature=0.3)
         
         return {
             "answer": answer,
-            "model": settings.chat_model,
+            "model": model_used,
         }
         
     except Exception as e:
@@ -89,24 +149,17 @@ def chat_completion(prompt: str, context: str = "") -> dict:
 
 def structured_chat_completion(system_prompt: str, user_prompt: str) -> dict:
     """
-    Generate structured JSON output using local Ollama.
+    Generate structured JSON output using Mistral, or Groq if Mistral fails.
     """
     try:
-        import json
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ]
         
-        # We tell Ollama to format output as JSON
-        response = ollama.chat(
-            model=settings.chat_model,
-            messages=messages,
-            format='json',
-            options={"temperature": 0.1} # very low temp for structured data
-        )
+        response_format = {"type": "json_object"}
+        content, _ = _chat_with_fallback(messages, temperature=0.1, response_format=response_format)
         
-        content = response['message']['content']
         return json.loads(content)
         
     except Exception as e:

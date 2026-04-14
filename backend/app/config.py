@@ -6,9 +6,11 @@ class Settings(BaseSettings):
     mongodb_uri: str = "mongodb+srv://deep_db_user:kZNVJJI89KHJsbLA@deep.yjgn8aa.mongodb.net/?appName=Deep"
     mongodb_database: str = "ai_tracking"
 
-    # Ollama (local LLM - no API key needed!)
-    ollama_host: str = "http://localhost:11434"
-    ollama_model: str = "llama3"   # matches OLLAMA_MODEL in .env
+    # Mistral (primary) and Groq (fallback if Mistral fails)
+    mistral_api_key: str = ""
+    groq_api_key: str = ""
+    mistral_model: str = "mistral-small-latest"
+    groq_model: str = "llama-3.3-70b-versatile"
 
     # App settings
     app_name: str = "AI Tracking Engine"
@@ -16,7 +18,6 @@ class Settings(BaseSettings):
 
     # Model settings
     embedding_model: str = "all-MiniLM-L6-v2"  # Local, free
-    chat_model: str = "llama3"                  # Local Ollama model
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

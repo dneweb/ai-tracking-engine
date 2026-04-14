@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { ChevronDown, ChevronUp, ChevronsUpDown, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronsUpDown, AlertTriangle, ArrowRight, Clock, ShieldAlert } from "lucide-react";
 import { getLowConfidenceQueries } from "@/lib/api";
 import type { LowConfidenceQuery } from "@/lib/api";
 import { useAuth } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 type SortField = "confidence" | "date";
@@ -15,7 +19,6 @@ export default function LowConfidenceTable() {
     const [queries, setQueries] = useState<LowConfidenceQuery[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
     const [limit, setLimit] = useState(10);
     const [sortBy, setSortBy] = useState<SortField>("confidence");
@@ -23,14 +26,13 @@ export default function LowConfidenceTable() {
 
     const fetchData = useCallback(async () => {
         setLoading(true);
-        setError(null);
         try {
             const token = await getToken();
             const data = await getLowConfidenceQueries(limit, 0.6, 0, sortBy, sortOrder, token || undefined);
             setQueries(data.queries);
             setTotal(data.total);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to load data");
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -39,16 +41,6 @@ export default function LowConfidenceTable() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
-    const isRecent = (dateStr: string) => {
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-        return {
-            bright: diffDays <= 7,
-            muted: diffDays > 30
-        };
-    };
 
     const toggleSort = (field: SortField) => {
         if (sortBy === field) {
@@ -60,183 +52,167 @@ export default function LowConfidenceTable() {
     };
 
     function SortIcon({ field }: { field: SortField }) {
-        if (sortBy !== field) return <ChevronsUpDown className="w-3.5 h-3.5 text-gray-600" />;
+        if (sortBy !== field) return <ChevronsUpDown className="w-3 h-3 text-tertiary" />;
         return sortOrder === "asc" ? (
-            <ChevronUp className="w-3.5 h-3.5 text-primary font-bold stroke-[3]" />
+            <ChevronUp className="w-3 h-3 text-accent-primary" />
         ) : (
-            <ChevronDown className="w-3.5 h-3.5 text-primary font-bold stroke-[3]" />
-        );
-    }
-
-    function ConfidenceBadge({ score }: { score: number }) {
-        const pct = Math.round(score * 100);
-        let colorClass = "bg-yellow-500/10 text-yellow-400";
-        if (pct < 30) colorClass = "bg-red-500/10 text-red-400";
-        else if (pct < 50) colorClass = "bg-orange-500/10 text-orange-400";
-
-        return (
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
-                {pct}%
-            </span>
-        );
-    }
-
-    function formatDate(iso: string) {
-        try {
-            return new Date(iso).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-            });
-        } catch {
-            return iso;
-        }
-    }
-
-    if (error) {
-        return (
-            <div className="bg-card border border-border rounded-xl p-6">
-                <p className="text-red-400 text-sm text-center">{error}</p>
-            </div>
+            <ChevronDown className="w-3 h-3 text-accent-primary" />
         );
     }
 
     return (
-        <div className="glass rounded-[2rem] overflow-hidden border border-white/[0.05] shadow-2xl">
-            <div className="px-6 py-5 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-orange-400" />
-                        Low Confidence Questions
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                        Questions with confidence below 60% &mdash; {total} total
-                    </p>
-                </div>
-                {/* Color Legend */}
-                <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground bg-white/[0.02] px-3 py-1.5 rounded-lg border border-white/[0.05]">
-                    <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-red-500" />
-                        <span>Critical &lt;30%</span>
+        <Card variant="default" padding="none" className="overflow-hidden border-subtle bg-surface/50">
+            <div className="px-8 py-6 border-b border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-accent-danger/10 flex items-center justify-center text-accent-danger border border-accent-danger/20 shadow-inner">
+                        <ShieldAlert className="w-5 h-5" />
                     </div>
-                    <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-orange-500" />
-                        <span>Orange 30-50%</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                        <span>Yellow 50-60%</span>
+                    <div>
+                        <h3 className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
+                            Neural Anomalies Identified
+                        </h3>
+                        <p className="text-[10px] font-label font-bold text-tertiary uppercase tracking-wider mt-0.5">
+                            Confidence threshhold &lt; 60% &mdash; <span className="text-accent-danger">{total} Instances</span>
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-white/[0.02] text-muted-foreground border-b border-border">
-                        <tr>
-                            <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px] w-[45%]">Question</th>
+            <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-surface/50 text-tertiary border-b border-subtle">
+                            <th className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] w-[45%]">Interaction Trace</th>
                             <th
-                                className="px-6 py-4 font-bold uppercase tracking-widest text-[10px] cursor-pointer select-none group/th"
+                                className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
                                 onClick={() => toggleSort("confidence")}
                             >
-                                <span className="inline-flex items-center gap-1 group-hover/th:text-foreground transition-colors">
-                                    Confidence <SortIcon field="confidence" />
+                                <span className="inline-flex items-center gap-2 group-hover/th:text-primary transition-colors">
+                                    Reliability <SortIcon field="confidence" />
                                 </span>
                             </th>
                             <th
-                                className="px-6 py-4 font-bold uppercase tracking-widest text-[10px] cursor-pointer select-none group/th"
+                                className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
                                 onClick={() => toggleSort("date")}
                             >
-                                <span className="inline-flex items-center gap-1 group-hover/th:text-foreground transition-colors">
-                                    Date <SortIcon field="date" />
+                                <span className="inline-flex items-center gap-2 group-hover/th:text-primary transition-colors">
+                                    Frequency <SortIcon field="date" />
                                 </span>
                             </th>
-                            <th className="px-6 py-4 font-bold uppercase tracking-widest text-[10px]">Related Document</th>
+                            <th className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em]">Primary Asset</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-border">
-                        {loading ? (
-                            <tr>
-                                <td colSpan={4} className="px-6 py-10 text-center text-muted-foreground">
-                                    <div className="flex items-center justify-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                                        <span>Synchronizing Neural Logs...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : (
-                            queries.map((q) => (
-                                <tr
-                                    key={q.id}
-                                    className="hover:bg-white/5 transition-colors cursor-pointer group"
-                                    onClick={() =>
-                                        setExpandedRow(expandedRow === q.id ? null : q.id)
-                                    }
-                                >
-                                    <td className="px-6 py-5" colSpan={expandedRow === q.id ? 4 : undefined}>
-                                        {expandedRow === q.id ? (
-                                            <div className="space-y-3">
-                                                <p className="text-white font-medium">{q.question}</p>
-                                                <div className="bg-white/[0.03] border border-white/[0.05] rounded-lg p-4">
-                                                    <p className="text-xs text-gray-500 mb-1">Answer</p>
-                                                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
-                                                        {q.answer}
-                                                    </p>
-                                                </div>
-                                                <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                                                    <span>Confidence: <ConfidenceBadge score={q.confidence_score} /></span>
-                                                    <span>Date: {formatDate(q.created_at)}</span>
-                                                    {q.retrieved_doc_title && (
-                                                        <span>Document: {q.retrieved_doc_title}</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <span
-                                                className="text-white font-medium truncate block max-w-md group-hover:text-primary transition-colors"
-                                                title={q.question}
-                                            >
-                                                {q.question}
-                                            </span>
-                                        )}
-                                    </td>
-                                    {expandedRow !== q.id && (
-                                        <>
-                                            <td className="px-6 py-5">
-                                                <ConfidenceBadge score={q.confidence_score} />
-                                            </td>
-                                            <td className={cn(
-                                                "px-6 py-5 whitespace-nowrap text-xs font-medium",
-                                                isRecent(q.created_at).bright ? "text-white" : isRecent(q.created_at).muted ? "text-muted-foreground/40" : "text-muted-foreground"
-                                            )}>
-                                                {formatDate(q.created_at)}
-                                            </td>
-                                            <td className="px-6 py-5 text-muted-foreground text-xs truncate max-w-[180px]" title={q.retrieved_doc_title || ""}>
-                                                {q.retrieved_doc_title || "—"}
-                                            </td>
-                                        </>
-                                    )}
+                    <tbody className="divide-y divide-subtle">
+                        {loading && queries.length === 0 ? (
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <tr key={i} className="animate-pulse">
+                                    <td className="px-8 py-6"><div className="h-3 w-64 bg-elevated rounded" /></td>
+                                    <td className="px-8 py-6"><div className="h-4 w-12 bg-elevated rounded" /></td>
+                                    <td className="px-8 py-6"><div className="h-3 w-20 bg-elevated rounded" /></td>
+                                    <td className="px-8 py-6"><div className="h-4 w-32 bg-elevated rounded" /></td>
                                 </tr>
+                            ))
+                        ) : (
+                            queries.map((q, idx) => (
+                                <React.Fragment key={q.id}>
+                                    <motion.tr
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className={cn(
+                                            "hover:bg-elevated transition-all cursor-pointer group",
+                                            expandedRow === q.id && "bg-elevated/50"
+                                        )}
+                                        onClick={() => setExpandedRow(expandedRow === q.id ? null : q.id)}
+                                    >
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-start gap-4">
+                                                <div className="p-1 bg-accent-danger/5 rounded mt-0.5 border border-accent-danger/10">
+                                                    <AlertTriangle className="w-3 h-3 text-accent-danger" />
+                                                </div>
+                                                <span className="text-[13px] font-semibold text-primary truncate block max-w-lg group-hover:text-accent-primary transition-colors">
+                                                    {q.question}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <Badge confidence={q.confidence_score}>{Math.round(q.confidence_score < 1 ? q.confidence_score * 100 : q.confidence_score)}% Match</Badge>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <div className="flex flex-col">
+                                                <span className="text-[11px] font-label font-bold text-primary tabular-nums">
+                                                    {new Date(q.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                </span>
+                                                <span className="text-[9px] font-label text-tertiary">{new Date(q.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center gap-2 max-w-[180px]">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-accent-danger/30" />
+                                                <span className="text-[11px] font-medium text-tertiary truncate">
+                                                    {q.retrieved_doc_title || "Unindexed Asset"}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </motion.tr>
+                                    <AnimatePresence>
+                                        {expandedRow === q.id && (
+                                            <tr>
+                                                <td colSpan={4} className="px-8 py-0">
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        className="overflow-hidden"
+                                                    >
+                                                        <div className="py-8 space-y-6">
+                                                            <Card variant="surface" padding="md" className="border-subtle bg-base/30">
+                                                                <div className="flex items-center gap-2 text-[9px] font-label font-bold text-tertiary uppercase tracking-widest mb-3">
+                                                                    <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
+                                                                    Trace Synthesis Answer
+                                                                </div>
+                                                                <p className="text-[13px] text-secondary leading-relaxed font-medium whitespace-pre-wrap">
+                                                                    {q.answer}
+                                                                </p>
+                                                            </Card>
+                                                            <div className="flex items-center gap-4 pl-4 border-l-2 border-accent-danger/20">
+                                                                <Button variant="secondary" size="sm" className="h-8 text-[10px] tracking-widest uppercase rounded-lg">
+                                                                    Adjust Weights
+                                                                </Button>
+                                                                <Button variant="ghost" size="sm" className="h-8 text-[10px] tracking-widest uppercase rounded-lg text-accent-danger">
+                                                                    Purge Trace
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </AnimatePresence>
+                                </React.Fragment>
                             ))
                         )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Show More */}
+            {/* Pagination / Show More */}
             {queries.length < total && (
-                <div className="px-6 py-8 flex justify-center">
-                    <button
+                <div className="px-8 py-6 border-t border-subtle bg-surface/30 flex justify-center">
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={(e) => {
                             e.stopPropagation();
                             setLimit((prev) => prev + 10);
                         }}
-                        className="px-6 py-2.5 rounded-lg border border-primary/30 bg-primary/5 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/10 hover:border-primary/50 transition-all"
+                        className="rounded-full h-10 px-8 text-[10px] tracking-widest uppercase"
                     >
-                        Show More ({queries.length} of {total})
-                    </button>
+                        Synchronize More ({queries.length} / {total})
+                    </Button>
                 </div>
             )}
-        </div>
+        </Card>
     );
 }
+
+import React from "react";

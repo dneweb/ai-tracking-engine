@@ -10,15 +10,16 @@ import {
     CartesianGrid,
     Tooltip,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Zap, Activity } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { getTimelineData } from "@/lib/api";
-
-// ── Types ────────────────────────────────────────────────────────────────────
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface TimelineEntry {
-    date: string;   // "YYYY-MM-DD"
-    label: string;  // "Feb 18" (formatted for display)
+    date: string;
+    label: string;
     count: number;
 }
 
@@ -30,65 +31,31 @@ interface TimelineResponse {
 
 type Period = "7" | "30";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Convert "2026-02-18" → "Feb 18" */
 function formatDate(isoDate: string): string {
     const parts = isoDate.split("-");
     const month = parseInt(parts[1], 10);
     const day = parseInt(parts[2], 10);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     return `${months[month - 1]} ${day}`;
 }
 
-// ── Custom Tooltip ───────────────────────────────────────────────────────────
-
-interface CustomTooltipProps {
-    active?: boolean;
-    payload?: Array<{ value: number }>;
-    label?: string;
-}
-
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label }: any) {
     if (!active || !payload || !payload.length) return null;
     const count = payload[0].value ?? 0;
     return (
-        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 shadow-lg">
-            <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-            <p className="text-sm font-semibold text-white">
-                {count} {count === 1 ? "question" : "questions"}
-            </p>
+        <div className="glass border border-strong rounded-xl px-4 py-3 shadow-2xl backdrop-blur-xl">
+            <p className="text-[10px] font-label font-bold text-tertiary uppercase tracking-widest mb-1">{label} · SESSION</p>
+            <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-accent-primary" />
+                <p className="text-sm font-bold text-primary">
+                    <span className="text-xl mr-1 font-label">{count}</span> Queries Synthesized
+                </p>
+            </div>
         </div>
     );
 }
 
-// ── Skeleton Loader ───────────────────────────────────────────────────────────
-
-function ChartSkeleton() {
-    return (
-        <div className="animate-pulse space-y-4 pt-4">
-            <div className="h-4 w-1/3 bg-white/10 rounded" />
-            <div className="h-[300px] bg-white/5 rounded-xl" />
-        </div>
-    );
-}
-
-// ── SVG Gradient Definition ───────────────────────────────────────────────────
-
-const GRADIENT_ID = "timelineGradient";
-
-function GradientDef() {
-    return (
-        <defs>
-            <linearGradient id={GRADIENT_ID} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#3B82F6" />   {/* blue-500 */}
-                <stop offset="100%" stopColor="#A855F7" /> {/* purple-500 */}
-            </linearGradient>
-        </defs>
-    );
-}
-
-// ── Main Component ────────────────────────────────────────────────────────────
+const GRADIENT_ID = "neuralTimelineGradient";
 
 export default function TimelineChart() {
     const { getToken } = useAuth();
@@ -97,34 +64,22 @@ export default function TimelineChart() {
     const [totalPeriod, setTotalPeriod] = useState(0);
     const [trend, setTrend] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     const fetchTimeline = useCallback(async (days: Period) => {
         setLoading(true);
-        setError(null);
         try {
             const token = await getToken();
             const data: TimelineResponse = await getTimelineData(days, token || undefined);
-
-            // Add formatted label for X-axis display
             const formatted: TimelineEntry[] = data.timeline.map((entry) => ({
                 date: entry.date,
                 label: formatDate(entry.date),
                 count: entry.count,
             }));
-
             setTimelineData(formatted);
             setTotalPeriod(data.total_period);
             setTrend(data.trend_vs_previous);
-            console.log("[TimelineChart] Data shape:", {
-                count: formatted.length,
-                sample: formatted[0],
-                total: data.total_period
-            });
-        } catch (err: unknown) {
-            const message =
-                err instanceof Error ? err.message : "Failed to load timeline data.";
-            setError(message);
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -134,142 +89,108 @@ export default function TimelineChart() {
         fetchTimeline(selectedPeriod);
     }, [selectedPeriod, fetchTimeline]);
 
-    // ── Trend Badge ──────────────────────────────────────────────────────────────
-
-    function TrendBadge() {
-        if (trend > 0) {
-            return (
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-400">
-                    <TrendingUp className="w-4 h-4" />
-                    +{trend}% vs prior period
-                </span>
-            );
-        } else if (trend < 0) {
-            return (
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-red-400">
-                    <TrendingDown className="w-4 h-4" />
-                    {trend}% vs prior period
-                </span>
-            );
-        }
-        return (
-            <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-500">
-                <Minus className="w-4 h-4" />
-                No change vs prior period
-            </span>
-        );
-    }
-
-    const isEmpty =
-        timelineData.length === 0 || timelineData.every((d) => d.count === 0);
-
-    // ── Render ───────────────────────────────────────────────────────────────────
-
     return (
-        <div className="bg-card border border-white/[0.05] rounded-[2rem] p-6 shadow-2xl">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                <div>
-                    <h3 className="text-lg font-semibold text-white">
-                        Questions Over Time
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                        {totalPeriod.toLocaleString()} total in the last {selectedPeriod} days
-                    </p>
+        <div className="h-full flex flex-col pt-4">
+            {/* Chart Sub-Header */}
+            <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-6">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-label font-bold text-tertiary tracking-widest uppercase">Periodic Throughput</span>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="text-2xl font-label font-bold text-primary">{totalPeriod.toLocaleString()}</span>
+                            <div className={cn(
+                                "flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md border",
+                                trend >= 0 ? "text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20" : "text-accent-danger bg-accent-danger/10 border-accent-danger/20"
+                            )}>
+                                {trend >= 0 ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
+                                {Math.abs(trend)}%
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {/* Trend */}
-                    {!loading && !error && <TrendBadge />}
-
-                    {/* Period Toggle */}
-                    <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.05] rounded-xl p-1 h-[36px]">
-                        {(["7", "30"] as Period[]).map((p) => (
-                            <button
-                                key={p}
-                                onClick={() => setSelectedPeriod(p)}
-                                className={`px-4 h-full text-[10px] rounded-lg font-bold uppercase tracking-widest transition-all ${selectedPeriod === p
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "text-muted-foreground hover:text-white bg-transparent"
-                                    }`}
-                            >
-                                {p} Days
-                            </button>
-                        ))}
-                    </div>
+                <div className="flex items-center gap-1 bg-surface border border-subtle rounded-xl p-1 shadow-inner h-9">
+                    {(["7", "30"] as Period[]).map((p) => (
+                        <button
+                            key={p}
+                            onClick={() => setSelectedPeriod(p)}
+                            className={cn(
+                                "h-full px-4 text-[9px] font-label font-bold uppercase tracking-widest rounded-lg transition-all",
+                                selectedPeriod === p ? "bg-accent-primary text-white shadow-lg" : "text-tertiary hover:text-primary"
+                            )}
+                        >
+                            {p} Days Scan
+                        </button>
+                    ))}
                 </div>
             </div>
 
             {/* Chart Area */}
-            {loading ? (
-                <ChartSkeleton />
-            ) : error ? (
-                <div className="flex items-center justify-center h-[300px] text-sm text-red-400">
-                    ⚠️ {error}
-                </div>
-            ) : isEmpty ? (
-                <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground gap-2">
-                    <span className="text-3xl">📭</span>
-                    <span className="text-sm">No questions logged in this period.</span>
-                </div>
-            ) : (
-                <div style={{ minHeight: "300px" }}>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart
-                            data={timelineData}
-                            margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
+            <div className="flex-1 min-h-0 relative">
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 flex items-center justify-center bg-base/50 z-10 backdrop-blur-[2px]"
                         >
-                        <GradientDef />
-
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="#262626"
-                            vertical={false}
-                        />
-
-                        {/* X-axis: show formatted label, reduce interval on 30-day view */}
-                        <XAxis
-                            dataKey="label"
-                            tick={{ fill: "#6B7280", fontSize: 12 }}
-                            axisLine={false}
-                            tickLine={false}
-                            interval={selectedPeriod === "30" ? 4 : 0}
-                        />
-
-                        {/* Y-axis: integers only with buffer */}
-                        <YAxis
-                            tick={{ fill: "#9CA3AF", fontSize: 10, fontWeight: 600 }}
-                            axisLine={false}
-                            tickLine={false}
-                            allowDecimals={false}
-                            width={32}
-                            domain={[0, (dataMax: number) => Math.max(dataMax + 2, 5)]}
-                        />
-
-                        <Tooltip
-                            content={<CustomTooltip />}
-                            cursor={{
-                                stroke: "#3B82F6",
-                                strokeWidth: 1,
-                                strokeDasharray: "4 4",
-                            }}
-                        />
-
-                        <Area
-                            type="monotone"
-                            dataKey="count"
-                            stroke="#8B5CF6"
-                            strokeWidth={3}
-                            fill={`url(#${GRADIENT_ID})`}
-                            fillOpacity={0.3}
-                            dot={{ r: 4, fill: "#8B5CF6", strokeWidth: 0, fillOpacity: 1 }}
-                            activeDot={{ r: 6, fill: "#A855F7", strokeWidth: 0 }}
-                            isAnimationActive={true}
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
+                            <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
+                        </motion.div>
+                    ) : (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full h-full"
+                        >
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id={GRADIENT_ID} x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="4 4" stroke="var(--border-subtle)" vertical={false} />
+                                    <XAxis 
+                                        dataKey="label" 
+                                        tick={{ fill: "var(--text-tertiary)", fontSize: 10, fontFamily: "var(--font-label)", fontWeight: 600 }}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        interval={selectedPeriod === "30" ? 5 : 0}
+                                    />
+                                    <YAxis 
+                                        tick={{ fill: "var(--text-tertiary)", fontSize: 10, fontFamily: "var(--font-label)" }}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        allowDecimals={false}
+                                        width={40}
+                                    />
+                                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: "var(--accent-primary)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                                    <Area 
+                                        type="monotone" 
+                                        dataKey="count" 
+                                        stroke="var(--accent-primary)" 
+                                        strokeWidth={3}
+                                        fill={`url(#${GRADIENT_ID})`}
+                                        animationDuration={1500}
+                                        dot={{ r: 4, fill: "var(--bg-base)", stroke: "var(--accent-primary)", strokeWidth: 2 }}
+                                        activeDot={{ r: 6, fill: "var(--accent-primary)", stroke: "var(--bg-base)", strokeWidth: 2 }}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        )}
-    </div>
-);
+        </div>
+    );
+}
+
+function Loader2({ className }: { className?: string }) {
+    return (
+        <svg className={cn("animate-spin", className)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+    );
 }

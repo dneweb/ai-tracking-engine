@@ -1,0 +1,35 @@
+/* 
+  Landing Custom — v2 bridge
+  This file only keeps legacy Tailwind @theme tokens that the
+  rest of the app may reference. The NEW landing page uses
+  landing-tokens.css + landing-v2.css exclusively.
+*/
+@theme {
+  --color-surface-container-low: #181b25;
+  --color-surface-container: #1c1f29;
+  --color-surface: #10131c;
+  --color-surface-bright: #363943;
+  --color-primary: #c4c0ff;
+  --color-on-primary: #2000a4;
+  --color-surface-dim: #10131c;
+  --color-on-background: #e0e2ef;
+  --color-on-surface-variant: #c7c4d9;
+  --color-on-surface: #e0e2ef;
+  --color-surface-container-highest: #32343f;
+  --color-surface-container-lowest: #0b0e17;
+  --color-surface-container-high: #272a34;
+  --color-outline-variant: #464556;
+  --color-outline: #918fa2;
+  --color-primary-container: #5b4dff;
+  --color-error: #ffb4ab;
+
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Prevent the global body overflow:hidden from breaking the landing page */
+.ke-root {
+  position: relative;
+}

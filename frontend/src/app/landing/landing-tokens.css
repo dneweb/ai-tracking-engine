@@ -1,0 +1,82 @@
+/* ============================================================
+   KNOWLEDGEENGINE — DESIGN TOKENS
+   Light + Dark mode via CSS custom properties
+   Base: 4px unit system
+   ============================================================ */
+
+/* ── LIGHT MODE (default) ─────────────────────────────────── */
+:root,
+[data-ke-theme="light"] {
+  --ke-bg-primary:   #F4F3FF;
+  --ke-bg-secondary: #ECEAFD;
+  --ke-bg-surface:   #FFFFFF;
+
+  --ke-text-primary:   #1A1830;
+  --ke-text-secondary: #5B5880;
+  --ke-text-tertiary:  #9896B8;
+
+  --ke-accent-purple: #6C63FF;
+  --ke-accent-violet: #8B5CF6;
+  --ke-accent-blue:   #3B82F6;
+
+  --ke-border-subtle: rgba(108, 99, 255, 0.12);
+  --ke-border-mid:    rgba(108, 99, 255, 0.22);
+  --ke-glow-purple:   rgba(108, 99, 255, 0.15);
+
+  /* RGB splits for alpha usage */
+  --ke-bg-primary-rgb:   244, 243, 255;
+  --ke-accent-purple-rgb: 108, 99, 255;
+  --ke-accent-blue-rgb: 59, 130, 246;
+}
+
+/* ── DARK MODE ────────────────────────────────────────────── */
+[data-ke-theme="dark"] {
+  --ke-bg-primary:   #0C0B1A;
+  --ke-bg-secondary: #100F22;
+  --ke-bg-surface:   #15132B;
+
+  --ke-text-primary:   #EEECff;
+  --ke-text-secondary: #9896C8;
+  --ke-text-tertiary:  #5B5880;
+
+  --ke-accent-purple: #7C6FFF;
+  --ke-accent-violet: #A78BFA;
+  --ke-accent-blue:   #60A5FA;
+
+  --ke-border-subtle: rgba(124, 111, 255, 0.14);
+  --ke-border-mid:    rgba(124, 111, 255, 0.28);
+  --ke-glow-purple:   rgba(124, 111, 255, 0.25);
+
+  --ke-bg-primary-rgb:   12, 11, 26;
+  --ke-accent-purple-rgb: 124, 111, 255;
+  --ke-accent-blue-rgb: 96, 165, 250;
+}
+
+/* ── TYPOGRAPHY SCALE (fluid) ─────────────────────────────── */
+:root {
+  --ke-text-hero:    clamp(2.4rem, 6vw, 5rem);
+  --ke-text-h2:      clamp(1.8rem, 4vw, 3.2rem);
+  --ke-text-body:    clamp(0.95rem, 1.5vw, 1.1rem);
+  --ke-text-small:   0.875rem;
+  --ke-text-micro:   0.75rem;
+
+  /* ── SPACING (4px base) ──────────────────────────────────── */
+  --ke-space-1:  4px;
+  --ke-space-2:  8px;
+  --ke-space-3:  12px;
+  --ke-space-4:  16px;
+  --ke-space-6:  24px;
+  --ke-space-8:  32px;
+  --ke-space-12: 48px;
+  --ke-space-16: 64px;
+  --ke-space-24: 96px;
+  --ke-space-32: 128px;
+
+  /* ── TRANSITION ──────────────────────────────────────────── */
+  --ke-ease:     cubic-bezier(0.23, 1, 0.32, 1);
+  --ke-duration: 0.4s;
+
+  /* ── GLASS ────────────────────────────────────────────────── */
+  --ke-glass-dark:  rgba(255, 255, 255, 0.06);
+  --ke-glass-light: rgba(255, 255, 255, 0.70);
+}

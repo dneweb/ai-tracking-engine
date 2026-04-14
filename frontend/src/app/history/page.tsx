@@ -1,254 +1,317 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getQueries, Query } from "@/lib/api";
-import { Search, ChevronDown, Calendar, ArrowUpRight, Filter, Download } from "lucide-react";
-import ConfidenceBadge from "@/components/ConfidenceBadge";
-import CategoryBadge from "@/components/CategoryBadge";
+import {
+  Search, Download, Activity, Zap, Shield,
+  BarChart3, ArrowUpRight, Filter, SlidersHorizontal,
+  Clock, MessageSquare, ChevronRight, Hash
+} from "lucide-react";
 import { useUser, useAuth } from "@clerk/nextjs";
+import { useToast } from "@/context/ToastContext";
+import { motion, AnimatePresence } from "framer-motion";
+import CountUp from "react-countup";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
+/* ─── Motion Variants ─────────────────────────────────── */
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.19, 1, 0.22, 1] } },
+};
+
+const stagger = {
+  animate: { transition: { staggerChildren: 0.05 } },
+};
+
+/* ─── Stat Card ────────────────────────────────────────── */
+function StatCard({
+  label, value, unit, icon: Icon, color, sub, index,
+}: {
+  label: string; value: number | string; unit: string;
+  icon: React.ElementType; color: string; sub: string; index: number;
+}) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      className="group relative p-6 rounded-[32px] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-lg)] hover:border-[var(--brand)] transition-all duration-500 overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--brand-glow)] blur-[40px] opacity-0 group-hover:opacity-30 transition-opacity" style={{ backgroundColor: color }} />
+      
+      <div className="flex justify-between items-start mb-6 relative z-10">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--bg-secondary)] text-[var(--text-muted)] group-hover:bg-[var(--brand-soft)] group-hover:text-[var(--brand)] transition-all duration-500">
+          <Icon className="w-4 h-4" />
+        </div>
+      </div>
+
+      <div className="space-y-1 relative z-10">
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+            {typeof value === "number" ? <CountUp end={value} duration={1.5} /> : value}
+          </span>
+          <span className="text-lg font-bold text-[var(--text-muted)]">{unit}</span>
+        </div>
+        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
+          {label}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Query row ────────────────────────────────────────── */
+function QueryRow({ query: q, index, total }: { query: Query; index: number; total: number }) {
+  const reliability = Math.round(q.confidence < 1 ? q.confidence * 100 : q.confidence);
+  
+  return (
+    <motion.div
+      variants={fadeUp}
+      className="group relative"
+    >
+      <div className="p-6 rounded-[28px] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-lg)] hover:border-[var(--brand)] transition-all duration-500 flex flex-col sm:flex-row items-center gap-6">
+        
+        {/* Index & Icon */}
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[10px] font-bold tabular-nums text-[var(--text-muted)] group-hover:bg-[var(--brand-soft)] group-hover:text-[var(--brand)] transition-all">
+               {String(total - index).padStart(3, '0')}
+            </div>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--bg-primary)] border border-[var(--border-subtle)] group-hover:scale-110 transition-transform duration-500">
+               <MessageSquare className="w-5 h-5 text-[var(--text-secondary)] group-hover:text-[var(--brand)] transition-colors" />
+            </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 w-full">
+           <div className="flex flex-wrap items-center gap-2 mb-2">
+              <Badge domain={q.category} className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest">{q.category}</Badge>
+              <div className={cn(
+                "px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5",
+                reliability >= 80 ? "bg-[var(--success-soft)] text-[var(--success)]" : reliability >= 60 ? "bg-[var(--warning-soft)] text-[var(--warning)]" : "bg-[var(--danger-soft)] text-[var(--danger)]"
+              )}>
+                <Shield className="w-3 h-3" />
+                {reliability}% Match
+              </div>
+           </div>
+           <h3 className="text-[15px] font-semibold text-[var(--text-primary)] leading-relaxed truncate group-hover:text-[var(--brand)] transition-colors duration-500">
+              {q.question}
+           </h3>
+        </div>
+
+        {/* Meta & Actions */}
+        <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto sm:pl-6 sm:border-l border-[var(--border-subtle)]">
+           <div className="text-left sm:text-right">
+              <p className="text-[11px] font-bold text-[var(--text-primary)] tracking-tight">
+                 {new Date(q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              </p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-muted)] mt-0.5">
+                 {new Date(q.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
+           </div>
+           <button 
+             onClick={() => showToast("Neural trail visualization coming in v3.1", "info" as any)}
+             className="p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:bg-[var(--brand)] hover:text-white transition-all active:scale-90 group/btn"
+           >
+              <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+           </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Page ─────────────────────────────────────────────── */
 export default function HistoryPage() {
-    const { isLoaded, isSignedIn, user: clerkUser } = useUser();
-    const { getToken } = useAuth();
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
+  const { getToken } = useAuth();
+  const { showToast } = useToast();
 
-    const [queries, setQueries] = useState<Query[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
+  const [queries, setQueries] = useState<Query[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
 
-    useEffect(() => {
-        async function loadData() {
-            try {
-                const token = await getToken();
-                const userEmail = clerkUser?.emailAddresses[0]?.emailAddress;
-                // Since this page serves both users and admin depending on context, we handle roles here
-                // For simplicity in this UI redesign, we follow the existing logic
-                const data = await getQueries(clerkUser?.publicMetadata?.role === "admin" ? undefined : userEmail, token || undefined);
-                setQueries(data);
-            } catch (err) {
-                console.error("Failed to load queries", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        if (isLoaded && isSignedIn) {
-            loadData();
-        }
-    }, [clerkUser, isLoaded, isSignedIn, getToken]);
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const token = await getToken();
+        const userEmail = clerkUser?.emailAddresses[0]?.emailAddress;
+        const data = await getQueries(
+          clerkUser?.publicMetadata?.role === "admin" ? undefined : userEmail,
+          token || undefined
+        );
+        setQueries(data);
+      } catch (err) {
+        console.error("Failed to load queries", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (isLoaded && isSignedIn) loadData();
+  }, [clerkUser, isLoaded, isSignedIn, getToken]);
 
-    const totalQueries = queries.length;
-    const avgConfidence = queries.length > 0
-        ? Math.round(queries.reduce((acc, q) => acc + q.confidence, 0) / queries.length)
-        : 0;
-
-    const categoryCounts = queries.reduce((acc, q) => {
-        acc[q.category] = (acc[q.category] || 0) + 1;
-        return acc;
+  const stats = useMemo(() => {
+    const total = queries.length;
+    const avgConf = total > 0 ? queries.reduce((a, q) => a + q.confidence, 0) / total : 0;
+    const today = new Date().toDateString();
+    const velocity = queries.filter((q) => new Date(q.date).toDateString() === today).length;
+    const counts = queries.reduce((acc, q) => {
+      acc[q.category] = (acc[q.category] || 0) + 1;
+      return acc;
     }, {} as Record<string, number>);
-    const topCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "None";
+    const topCat = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+    
+    return [
+      { label: "Neural Logs", value: total, unit: "", icon: Activity, color: "var(--brand)", sub: "Total interactions" },
+      { label: "Reliability", value: Math.round(avgConf < 1 ? avgConf * 100 : avgConf), unit: "%", icon: Shield, color: "var(--success)", sub: "Mean confidence" },
+      { label: "Active Sector", value: topCat, unit: "", icon: Zap, color: "var(--warning)", sub: "Top domain" },
+      { label: "24h Velocity", value: velocity, unit: "", icon: BarChart3, color: "var(--info)", sub: "Queries today" },
+    ];
+  }, [queries]);
 
-    const todaysCount = queries.filter(q => {
-        const queryDate = new Date(q.date);
-        const today = new Date();
-        return queryDate.toDateString() === today.toDateString();
-    }).length;
-
-    const filteredQueries = queries.filter(q =>
+  const filteredQueries = useMemo(() => {
+    let f = queries.filter(
+      (q) =>
         q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
         q.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    if (activeFilter === "high") f = f.filter((q) => q.confidence >= 80);
+    return f;
+  }, [queries, searchTerm, activeFilter]);
 
+  if (loading) {
     return (
-        <div className="max-w-5xl mx-auto space-y-6 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Nexus History</h1>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-70">Archive of deep-intelligence queries</p>
-                </div>
-            </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+        <div className="w-16 h-16 border-4 border-[var(--brand-soft)] border-t-[var(--brand)] rounded-full animate-spin" />
+        <p className="text-[11px] font-bold tracking-[0.3em] uppercase text-[var(--text-muted)] animate-pulse">
+          Accessing Neural Archives
+        </p>
+      </div>
+    );
+  }
 
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatsCard 
-                    title="Total Intelligence" 
-                    value={totalQueries.toString()} 
-                    subtitle="Lifetime queries" 
-                    trend="+12%"
-                    color="primary"
-                />
-                <StatsCard 
-                    title="System Confidence" 
-                    value={`${avgConfidence}%`} 
-                    subtitle="Average accuracy" 
-                    trend="+2.4%"
-                    color="success"
-                />
-                <StatsCard 
-                    title="Peak Interest" 
-                    value={topCategory} 
-                    subtitle="Most active sector" 
-                    trend="Stable"
-                    color="warning"
-                />
-                <StatsCard 
-                    title="Today's Velocity" 
-                    value={todaysCount.toString()} 
-                    subtitle="24h throughput" 
-                    trend="+50%"
-                    color="primary"
-                />
-            </div>
+  return (
+    <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-12 md:py-20 space-y-12">
 
-            {/* Actions & Filters */}
-            <div className="flex flex-col lg:flex-row gap-6 items-center justify-between pb-2 border-b border-white/[0.05]">
-                <div className="flex flex-wrap gap-3 items-center w-full lg:w-auto">
-                    <div className="p-2 bg-white/[0.03] border border-white/[0.05] rounded-xl text-primary">
-                        <Filter className="w-5 h-5" />
-                    </div>
-                    <FilterButton label="All Sectors" active />
-                    <FilterButton label="High Confidence" />
-                    <FilterButton label="Temporal Range" icon={Calendar} />
-                    <div className="h-6 w-px bg-white/[0.05] mx-2 hidden sm:block" />
-                    <button className="flex items-center gap-2 px-4 py-2 hover:bg-white/[0.05] rounded-xl text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all">
-                        <Download className="w-4 h-4" />
-                        Export Data
-                    </button>
-                </div>
-                
-                <div className="relative w-full lg:w-80 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Filter intelligence..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-white/[0.03] border border-white/[0.05] focus:border-primary/50 rounded-xl pl-11 pr-4 py-3 text-sm font-medium text-foreground placeholder:text-muted-foreground transition-all outline-none"
-                    />
-                </div>
-            </div>
+      {/* ── Header ── */}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <motion.div variants={fadeUp} initial="initial" animate="animate">
+          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+            Neural <span className="text-[var(--brand)]">Archives.</span>
+          </h1>
+          <p className="text-[13px] font-semibold text-[var(--text-muted)] tracking-widest uppercase mt-4 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-[var(--brand)]" />
+            Traversed network logs · {queries.length} historical trails
+          </p>
+        </motion.div>
 
-            {/* Archive Table */}
-            <div className="glass rounded-[2rem] overflow-hidden shadow-2xl border border-white/[0.05]">
-                <div className="overflow-x-auto scrollbar-hide">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-white/[0.02] border-b border-white/[0.05]">
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Rank</th>
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Query Intelligence</th>
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Domain</th>
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Reliability</th>
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Source</th>
-                                <th className="px-8 py-5 text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] text-right">Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/[0.03]">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={6} className="px-8 py-20 text-center">
-                                         <div className="flex flex-col items-center gap-4">
-                                            <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Synchronizing Archive</p>
-                                         </div>
-                                    </td>
-                                </tr>
-                            ) : filteredQueries.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="px-8 py-20 text-center text-muted-foreground">
-                                        <div className="flex flex-col items-center gap-2">
-                                            <Search className="w-10 h-10 opacity-20 mb-2" />
-                                            <p className="text-sm font-bold tracking-tight">No matching intelligence found</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredQueries.map((q, idx) => (
-                                    <tr key={q.id} className="hover:bg-white/[0.02] transition-all group">
-                                        <td className="px-8 py-4 text-[11px] font-bold text-muted-foreground/50 tabular-nums">
-                                            {(filteredQueries.length - idx).toString().padStart(3, '0')}
-                                        </td>
-                                        <td className="px-8 py-4 max-w-md">
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-1.5 bg-primary/10 rounded-lg translate-y-0.5">
-                                                    <ArrowUpRight className="w-3 h-3 text-primary" />
-                                                </div>
-                                                <p className="text-sm font-bold text-foreground leading-snug group-hover:text-primary transition-colors cursor-pointer" title={q.question}>
-                                                    {q.question}
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <CategoryBadge category={q.category} />
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <ConfidenceBadge confidence={q.confidence} />
-                                        </td>
-                                        <td className="px-8 py-4 max-w-[200px]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                                                <span className="text-xs font-semibold text-muted-foreground truncate" title={q.source}>
-                                                    {q.source}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4 text-right">
-                                            <div className="text-sm font-bold text-foreground tabular-nums">
-                                                {new Date(q.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </div>
-                                            <div className="text-[10px] font-bold uppercase tracking-tighter text-muted-foreground/60">{new Date(q.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => showToast("JSON Manifest preparation active...", "success")}
+            className="rounded-2xl px-6 py-6 h-auto font-bold uppercase tracking-widest text-[10px] gap-2"
+          >
+            <Download className="w-4 h-4" /> Export JSON Log
+          </Button>
         </div>
-    );
-}
+      </div>
 
-function StatsCard({ title, value, subtitle, trend, color }: { title: string; value: string; subtitle: string, trend: string, color: 'primary' | 'success' | 'warning' }) {
-    return (
-        <div className="group relative">
-            <div className={cn(
-                "absolute -inset-0.5 rounded-[2rem] blur opacity-0 group-hover:opacity-10 transition duration-500",
-                color === 'primary' ? 'bg-primary' : color === 'success' ? 'bg-success' : 'bg-warning'
-            )} />
-            <div className="relative glass rounded-[1.25rem] p-6 border border-white/[0.05] hover:border-white/10 transition-all shadow-xl overflow-hidden">
-                <div className={cn(
-                    "absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-[40px] opacity-10",
-                    color === 'primary' ? 'bg-primary' : color === 'success' ? 'bg-success' : 'bg-warning'
-                )} />
-                
-                <div className="flex justify-between items-start mb-6">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-70">{title}</span>
-                    <span className={cn(
-                        "text-xs font-bold px-2 py-0.5 rounded-md",
-                        color === 'primary' ? 'text-primary bg-primary/10' : color === 'success' ? 'text-success bg-success/10' : 'text-warning bg-warning/10'
-                    )}>{trend}</span>
-                </div>
-                
-                <div className="space-y-1">
-                    <div className="text-3xl font-bold text-foreground tracking-tight">{value}</div>
-                    <div className="text-xs font-bold text-muted-foreground uppercase tracking-[0.15em] opacity-60">{subtitle}</div>
-                </div>
-            </div>
+      {/* ── Stats grid ── */}
+      <motion.div variants={stagger} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((s, i) => (
+          <StatCard key={i} {...s} index={i} />
+        ))}
+      </motion.div>
+
+      {/* ── Filter Bar ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="sticky top-[var(--topbar-height)] z-20 py-6 -mx-6 px-6 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-subtle)]"
+      >
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide w-full md:w-auto">
+              {[
+                { id: "all", label: "All Logs" },
+                { id: "high", label: "High Precision" },
+              ].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  className={cn(
+                    "whitespace-nowrap px-6 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all",
+                    activeFilter === f.id
+                      ? "bg-[var(--brand)] text-white shadow-md shadow-[var(--brand-soft)]"
+                      : "bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+              <div className="w-px h-6 bg-[var(--border-subtle)] mx-2 hidden sm:block" />
+              <button className="whitespace-nowrap flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] transition-all">
+                 <SlidersHorizontal className="w-3.5 h-3.5" /> Domain Filter
+              </button>
+           </div>
+
+           <div className="group relative w-full md:w-80">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--brand)] transition-colors" />
+              <input
+                type="text"
+                placeholder="Scan archives..."
+                className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm font-medium bg-[var(--input-bg)] border border-[var(--border-subtle)] focus:border-[var(--brand)] transition-all outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+           </div>
         </div>
-    );
-}
+      </motion.div>
 
-function FilterButton({ label, icon: Icon, active }: { label: string; icon?: React.ElementType, active?: boolean }) {
-    return (
-        <button className={cn(
-            "flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-[0.15em] transition-all shadow-sm border",
-            active 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
-                : "bg-white/[0.03] text-muted-foreground border-white/[0.05] hover:border-white/10 hover:text-foreground"
-        )}>
-            {Icon && <Icon className="w-3.5 h-3.5" />}
-            {label}
-            {!Icon && <ChevronDown className={cn("w-3 h-3 transition-transform", active ? "rotate-180" : "opacity-50")} />}
-        </button>
-    );
+      {/* ── Query List ── */}
+      <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-4">
+        <AnimatePresence mode="wait">
+          {filteredQueries.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="py-32 flex flex-col items-center text-center gap-6 rounded-[40px] border-2 border-dashed border-[var(--border-subtle)] bg-[var(--bg-secondary)]/30"
+            >
+               <div className="w-20 h-20 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-muted)] opacity-30">
+                 <Search className="w-10 h-10" />
+               </div>
+               <div className="space-y-2">
+                 <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Void Archives</h3>
+                 <p className="text-[14px] text-[var(--text-muted)] font-medium max-w-xs uppercase tracking-widest">No intelligence logs match your traversal parameters</p>
+               </div>
+               <Button variant="outline" onClick={() => { setActiveFilter("all"); setSearchTerm(""); }} className="rounded-xl px-10">Clear Parameters</Button>
+            </motion.div>
+          ) : (
+            <motion.div key="list">
+              {filteredQueries.map((q, idx) => (
+                <QueryRow
+                  key={q.id}
+                  query={q}
+                  index={idx}
+                  total={filteredQueries.length}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {!loading && filteredQueries.length > 0 && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)] opacity-40 pt-8"
+        >
+          End of transmission · {filteredQueries.length} records retrieved
+        </motion.p>
+      )}
+    </div>
+  );
 }

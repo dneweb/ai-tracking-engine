@@ -1,86 +1,89 @@
 "use client";
 
 import { useToast } from "@/context/ToastContext";
-import { CheckCircle2, AlertCircle, X } from "lucide-react";
-import { clsx } from "clsx";
-import { useState } from "react";
+import { CheckCircle2, AlertCircle, X, Info } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ToastContainer() {
     const { toasts, removeToast } = useToast();
 
-    if (toasts.length === 0) return null;
-
     return (
-        <div className="fixed bottom-8 right-8 z-[9999] flex flex-col gap-4 pointer-events-none max-w-md w-full">
-            {toasts.map((toast) => (
-                <ToastItem key={toast.id} toast={toast} onRemove={() => removeToast(toast.id)} />
-            ))}
+        <div className="fixed bottom-10 right-10 z-[10000] flex flex-col gap-4 pointer-events-none max-w-md w-full">
+            <AnimatePresence>
+                {toasts.map((toast) => (
+                    <ToastItem key={toast.id} toast={toast} onRemove={() => removeToast(toast.id)} />
+                ))}
+            </AnimatePresence>
         </div>
     );
 }
 
 function ToastItem({ toast, onRemove }: { toast: { id: string, type: 'success'|'error', message: string }, onRemove: () => void }) {
-    const [isExiting, setIsExiting] = useState(false);
-
-    const handleRemove = () => {
-        setIsExiting(true);
-        setTimeout(onRemove, 300);
-    };
+    const isSuccess = toast.type === "success";
+    const color = isSuccess ? "var(--success)" : "var(--danger)";
 
     return (
-        <div
-            className={clsx(
-                "pointer-events-auto flex flex-col rounded-2xl border glass shadow-2xl overflow-hidden transition-all duration-300",
-                isExiting ? "opacity-0 translate-x-12 scale-95" : "animate-in slide-in-from-right-8 fade-in zoom-in-95 duration-500 [animation-timing-function:cubic-bezier(0.34,1.56,0.64,1)]",
-                toast.type === "success" ? "border-success/20" : "border-danger/20"
-            )}
+        <motion.div
+            layout
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="pointer-events-auto relative group"
         >
-            <div className="flex items-center gap-4 px-5 py-4">
-                <div className={clsx(
-                    "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner",
-                    toast.type === "success" ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
-                )}>
-                    {toast.type === "success" ? (
-                        <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                        <AlertCircle className="w-5 h-5" />
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-0.5 flex-grow pr-2">
-                    <span className="text-[11px] font-bold uppercase tracking-widest opacity-50">
-                        {toast.type === "success" ? "Success" : "System Error"}
-                    </span>
-                    <p className="text-sm font-medium text-foreground leading-snug">
-                        {toast.message}
-                    </p>
-                </div>
-
-                <button
-                    onClick={handleRemove}
-                    className="text-muted-foreground hover:text-foreground hover:bg-white/[0.05] p-2 rounded-lg transition-all"
-                >
-                    <X className="w-4 h-4" />
-                </button>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="h-1 w-full bg-white/[0.02]">
+            <div 
+                className={cn(
+                    "flex flex-col rounded-[24px] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] overflow-hidden transition-all duration-300",
+                    "hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.25)] hover:border-[var(--brand-glow)]"
+                )}
+            >
+                {/* Subtle Ambient Glow */}
                 <div 
-                    className={clsx(
-                        "h-full transition-all duration-[4000ms] ease-linear",
-                        toast.type === "success" ? "bg-success" : "bg-danger"
-                    )}
-                    style={{ width: "100%", animation: "shrink 4s linear forwards" }}
+                    className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity" 
+                    style={{ backgroundColor: color }}
                 />
-            </div>
 
-            <style jsx>{`
-                @keyframes shrink {
-                    from { width: 100%; }
-                    to { width: 0%; }
-                }
-            `}</style>
-        </div>
+                <div className="flex items-center gap-5 px-6 py-5">
+                    <div 
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border"
+                        style={{ 
+                            backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)`, 
+                            borderColor: `color-mix(in srgb, ${color} 20%, transparent)`,
+                            color: color 
+                        }}
+                    >
+                        {isSuccess ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                    </div>
+
+                    <div className="flex flex-col gap-0.5 flex-grow min-w-0 pr-2">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-60">
+                            {isSuccess ? "Neural Sync Complete" : "System Error Encountered"}
+                        </span>
+                        <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-relaxed truncate">
+                            {toast.message}
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={onRemove}
+                        className="w-8 h-8 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] rounded-xl transition-all"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+                
+                {/* Progress Bar with cinematic feel */}
+                <div className="h-[3px] w-full bg-[var(--bg-secondary)]">
+                    <motion.div 
+                        initial={{ width: "100%" }}
+                        animate={{ width: "0%" }}
+                        transition={{ duration: 4, ease: "linear" }}
+                        className="h-full"
+                        style={{ backgroundColor: color }}
+                    />
+                </div>
+            </div>
+        </motion.div>
     );
 }
