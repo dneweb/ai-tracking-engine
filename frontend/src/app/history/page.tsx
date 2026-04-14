@@ -47,7 +47,7 @@ function StatCard({
 
       <div className="space-y-1 relative z-10">
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-3xl font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             {typeof value === "number" ? <CountUp end={value} duration={1.5} /> : value}
           </span>
           <span className="text-lg font-bold text-[var(--text-muted)]">{unit}</span>
@@ -196,7 +196,7 @@ export default function HistoryPage() {
       {/* ── Header ── */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <motion.div variants={fadeUp} initial="initial" animate="animate">
-          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             Neural <span className="text-[var(--brand)]">Archives.</span>
           </h1>
           <p className="text-[13px] font-semibold text-[var(--text-muted)] tracking-widest uppercase mt-4 flex items-center gap-2">
@@ -283,7 +283,7 @@ export default function HistoryPage() {
                  <Search className="w-10 h-10" />
                </div>
                <div className="space-y-2">
-                 <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Void Archives</h3>
+                 <h3 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Void Archives</h3>
                  <p className="text-[14px] text-[var(--text-muted)] font-medium max-w-xs uppercase tracking-widest">No intelligence logs match your traversal parameters</p>
                </div>
                <Button variant="outline" onClick={() => { setActiveFilter("all"); setSearchTerm(""); }} className="rounded-xl px-10">Clear Parameters</Button>

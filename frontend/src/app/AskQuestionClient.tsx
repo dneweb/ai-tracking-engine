@@ -270,8 +270,8 @@ export default function AskQuestionPage() {
 
               <motion.div variants={fadeUp} className="space-y-6">
                 <h1
-                  className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold tracking-tight text-[var(--text-primary)] leading-[0.95]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-[clamp(2.5rem,8vw,4.5rem)] font-extrabold tracking-tight text-[var(--text-primary)] leading-[0.95]"
+                  style={{ fontFamily: "var(--font-body)" }}
                 >
                   {greeting},<br />
                   <span className="text-[var(--brand)]">{firstName}.</span>
@@ -398,7 +398,7 @@ export default function AskQuestionPage() {
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--border-subtle)]" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
                 {PROMPT_CARDS.map((card, idx) => {
                   const Icon = card.icon === undefined ? TrendingUp : card.icon; 
                   return (
@@ -505,7 +505,7 @@ export default function AskQuestionPage() {
                           <MessageSquare className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+                          <h3 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight" style={{ fontFamily: "var(--font-body)" }}>
                             Intelligence Ready
                           </h3>
                           <div className="flex items-center gap-2.5 mt-1.5">

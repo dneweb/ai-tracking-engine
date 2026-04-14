@@ -73,7 +73,7 @@ function MetricCard({
 
       <div className="space-y-1">
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-4xl font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             <CountUp end={value} duration={2} decimals={unit === "%" ? 0 : 0} />
           </span>
           <span className="text-lg font-bold text-[var(--text-muted)]">{unit}</span>
@@ -199,7 +199,7 @@ export default function AnalyticsPage() {
       {/* ── Header ── */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <motion.div variants={fadeUp} initial="initial" animate="animate">
-          <h1 className="text-[clamp(2.5rem,8vw,4rem)] font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="text-[clamp(2.5rem,8vw,4rem)] font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             Intelligence <span className="text-[var(--brand)]">Insights.</span>
           </h1>
           <p className="text-[13px] font-semibold text-[var(--text-muted)] tracking-widest uppercase mt-4 flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function AnalyticsPage() {
                  <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Temporal Velocity</h3>
+                <h3 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Temporal Velocity</h3>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Interaction frequency over time</p>
               </div>
             </div>
@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
                <PieChart className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Reliability</h3>
+              <h3 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Reliability</h3>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Precision distribution</p>
             </div>
           </div>
@@ -318,7 +318,7 @@ export default function AnalyticsPage() {
              <div className="flex items-center justify-between">
                 <div>
                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)]">Global Average</p>
-                   <p className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>{Math.round(avgConf)}%</p>
+                   <p className="text-3xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>{Math.round(avgConf)}%</p>
                 </div>
                 <div className="w-12 h-12 rounded-full border-4 border-[var(--brand)] animate-pulse shadow-[0_0_15px_var(--brand)] flex items-center justify-center">
                     <Zap className="w-5 h-5 text-[var(--brand)]" />
@@ -339,7 +339,7 @@ export default function AnalyticsPage() {
                <AlertTriangle className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Intelligence Gaps</h3>
+              <h3 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Intelligence Gaps</h3>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Interactions with confidence threshold below 60%</p>
             </div>
           </div>

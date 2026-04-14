@@ -131,7 +131,7 @@ export default function ReportsPage() {
       {/* ── Page Header: Cinematic Header ── */}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <motion.div variants={fadeUp} initial="initial" animate="animate">
-          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             Deep <span className="text-[var(--brand)]">Reports.</span>
           </h1>
           <p className="text-[13px] font-semibold text-[var(--text-muted)] tracking-widest uppercase mt-4 flex items-center gap-2">
@@ -259,7 +259,7 @@ export default function ReportsPage() {
                 <AlertTriangle className="w-10 h-10" />
               </div>
               <div className="space-y-3">
-                <h3 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Analysis pipeline fault</h3>
+                <h3 className="text-3xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Analysis pipeline fault</h3>
                 <p className="text-[14px] font-medium text-[var(--text-muted)] max-w-sm uppercase tracking-widest">{error}</p>
               </div>
               <Button onClick={generateReport} className="rounded-2xl px-12 py-6 h-auto text-[11px] font-bold uppercase tracking-widest bg-[var(--brand)] text-white">Retry Neural Scan</Button>
@@ -318,7 +318,7 @@ export default function ReportsPage() {
                      <CheckCircle2 className="w-10 h-10" />
                    </div>
                    <div className="space-y-3">
-                     <h3 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Neural equilibrium achieved</h3>
+                      <h3 className="text-3xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Neural equilibrium achieved</h3>
                      <p className="text-[14px] font-medium text-[var(--text-muted)] max-w-sm uppercase tracking-widest leading-relaxed">All {report.summary.total_queries_in_period} interactions processed with maximum high-fidelity signatures.</p>
                    </div>
                 </div>
@@ -328,7 +328,7 @@ export default function ReportsPage() {
                      <Activity className="w-10 h-10" />
                    </div>
                    <div className="space-y-3">
-                     <h3 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Diffuse signals identified</h3>
+                      <h3 className="text-3xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Diffuse signals identified</h3>
                      <p className="text-[14px] font-medium text-[var(--text-muted)] max-w-sm uppercase tracking-widest leading-relaxed">{report.summary.total_low_confidence} anomalous data points found, but density thresholds for clustering were not met.</p>
                    </div>
                 </div>
@@ -362,7 +362,7 @@ export default function ReportsPage() {
                           >
                              <div className="flex items-center gap-4">
                                <ShieldCheck className="w-6 h-6 text-[var(--success)]" />
-                               <h2 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Resolved Intelligence Trails</h2>
+                               <h2 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Resolved Intelligence Trails</h2>
                              </div>
                              <div className="grid gap-8 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0 duration-700">
                                {resolvedLocal.map(r => (

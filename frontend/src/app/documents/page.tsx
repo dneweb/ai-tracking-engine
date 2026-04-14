@@ -109,7 +109,7 @@ export default function DocumentsPage() {
       {/* ── Page Header: Action Zone ── */}
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <motion.div variants={fadeUp} initial="initial" animate="animate">
-          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-extrabold tracking-tight text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>
             Knowledge <span className="text-[var(--brand)]">Assets.</span>
           </h1>
           <p className="text-[13px] font-semibold text-[var(--text-muted)] tracking-widest uppercase mt-4 flex items-center gap-2">
@@ -226,13 +226,13 @@ export default function DocumentsPage() {
                  <Search className="w-10 h-10" />
                </div>
                <div className="space-y-2">
-                 <h3 className="text-2xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Void Encountered</h3>
+                 <h3 className="text-2xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Void Encountered</h3>
                  <p className="text-[14px] text-[var(--text-muted)] font-medium max-w-xs uppercase tracking-widest">No intelligence assets match your neural filter</p>
                </div>
                <Button variant="outline" onClick={() => setSelectedCategory("All")} className="rounded-xl px-10">Clear Parameters</Button>
             </motion.div>
           ) : (
-            <motion.div key="list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 col-span-full">
+            <motion.div key="list" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 col-span-full items-stretch">
               {filteredDocs.map((doc, idx) => (
                 <motion.div
                   layout
@@ -264,7 +264,7 @@ export default function DocumentsPage() {
 
                     {/* Middle: Content */}
                     <div className="flex-1 space-y-4 mb-8 min-w-0 relative z-10">
-                      <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[var(--text-primary)] leading-[1.2] line-clamp-3 group-hover:text-[var(--brand)] transition-colors duration-500" style={{ fontFamily: "var(--font-display)" }}>
+                      <h3 className="text-xl md:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] leading-[1.2] line-clamp-3 group-hover:text-[var(--brand)] transition-colors duration-500" style={{ fontFamily: "var(--font-body)" }}>
                         {doc.title}
                       </h3>
                       <div className="flex items-center gap-3 text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors">
@@ -325,7 +325,7 @@ export default function DocumentsPage() {
             <Upload className="w-8 h-8" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>Expand Intelligence</h3>
+            <h3 className="text-3xl font-extrabold text-[var(--text-primary)]" style={{ fontFamily: "var(--font-body)" }}>Expand Intelligence</h3>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)] group-hover:text-[var(--brand)] transition-colors">Scale the neural knowledge base with your specific data</p>
           </div>
           <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)] group-hover:border-[var(--brand-glow)] transition-all">
