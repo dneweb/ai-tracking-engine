@@ -61,8 +61,6 @@ export default function RootLayout({
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Manrope:wght@400;500;600&amp;family=Space+Grotesk:wght@300;500;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet" />
-          <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
           <Script
             id="theme-init"
             strategy="beforeInteractive"
@@ -70,7 +68,7 @@ export default function RootLayout({
               __html: `
                 (function() {
                   try {
-                    const savedTheme = localStorage.getItem('nexus-theme') || 'dark';
+                    const savedTheme = localStorage.getItem('ai-tracking-theme') || 'dark';
                     document.documentElement.setAttribute('data-theme', savedTheme);
                   } catch (e) {}
                 })();

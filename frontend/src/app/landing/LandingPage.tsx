@@ -573,7 +573,7 @@ export function LandingPage() {
   // ── Theme persistence ────────────────────────────────────
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("ke-theme") as Theme | null;
+    const saved = localStorage.getItem("ai-tracking-theme") as Theme | null;
     if (saved) setTheme(saved as Theme);
     else {
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -597,7 +597,7 @@ export function LandingPage() {
   const toggleTheme = () => {
     setTheme((prev) => {
       const next = prev === "dark" ? "light" : "dark";
-      localStorage.setItem("ke-theme", next);
+      localStorage.setItem("ai-tracking-theme", next);
       return next;
     });
   };

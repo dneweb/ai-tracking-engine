@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  turbopack: {},
   async rewrites() {
     const backendOrigin =
       process.env.NEXT_PRIVATE_BACKEND_ORIGIN || "http://127.0.0.1:8000";
