@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse, StreamingResponse
 from app.services.ai_service import structured_chat_completion
-from app.services.clerk_auth import get_admin_user
+from app.services.clerk_auth import require_permission
 from datetime import datetime, timedelta, timezone, date
 from typing import List, Dict, Any, Optional
 from reportlab.lib.pagesizes import letter
@@ -18,6 +18,7 @@ from html import escape as _html_escape
 from urllib.parse import quote as _url_quote
 
 import json
+from app.middleware.tenant import get_current_org_id
 
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 
@@ -199,7 +200,8 @@ def _build_topic_name(top_tokens: List[str], sample_questions: List[str]) -> str
 @router.post("/analyze-topic")
 async def analyze_topic(
     payload: Dict[str, Any],
-    _: dict = Depends(get_admin_user),
+    org_id: str = Depends(get_current_org_id),
+    _: dict = Depends(require_permission("reports:read")),
 ):
     """
     Generate deep AI insights for a specific topic cluster.
@@ -255,7 +257,7 @@ async def analyze_topic(
         }}
         """
         
-        analysis = structured_chat_completion(system_prompt, user_prompt)
+        analysis = await structured_chat_completion(system_prompt, user_prompt)
         
         if "error" in analysis:
             raise Exception(analysis["error"])
@@ -336,9 +338,12 @@ def _tokenize(text: str) -> List[str]:
     return [t for t in re.split(r'\W+', text.lower()) if len(t) > 2]
 
 
-async def _fetch_total_queries_in_range(start_date: date, end_date: date) -> int:
-    from app.services.database import async_queries
+async def _fetch_total_queries_in_range(start_date: date, end_date: date, org_id: str) -> int:
+    """Count total queries in date range, strictly scoped to org. org_id is REQUIRED."""
+    from app.services.database import async_queries, _require_org_id
+    _require_org_id(org_id, "_fetch_total_queries_in_range")
     query = {
+        "org_id": org_id,
         "created_at": {
             "$gte": start_date.isoformat(),
             "$lte": (end_date + timedelta(days=1)).isoformat()
@@ -347,9 +352,12 @@ async def _fetch_total_queries_in_range(start_date: date, end_date: date) -> int
     return await async_queries.count_documents(query)
 
 
-async def _fetch_low_confidence_queries(start_date: date, end_date: date, threshold: float) -> List[Dict[str, Any]]:
-    from app.services.database import async_queries
+async def _fetch_low_confidence_queries(start_date: date, end_date: date, threshold: float, org_id: str) -> List[Dict[str, Any]]:
+    """Fetch low-confidence queries in date range, strictly scoped to org. org_id is REQUIRED."""
+    from app.services.database import async_queries, _require_org_id
+    _require_org_id(org_id, "_fetch_low_confidence_queries")
     query = {
+        "org_id": org_id,
         "created_at": {
             "$gte": start_date.isoformat(),
             "$lte": (end_date + timedelta(days=1)).isoformat()
@@ -369,7 +377,8 @@ async def get_sop_updates(
     days: int = Query(default=30, ge=1, le=365),
     confidence_threshold: float = Query(default=0.6, ge=0.0, le=1.0),
     min_cluster_size: int = Query(default=2, ge=1, le=50),
-    _: dict = Depends(get_admin_user),
+    org_id: str = Depends(get_current_org_id),
+    _: dict = Depends(require_permission("reports:read")),
 ):
     try:
         # Health check guard
@@ -383,8 +392,8 @@ async def get_sop_updates(
         print(f"🔍 Report params: days={days}, threshold={confidence_threshold}, min_cluster={min_cluster_size}")
         print(f"🔍 Date range: {start_date} → {today}")
 
-        total_in_period = await _fetch_total_queries_in_range(start_date, today)
-        queries = await _fetch_low_confidence_queries(start_date, today, confidence_threshold)
+        total_in_period = await _fetch_total_queries_in_range(start_date, today, org_id=org_id)
+        queries = await _fetch_low_confidence_queries(start_date, today, confidence_threshold, org_id=org_id)
 
         # 🛡️ Guard: Validate intermediate variables
         if queries is None:
@@ -399,19 +408,20 @@ async def get_sop_updates(
                 f"— {c['question_count']} questions, urgency={c['urgency_score']}/100"
             )
 
-        # Filter resolved topics asynchronously at the route level
+        # Filter resolved topics — SCOPED TO org_id (was leaking cross-tenant data)
         try:
             from app.services.database import resolved_topics_collection
 
             resolved = list(resolved_topics_collection.find({
+                "org_id":      org_id,          # ← CRITICAL: scope to this org only
                 "resolved_at": {
                     "$gte": (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
-                }
+                },
             }, {"topic_name": 1}))
             resolved_names = {r["topic_name"].lower() for r in resolved}
             clusters = [c for c in clusters if c["topic"].lower() not in resolved_names]
         except Exception as _resolved_err:
-            print(f"Resolved topic filtering failed (continuing): {_resolved_err}")
+            print(f"[reports] Resolved topic filtering failed (continuing): {_resolved_err}")
 
 
 
@@ -456,14 +466,15 @@ async def export_sop_updates_pdf(
     days: int = Query(default=30, ge=1, le=365),
     confidence_threshold: float = Query(default=0.6, ge=0.0, le=1.0),
     min_cluster_size: int = Query(default=2, ge=1, le=50),
-    _: dict = Depends(get_admin_user),
+    org_id: str = Depends(get_current_org_id),
+    _: dict = Depends(require_permission("reports:read")),
 ):
     try:
         today = datetime.now(timezone.utc).date()
         start_date = today - timedelta(days=days)
 
-        total_in_period = await _fetch_total_queries_in_range(start_date, today)
-        queries = await _fetch_low_confidence_queries(start_date, today, confidence_threshold)
+        total_in_period = await _fetch_total_queries_in_range(start_date, today, org_id=org_id)
+        queries = await _fetch_low_confidence_queries(start_date, today, confidence_threshold, org_id=org_id)
         
         # 🛡️ Guard: Validate intermediate variables
         if queries is None:

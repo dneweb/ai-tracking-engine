@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from pydantic import BaseModel
@@ -8,9 +9,33 @@ from app.api import queries
 from app.api import analytics  # Analytics router (timeline chart)
 from app.api import reports    # Reports router (SOP updates)
 from app.api import auth       # Auth/User sync router
+from app.routers.members import router as members_router
+# from app.routers.users import router as users_router  # DELETED - consolidated into app.api.auth
+from app.routers.auth_flow import router as auth_flow_router
+from app.routers.conversations import router as conversations_router
+from app.services.ai_service import get_model
+from app.services.rate_limiter import limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 
-# Import database functions (existing)
-from app.services.database import get_all_queries, add_query_log
+# ── Lifespan handler ──────────────────────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Startup and Shutdown logic for the application.
+    Allows us to initialize heavy resources (like the AI model) without
+    blocking the entire initial import phase.
+    """
+    print("🚀 Starting AI Tracking Engine...", flush=True)
+    # The model will load lazily on the first request to avoid blocking the server startup.
+
+    yield
+
+    print("👋 Shutting down AI Tracking Engine...")
+
+# Import database utility (non-tenant, for health checks only)
+from app.services.database import MONGODB_URI
 
 # Import AI service functions (existing)
 from app.services.ai_service import get_embedding, chat_completion
@@ -22,9 +47,33 @@ from app.api import document as documents
 settings = get_settings()
 
 # Create FastAPI app
-app = FastAPI(title="AI Tracking Engine API")
+app = FastAPI(
+    title="AI Tracking Engine API",
+    lifespan=lifespan
+)
 
-# Configure CORS
+# ============================================================================
+# MIDDLEWARE
+# IMPORTANT: Starlette executes middleware in REVERSE order of registration.
+# The last middleware added here runs FIRST on every incoming request.
+# Order of execution: CORSMiddleware → SlowAPIMiddleware → TenantMiddleware
+# ============================================================================
+
+# Initialize rate limiter state
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Add rate limiting middleware — executes second
+from slowapi.middleware import SlowAPIMiddleware
+app.add_middleware(SlowAPIMiddleware)
+
+# Add tenant isolation middleware — executes third
+from app.middleware.tenant import TenantMiddleware
+app.add_middleware(TenantMiddleware)
+
+# Configure CORS — added LAST so it executes FIRST.
+# This ensures every request (including OPTIONS preflight) gets
+# Access-Control-Allow-Origin headers before anything else runs.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Next.js frontend
@@ -43,6 +92,9 @@ app.include_router(queries.router)
 app.include_router(analytics.router)  # Analytics - timeline chart
 app.include_router(reports.router)    # Reports - SOP updates
 app.include_router(auth.router)       # User sync
+app.include_router(members_router, prefix="/members", tags=["members"])
+app.include_router(auth_flow_router, prefix="/auth", tags=["auth"])
+app.include_router(conversations_router, tags=["conversations"])
 
 
 # ============================================================================
@@ -76,39 +128,26 @@ async def health_check():
 
 @app.get("/api/test-search")
 async def test_search():
-    """Test search function with debug info"""
-    from app.services.database import search_similar_documents, get_all_documents
+    """
+    Quick sanity-check: verifies the AI embedding pipeline is functional.
+    Does NOT touch tenant-scoped data — safe for public health monitoring.
+    """
     from app.services.ai_service import get_embedding
-    
     try:
-        # Get all docs
-        docs = await get_all_documents()
-        
-        # Generate embedding
-        test_question = "How do I reset my password?"
-        test_embedding = get_embedding(test_question)
-        
-        # Search
-        results = await search_similar_documents(
-            query_embedding=test_embedding,
-            match_threshold=0.1,
-            match_count=5
-        )
-        
+        test_question  = "How do I reset my password?"
+        test_embedding = await get_embedding(test_question)
         return {
-            "status": "success",
-            "test_question": test_question,
+            "status":             "success",
+            "test_question":      test_question,
             "embedding_generated": test_embedding is not None,
-            "embedding_length": len(test_embedding) if test_embedding else 0,
-            "total_docs_in_db": len(docs),
-            "search_results_count": len(results),
-            "first_result": results[0] if results else None
+            "embedding_length":   len(test_embedding) if test_embedding else 0,
+            "note":               "Tenant document search requires an authenticated request via /api/query"
         }
     except Exception as e:
         import traceback
         return {
-            "status": "error",
-            "error": str(e),
+            "status":    "error",
+            "error":     str(e),
             "traceback": traceback.format_exc()
         }
 
@@ -138,8 +177,8 @@ async def test_embedding():
     Generates embedding for a sample text.
     """
     text = "How do I reset my password?"
-    embedding = get_embedding(text)
-    
+    embedding = await get_embedding(text)
+
     return {
         "text": text,
         "embedding_length": len(embedding),
@@ -154,50 +193,17 @@ async def test_groq():
     Test Groq chat completion.
     Generates an answer using Groq API.
     """
-    result = chat_completion(
+    result = await chat_completion(
         prompt="What is a password reset?",
         context="A password reset allows users to create a new password when they forget their old one."
     )
-    
+
     return {
         "question": "What is a password reset?",
         "result": result
     }
 
 
-# ============================================================================
-# QUERY LOGS ENDPOINTS (Existing - for testing)
-# ============================================================================
-
-class QueryRequest(BaseModel):
-    """Schema for adding a query log"""
-    question: str
-    answer: str
-    confidence: float
-
-
-@app.get("/api/queries")
-async def get_queries(user_email: Optional[str] = None):
-    """
-    Get all query logs.
-    Used by frontend dashboard to show query history.
-    """
-    queries = await get_all_queries(user_email=user_email)
-    return {
-        "count": len(queries),
-        "queries": queries
-    }
-
-
-@app.post("/api/queries")
-async def create_query(query: QueryRequest):
-    """
-    Add new query log.
-    Used for testing database writes.
-    """
-    result = await add_query_log(
-        question=query.question,
-        answer=query.answer,
-        confidence=query.confidence
-    )
-    return {"success": True, "data": result}
+# NOTE: /api/queries (GET) and /api/queries (POST) have been intentionally removed.
+# The authenticated, org-scoped equivalents are registered via app.include_router(queries.router)
+# and live in app/api/queries.py. All query operations require a valid JWT and org context.

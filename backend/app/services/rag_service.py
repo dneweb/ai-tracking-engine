@@ -5,15 +5,19 @@ from app.services.database import search_similar_documents, add_query_log
 
 async def answer_question(
     question: str,
+    org_id: str,                           # REQUIRED — RLS enforced
     top_k: int = 3,
+    threshold: float = 0.1,                # Added threshold
     user_id: Optional[str] = None,
     user_email: Optional[str] = None,
     user_name: Optional[str] = None,
+    conversation_id: Optional[str] = None,
+    conversation_history: list = None,
 ) -> Dict:
     """Answer a question using RAG and log the query"""
     try:
         # Step 1: Generate question embedding
-        question_embedding = get_embedding(question)
+        question_embedding = await get_embedding(question)
         
         if not question_embedding:
             return {
@@ -26,8 +30,9 @@ async def answer_question(
         # Step 2: Search for similar documents
         similar_docs = await search_similar_documents(
             query_embedding=question_embedding,
-            match_threshold=0.1,
-            match_count=top_k
+            match_threshold=threshold,  # Use passed threshold
+            match_count=top_k,
+            org_id=org_id,
         )
         
         if not similar_docs:
@@ -42,6 +47,8 @@ async def answer_question(
                 user_id=user_id,
                 user_email=user_email,
                 user_name=user_name,
+                org_id=org_id,
+                conversation_id=conversation_id,
             )
             return {
                 "question": question,
@@ -55,8 +62,12 @@ async def answer_question(
         context = best_doc['content']
         confidence = best_doc['similarity']
         
-        # Step 4: Generate answer using Groq
-        answer_result = chat_completion(prompt=question, context=context)
+        # Step 4: Generate answer using Groq (with conversation history)
+        answer_result = await chat_completion(
+            prompt=question,
+            context=context,
+            conversation_history=conversation_history,
+        )
         answer = answer_result.get('answer', 'Sorry, I could not generate an answer.')
         
         # Step 5: Log query to database
@@ -70,6 +81,8 @@ async def answer_question(
             user_id=user_id,
             user_email=user_email,
             user_name=user_name,
+            org_id=org_id,
+            conversation_id=conversation_id,
         )
         
         # Step 6: Prepare sources
@@ -77,6 +90,7 @@ async def answer_question(
             {
                 "id": doc['id'],
                 "title": doc['title'],
+                "content": doc['content'],  # Include content
                 "category": doc.get('category'),
                 "similarity": doc['similarity']
             }

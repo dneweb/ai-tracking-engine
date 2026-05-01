@@ -89,7 +89,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 5vw;
+  padding: clamp(0.8rem, 2vw, 1.2rem) 5vw;
   background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
   backdrop-filter: blur(20px) saturate(180%);
 }
@@ -254,7 +254,7 @@
   position: relative;
   display: grid;
   align-items: center;
-  padding: 7.5rem 5vw 2.5rem;
+  padding: clamp(3rem, 8vw, 7.5rem) 5vw clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .noise {
@@ -294,8 +294,8 @@
   width: min(1320px, 100%);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 55% 45%;
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(1.5rem, 2vw, 2rem);
 }
 
 .eyebrow {
@@ -340,7 +340,8 @@
 
 .ctaRow {
   display: flex;
-  gap: 0.9rem;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 1.5vw, 1rem);
 }
 
 .ctaRow button,
@@ -470,13 +471,13 @@
 .footer {
   width: min(1320px, 100%);
   margin-inline: auto;
-  padding: 5.5rem 5vw;
+  padding: clamp(2rem, 4vw, 5.5rem) 5vw;
 }
 
 .counters {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(1rem, 1.5vw, 1.25rem);
 }
 
 .counters h3 {
@@ -530,8 +531,8 @@
 
 .featureGrid {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 1.5vw, 1.25rem);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .featureCard {

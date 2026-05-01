@@ -2,9 +2,9 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-type ToastType = 'success' | 'error';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
-interface Toast {
+export interface Toast {
     id: string;
     message: string;
     type: ToastType;

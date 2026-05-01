@@ -4,52 +4,77 @@
    Base: 4px unit system
    ============================================================ */
 
+/* ── BLUE RIBBON PALETTE ─────────────────────────────────── */
+:root {
+  --color-blue-ribbon-50:  #eef7ff;
+  --color-blue-ribbon-100: #d8ecff;
+  --color-blue-ribbon-200: #badfff;
+  --color-blue-ribbon-300: #8bccff;
+  --color-blue-ribbon-400: #55b0ff;
+  --color-blue-ribbon-500: #2d8fff;
+  --color-blue-ribbon-600: #1772f9;
+  --color-blue-ribbon-700: #105eef;
+  --color-blue-ribbon-800: #1349ba;
+  --color-blue-ribbon-900: #164192;
+  --color-blue-ribbon-950: #132958;
+}
+
 /* ── LIGHT MODE (default) ─────────────────────────────────── */
 :root,
 [data-ke-theme="light"] {
-  --ke-bg-primary:   #F4F3FF;
-  --ke-bg-secondary: #ECEAFD;
+  --ke-bg-primary:   #f8fbff; /* Ice white */
+  --ke-bg-secondary: #f0f7ff;
   --ke-bg-surface:   #FFFFFF;
 
-  --ke-text-primary:   #1A1830;
-  --ke-text-secondary: #5B5880;
-  --ke-text-tertiary:  #9896B8;
+  --ke-text-primary:   #0a1628; /* Deep sapphire */
+  --ke-text-secondary: #475569;
+  --ke-text-tertiary:  #64748b;
 
-  --ke-accent-purple: #6C63FF;
-  --ke-accent-violet: #8B5CF6;
-  --ke-accent-blue:   #3B82F6;
+  --ke-accent-purple: var(--color-blue-ribbon-600);
+  --ke-accent-violet: var(--color-blue-ribbon-700);
+  --ke-accent-blue:   var(--color-blue-ribbon-500);
 
-  --ke-border-subtle: rgba(108, 99, 255, 0.12);
-  --ke-border-mid:    rgba(108, 99, 255, 0.22);
-  --ke-glow-purple:   rgba(108, 99, 255, 0.15);
+  --ke-border-subtle: rgba(19, 41, 88, 0.05);
+  --ke-border-mid:    rgba(19, 41, 88, 0.1);
+  --ke-glow-purple:   rgba(45, 143, 255, 0.1);
+
+  /* Shadows for fabulousness */
+  --ke-shadow-sm: 0 2px 8px rgba(19, 41, 88, 0.04);
+  --ke-shadow-md: 0 12px 32px -8px rgba(19, 41, 88, 0.08);
+  --ke-shadow-lg: 0 32px 64px -12px rgba(19, 41, 88, 0.12);
 
   /* RGB splits for alpha usage */
-  --ke-bg-primary-rgb:   244, 243, 255;
-  --ke-accent-purple-rgb: 108, 99, 255;
-  --ke-accent-blue-rgb: 59, 130, 246;
+  --ke-bg-primary-rgb:   248, 251, 255;
+  --ke-accent-purple-rgb: 23, 114, 249;
+  --ke-accent-blue-rgb: 45, 143, 255;
 }
 
 /* ── DARK MODE ────────────────────────────────────────────── */
 [data-ke-theme="dark"] {
-  --ke-bg-primary:   #0C0B1A;
-  --ke-bg-secondary: #100F22;
-  --ke-bg-surface:   #15132B;
+  --ke-bg-primary:   #040815; /* Deeper blue-black */
+  --ke-bg-secondary: var(--color-blue-ribbon-950);
+  --ke-bg-surface:   rgba(19, 41, 88, 0.5);
 
-  --ke-text-primary:   #EEECff;
-  --ke-text-secondary: #9896C8;
-  --ke-text-tertiary:  #5B5880;
+  --ke-text-primary:   var(--color-blue-ribbon-50);
+  --ke-text-secondary: var(--color-blue-ribbon-200);
+  --ke-text-tertiary:  var(--color-blue-ribbon-500);
 
-  --ke-accent-purple: #7C6FFF;
-  --ke-accent-violet: #A78BFA;
-  --ke-accent-blue:   #60A5FA;
+  --ke-accent-purple: var(--color-blue-ribbon-500);
+  --ke-accent-violet: var(--color-blue-ribbon-600);
+  --ke-accent-blue:   var(--color-blue-ribbon-400);
 
-  --ke-border-subtle: rgba(124, 111, 255, 0.14);
-  --ke-border-mid:    rgba(124, 111, 255, 0.28);
-  --ke-glow-purple:   rgba(124, 111, 255, 0.25);
+  --ke-border-subtle: rgba(45, 143, 255, 0.14);
+  --ke-border-mid:    rgba(45, 143, 255, 0.28);
+  --ke-glow-purple:   rgba(45, 143, 255, 0.25);
 
-  --ke-bg-primary-rgb:   12, 11, 26;
-  --ke-accent-purple-rgb: 124, 111, 255;
-  --ke-accent-blue-rgb: 96, 165, 250;
+  /* Shadows for depth */
+  --ke-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --ke-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --ke-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.7);
+
+  --ke-bg-primary-rgb:   4, 8, 21;
+  --ke-accent-purple-rgb: 45, 143, 255;
+  --ke-accent-blue-rgb: 85, 176, 255;
 }
 
 /* ── TYPOGRAPHY SCALE (fluid) ─────────────────────────────── */
@@ -61,16 +86,16 @@
   --ke-text-micro:   0.75rem;
 
   /* ── SPACING (4px base) ──────────────────────────────────── */
-  --ke-space-1:  4px;
-  --ke-space-2:  8px;
-  --ke-space-3:  12px;
-  --ke-space-4:  16px;
-  --ke-space-6:  24px;
-  --ke-space-8:  32px;
-  --ke-space-12: 48px;
-  --ke-space-16: 64px;
-  --ke-space-24: 96px;
-  --ke-space-32: 128px;
+  --ke-space-1:  0.25rem;
+  --ke-space-2:  0.5rem;
+  --ke-space-3:  0.75rem;
+  --ke-space-4:  1rem;
+  --ke-space-6:  1.5rem;
+  --ke-space-8:  2rem;
+  --ke-space-12: 3rem;
+  --ke-space-16: 4rem;
+  --ke-space-24: 6rem;
+  --ke-space-32: 8rem;
 
   /* ── TRANSITION ──────────────────────────────────────────── */
   --ke-ease:     cubic-bezier(0.23, 1, 0.32, 1);

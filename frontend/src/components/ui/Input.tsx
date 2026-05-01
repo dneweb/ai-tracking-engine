@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       variant === "search"
         ? "h-12 rounded-2xl bg-[var(--bg-secondary)] border-[var(--border-subtle)] pl-12"
         : variant === "dense"
-          ? "h-9 rounded-lg text-[13px]"
+          ? "h-9 rounded-lg text-[clamp(0.65rem,1.3vw,0.8125rem)]"
           : "h-11 rounded-xl"
 
     return (
@@ -41,7 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           />
         </div>
         {error && (
-          <p className="text-[11px] font-medium text-[var(--danger)] animate-in fade-in slide-in-from-top-1">
+          <p className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-medium text-[var(--danger)] animate-in fade-in slide-in-from-top-1">
             {error}
           </p>
         )}

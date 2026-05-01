@@ -7,6 +7,8 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useState, useEffect } from "react";
 import { CommandPalette } from "./CommandPalette";
 import { motion } from "framer-motion";
+import { ProfileDropdown } from "./ProfileDropdown";
+import { NotificationHub } from "./NotificationHub";
 
 const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   "/":          { title: "Ask Intelligence",  subtitle: "Query the neural knowledge base" },
@@ -40,86 +42,77 @@ export default function Header({ onMobileMenuClick }: HeaderProps) {
   const meta = PAGE_META[pathname] ?? { title: "Nexus AI", subtitle: "Neural Intelligence Platform" };
 
   return (
-    <header className="topbar px-4 sm:px-6">
+    <header className="topbar glass sticky top-0 px-4 sm:px-8 h-[var(--topbar-height)] border-b border-[var(--border-subtle)] z-[100] transition-all">
       <CommandPalette open={open} setOpen={setOpen} />
 
-      {/* ── Left Zone: Navigation & Breadcrumbs ── */}
-      <div className="flex items-center gap-4 flex-1 min-w-0">
+      {/* ── Left Zone: Logo & Navigation ── */}
+      <div className="flex items-center gap-6 flex-1 min-w-0">
         <button
           id="mobile-menu-toggle"
-          className="hamburger-btn"
+          className="hamburger-btn sm:hidden p-2.5 rounded-xl hover:bg-[var(--brand-soft)] hover:text-[var(--brand)] active:scale-[0.97] transition-all"
           onClick={onMobileMenuClick}
           aria-label="Open navigation menu"
         >
-          <Menu className="w-5 h-5 text-[var(--text-primary)]" />
+          <Menu className="w-5 h-5" />
         </button>
 
         <motion.div
           key={pathname}
-          initial={{ opacity: 0, x: -8 }}
+          initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-          className="hidden sm:flex flex-col min-w-0"
+          transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] }}
+          className="flex flex-col min-w-0"
         >
-          <h1 className="text-[14px] font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-1.5">
-            {meta.title.split(" ").slice(0, -1).join(" ")}{" "}
-            <span className="text-[var(--brand)]">
+          <h1 className="text-[clamp(0.85rem,1.8vw,1.125rem)] md:text-[clamp(1.0rem,2.0vw,1.25rem)] font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2 truncate">
+            <span className="sm:inline">{meta.title.split(" ").slice(0, -1).join(" ")}</span>{" "}
+            <span className="brand-gradient-text">
               {meta.title.split(" ").at(-1)}
             </span>
           </h1>
-          <p className="text-[10px] font-medium text-[var(--text-muted)] tracking-wider uppercase mt-0.5 truncate max-w-[200px]">
-            {meta.subtitle}
-          </p>
+          <div className="hidden sm:flex items-center gap-2 mt-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] animate-pulse" />
+            <p className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-bold text-[var(--text-muted)] tracking-[0.15em] uppercase truncate max-w-[clamp(10.0rem,20.0vw,18.75rem)]">
+              {meta.subtitle}
+            </p>
+          </div>
         </motion.div>
       </div>
 
-      {/* ── Center Zone: Search Utility ── */}
-      <div className="flex-[2] max-w-lg hidden md:block">
+      {/* ── Center Zone: Advanced Command Bar ── */}
+      <div className="flex-[4] max-w-2xl hidden lg:block">
         <button
           onClick={() => setOpen(true)}
-          className="w-full flex items-center gap-3 px-4 py-2 rounded-2xl text-[var(--text-muted)] bg-[var(--input-bg)] border border-[var(--border-subtle)] hover:border-[var(--brand)] hover:shadow-sm transition-all group/search"
+          className="w-full flex items-center gap-4 px-6 py-3 rounded-2xl text-[var(--text-muted)] bg-[var(--surface-2)]/40 border border-[var(--border-default)] hover:border-[var(--brand)] hover:bg-[var(--surface-1)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all group/search relative overflow-hidden"
         >
-          <Search className="w-3.5 h-3.5 group-hover/search:text-[var(--brand)] transition-colors" />
-          <span className="text-[12px] font-medium flex-1 text-left">
-            Search neural documentation...
+          <Search className="w-5 h-5 group-hover/search:text-[var(--brand)] transition-colors" />
+          <span className="text-[clamp(0.7rem,1.4vw,0.875rem)] font-medium flex-1 text-left">
+            Search intelligence, nodes, or logs...
           </span>
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
-            <Command className="w-2.5 h-2.5" />
-            <span className="text-[9px] font-bold">K</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-subtle)] shadow-inner">
+            <Command className="w-3.5 h-3.5 opacity-60" />
+            <span className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-bold">K</span>
           </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--brand-glow)] to-transparent -translate-x-full group-hover/search:animate-shimmer pointer-events-none opacity-40" />
         </button>
       </div>
 
-      {/* ── Right Zone: System Actions ── */}
-      <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1">
-        {/* Status — refined */}
-        <div className="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-[var(--brand-glow)] bg-[var(--brand-soft)] shadow-sm">
-          <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] animate-pulse-dot" />
-          <span className="label-caps !text-[9px] !font-bold !tracking-[0.16em] text-[var(--brand)]">
-            Neural Sync
+      {/* ── Right Zone: System State ── */}
+      <div className="flex items-center justify-end gap-3 sm:gap-6 flex-1">
+        <div className="hidden xl:flex items-center gap-3 px-4 py-2 rounded-full border border-[var(--brand-glow)] bg-[var(--brand-soft)]/50 hover:bg-[var(--brand-soft)] transition-colors cursor-default group">
+          <div className="w-2 h-2 rounded-full bg-[var(--brand)] animate-pulse-dot shadow-[0_0_8px_var(--brand)]" />
+          <span className="label-caps !text-[clamp(0.5rem,1.0vw,0.625rem)] !font-bold !tracking-[0.2em] text-[var(--brand)] group-hover:tracking-[0.25em] transition-all">
+            Neural Sync Active
           </span>
         </div>
 
-        <div className="h-4 w-px bg-[var(--border-default)] hidden sm:block mx-1" />
+        <div className="h-6 w-px bg-[var(--border-subtle)] hidden sm:block" />
 
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
 
-          <button
-            className="p-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors group/bell relative"
-            aria-label="Notifications"
-          >
-            <Bell className="w-4 h-4 text-[var(--text-secondary)] group-hover/bell:text-[var(--text-primary)] transition-colors" />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[var(--brand)] ring-2 ring-[var(--bg-secondary)]" />
-          </button>
-
-          {isLoaded && user && (
-            <div className="flex items-center gap-3 pl-1 sm:pl-2">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-md bg-[var(--brand)] ring-2 ring-[var(--bg-primary)]">
-                {(user.fullName || user.primaryEmailAddress?.emailAddress || "U").charAt(0).toUpperCase()}
-              </div>
-            </div>
-          )}
+          <NotificationHub />
+          
+          <ProfileDropdown />
         </div>
       </div>
     </header>

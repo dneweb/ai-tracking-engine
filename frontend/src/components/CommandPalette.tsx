@@ -46,7 +46,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="w-full max-w-2xl overflow-hidden border border-[var(--border-subtle)] rounded-[24px] shadow-2xl bg-[var(--bg-secondary)]/95 backdrop-blur-xl"
+            className="w-full max-w-2xl overflow-hidden border border-[var(--border-subtle)] rounded-[1.5rem] shadow-2xl bg-[var(--bg-secondary)]/95 backdrop-blur-xl"
           >
             <div className="flex items-center px-6 py-4 border-b border-[var(--border-subtle)]">
               <Search className="w-5 h-5 text-[var(--text-muted)] mr-4" />
@@ -54,17 +54,17 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
                 placeholder="Search queries, documents, or navigation..."
                 className="flex-1 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)]/40 text-base font-medium"
               />
-              <div className="flex items-center gap-1 px-2 py-1 bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-lg text-[10px] font-bold text-[var(--text-muted)] ml-4">
+              <div className="flex items-center gap-1 px-2 py-1 bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-lg text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] ml-4">
                 ESC
               </div>
             </div>
 
-            <Command.List className="max-h-[480px] overflow-y-auto p-3 scrollbar-hide">
+            <Command.List className="max-h-[clamp(24.0rem,48.0vw,30.0rem)] overflow-y-auto p-3 scrollbar-hide">
               <Command.Empty className="py-12 text-center text-[var(--text-muted)] text-sm">
                 No results discovered in neural database.
               </Command.Empty>
 
-              <Command.Group heading="NAVIGATION" className="text-[10px] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3">
+              <Command.Group heading="NAVIGATION" className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3">
                 <CommandItem onSelect={() => runCommand(() => router.push("/"))} icon={Activity}>
                   Ask Intelligence
                 </CommandItem>
@@ -82,7 +82,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
                 </CommandItem>
               </Command.Group>
 
-              <Command.Group heading="SYSTEM" className="text-[10px] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3 border-t border-[var(--border-subtle)] mt-2">
+              <Command.Group heading="SYSTEM" className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3 border-t border-[var(--border-subtle)] mt-2">
                 <CommandItem onSelect={() => runCommand(() => {})} icon={User}>
                   Account Settings
                 </CommandItem>
@@ -91,7 +91,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
                 </CommandItem>
               </Command.Group>
 
-              <Command.Group heading="ACTIONS" className="text-[10px] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3 border-t border-[var(--border-subtle)] mt-2">
+              <Command.Group heading="ACTIONS" className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] tracking-[0.14em] uppercase px-4 py-3 border-t border-[var(--border-subtle)] mt-2">
                  <CommandItem label="Sign Out" onSelect={() => runCommand(() => {})} icon={LogOut} destructive>
                   Sign Out
                 </CommandItem>
@@ -100,16 +100,16 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
 
             <div className="px-6 py-4 bg-[var(--bg-primary)]/50 border-t border-[var(--border-subtle)] flex items-center justify-between">
                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-[9px] text-[var(--text-muted)]">
+                  <div className="flex items-center gap-1.5 text-[clamp(0.45rem,0.9vw,0.5625rem)] text-[var(--text-muted)]">
                     <span className="px-1.5 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded lowercase">↑↓</span>
                     Navigate
                   </div>
-                  <div className="flex items-center gap-1.5 text-[9px] text-[var(--text-muted)]">
+                  <div className="flex items-center gap-1.5 text-[clamp(0.45rem,0.9vw,0.5625rem)] text-[var(--text-muted)]">
                     <span className="px-1.5 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded lowercase">Enter</span>
                     Execute
                   </div>
                </div>
-               <div className="text-[9px] text-[var(--brand)] uppercase tracking-widest font-bold">
+               <div className="text-[clamp(0.45rem,0.9vw,0.5625rem)] text-[var(--brand)] uppercase tracking-widest font-bold">
                  Neural Search Mode Active
                </div>
             </div>
@@ -143,7 +143,7 @@ function CommandItem({ children, onSelect, icon: Icon, destructive, label }: any
       )}>
         <Icon className="w-4 h-4" />
       </div>
-      <span className="flex-1 text-[13px] font-medium tracking-tight">
+      <span className="flex-1 text-[clamp(0.65rem,1.3vw,0.8125rem)] font-medium tracking-tight">
         {label || children}
       </span>
       <ChevronRight className="w-3.5 h-3.5 text-[var(--text-muted)] opacity-0 group-data-[selected=true]:opacity-100 transition-opacity translate-x-[-4px] group-data-[selected=true]:translate-x-0" />

@@ -190,87 +190,59 @@ class DocumentList(BaseModel):
 class RAGQueryRequest(BaseModel):
     """
     Schema for RAG query requests.
-    Used in: POST /api/query (main RAG endpoint we'll build next)
-    
-    This is what users send when asking a question.
+    Used in: POST /api/query
     """
-    question: str = Field(
-        ..., 
-        min_length=1, 
-        description="User's question"
-    )
-    top_k: int = Field(
-        default=3, 
-        ge=1, 
-        le=10, 
-        description="Number of similar documents to retrieve (1-10)"
-    )
-    threshold: float = Field(
-        default=0.5, 
-        ge=0.0, 
-        le=1.0, 
-        description="Minimum similarity threshold (0.0-1.0)"
-    )
+    question: str = Field(..., min_length=1, description="User's question")
+    top_k: int = Field(default=3, ge=1, le=10, description="Number of similar documents to retrieve")
+    threshold: float = Field(default=0.1, ge=0.0, le=1.0, description="Minimum similarity threshold")
+    conversation_id: Optional[str] = Field(default=None, description="Existing conversation ID, or null for new conversation")
+    
+    # User metadata fields (sent by frontend, used for logging)
+    user_id: Optional[str] = None
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
     
     class Config:
         json_schema_extra = {
             "example": {
                 "question": "How do I reset my password?",
                 "top_k": 3,
-                "threshold": 0.7
+                "conversation_id": None,
+                "user_id": "user_123",
+                "user_email": "user@example.com"
             }
         }
+
+class DocumentWithSimilarity(BaseModel):
+    """
+    Schema for search results with similarity scores.
+    """
+    id: str
+    title: str
+    content: str
+    category: Optional[str] = None
+    similarity: float = Field(..., ge=0.0, le=1.0)
+    
+    class Config:
+        from_attributes = True
 
 class RAGQueryResponse(BaseModel):
     """
     Schema for RAG query responses.
-    Used in: POST /api/query response
-    
-    This is what the system returns after answering a question.
     """
     question: str
     answer: str
-    confidence: float = Field(
-        ..., 
-        ge=0.0, 
-        le=1.0, 
-        description="Confidence in the answer (based on document similarity)"
-    )
-    sources: List[DocumentWithSimilarity] = Field(
-        ..., 
-        description="Source documents used to generate the answer"
-    )
+    confidence: float
+    sources: List[DocumentWithSimilarity]
+    conversation_id: Optional[str] = None
     
     class Config:
         json_schema_extra = {
             "example": {
                 "question": "How do I reset my password?",
-                "answer": "To reset your password, go to portal.company.com and click 'Forgot Password'...",
+                "answer": "To reset your password...",
                 "confidence": 0.92,
-                "sources": [
-                    {
-                        "id": "550e8400-e29b-41d4-a716-446655440000",
-                        "title": "Password Reset Procedure",
-                        "content": "Step 1...",
-                        "category": "IT Security",
-                        "similarity": 0.92
-                    }
-                ]
+                "sources": [],
+                "conversation_id": "conv_abc123"
             }
         }
-    
-class RAGQueryRequest(BaseModel):
-    question: str = Field(..., min_length=1)
-    top_k: int = Field(default=3, ge=1, le=10)
-
-class DocumentWithSimilarity(BaseModel):
-    id: str
-    title: str
-    category: Optional[str] = None
-    similarity: float
-
-class RAGQueryResponse(BaseModel):
-    question: str
-    answer: str
-    confidence: float
-    sources: list[DocumentWithSimilarity]

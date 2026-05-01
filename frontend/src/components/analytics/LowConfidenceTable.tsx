@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, ChevronsUpDown, AlertTriangle, ArrowRight, Cloc
 import { getLowConfidenceQueries } from "@/lib/api";
 import type { LowConfidenceQuery } from "@/lib/api";
 import { useAuth } from "@clerk/nextjs";
+import { useCurrentMember } from "@/hooks/useCurrentMember";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -16,6 +17,7 @@ type SortOrder = "asc" | "desc";
 
 export default function LowConfidenceTable() {
     const { getToken } = useAuth();
+    const { member } = useCurrentMember();
     const [queries, setQueries] = useState<LowConfidenceQuery[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -28,7 +30,8 @@ export default function LowConfidenceTable() {
         setLoading(true);
         try {
             const token = await getToken();
-            const data = await getLowConfidenceQueries(limit, 0.6, 0, sortBy, sortOrder, token || undefined);
+            const orgId = member?.org_id ?? "";
+            const data = await getLowConfidenceQueries(limit, 0.6, 0, sortBy, sortOrder, token || undefined, orgId);
             setQueries(data.queries);
             setTotal(data.total);
         } catch (err) {
@@ -36,11 +39,13 @@ export default function LowConfidenceTable() {
         } finally {
             setLoading(false);
         }
-    }, [limit, sortBy, sortOrder, getToken]);
+    }, [limit, sortBy, sortOrder, getToken, member]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        if (member) {
+            fetchData();
+        }
+    }, [fetchData, member]);
 
     const toggleSort = (field: SortField) => {
         if (sortBy === field) {
@@ -71,7 +76,7 @@ export default function LowConfidenceTable() {
                         <h3 className="text-sm font-bold text-primary uppercase tracking-widest flex items-center gap-2">
                             Neural Anomalies Identified
                         </h3>
-                        <p className="text-[10px] font-label font-bold text-tertiary uppercase tracking-wider mt-0.5">
+                        <p className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold text-tertiary uppercase tracking-wider mt-0.5">
                             Confidence threshhold &lt; 60% &mdash; <span className="text-accent-danger">{total} Instances</span>
                         </p>
                     </div>
@@ -82,9 +87,9 @@ export default function LowConfidenceTable() {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-surface/50 text-tertiary border-b border-subtle">
-                            <th className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] w-[45%]">Interaction Trace</th>
+                            <th className="px-8 py-5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold uppercase tracking-[0.2em] w-[45%]">Interaction Trace</th>
                             <th
-                                className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
+                                className="px-8 py-5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
                                 onClick={() => toggleSort("confidence")}
                             >
                                 <span className="inline-flex items-center gap-2 group-hover/th:text-primary transition-colors">
@@ -92,14 +97,14 @@ export default function LowConfidenceTable() {
                                 </span>
                             </th>
                             <th
-                                className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
+                                className="px-8 py-5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold uppercase tracking-[0.2em] cursor-pointer select-none group/th"
                                 onClick={() => toggleSort("date")}
                             >
                                 <span className="inline-flex items-center gap-2 group-hover/th:text-primary transition-colors">
                                     Frequency <SortIcon field="date" />
                                 </span>
                             </th>
-                            <th className="px-8 py-5 text-[10px] font-label font-bold uppercase tracking-[0.2em]">Primary Asset</th>
+                            <th className="px-8 py-5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold uppercase tracking-[0.2em]">Primary Asset</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-subtle">
@@ -129,26 +134,26 @@ export default function LowConfidenceTable() {
                                                 <div className="p-1 bg-accent-danger/5 rounded mt-0.5 border border-accent-danger/10">
                                                     <AlertTriangle className="w-3 h-3 text-accent-danger" />
                                                 </div>
-                                                <span className="text-[13px] font-semibold text-primary truncate block max-w-lg group-hover:text-accent-primary transition-colors">
+                                                <span className="text-[clamp(0.65rem,1.3vw,0.8125rem)] font-semibold text-primary truncate block max-w-lg group-hover:text-accent-primary transition-colors">
                                                     {q.question}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <Badge confidence={q.confidence_score}>{Math.round(q.confidence_score < 1 ? q.confidence_score * 100 : q.confidence_score)}% Match</Badge>
+                                            <Badge variant="soft" className={q.confidence_score < 0.6 ? "bg-accent-danger/10 text-accent-danger border-accent-danger/20" : "bg-accent-secondary/10 text-accent-secondary border-accent-secondary/20"}>{Math.round(q.confidence_score < 1 ? q.confidence_score * 100 : q.confidence_score)}% Match</Badge>
                                         </td>
                                         <td className="px-8 py-5">
                                             <div className="flex flex-col">
-                                                <span className="text-[11px] font-label font-bold text-primary tabular-nums">
+                                                <span className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-label font-bold text-primary tabular-nums">
                                                     {new Date(q.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                 </span>
-                                                <span className="text-[9px] font-label text-tertiary">{new Date(q.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-label text-tertiary">{new Date(q.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <div className="flex items-center gap-2 max-w-[180px]">
+                                            <div className="flex items-center gap-2 max-w-[clamp(9.0rem,18.0vw,11.25rem)]">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-accent-danger/30" />
-                                                <span className="text-[11px] font-medium text-tertiary truncate">
+                                                <span className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-medium text-tertiary truncate">
                                                     {q.retrieved_doc_title || "Unindexed Asset"}
                                                 </span>
                                             </div>
@@ -166,19 +171,19 @@ export default function LowConfidenceTable() {
                                                     >
                                                         <div className="py-8 space-y-6">
                                                             <Card variant="surface" padding="md" className="border-subtle bg-base/30">
-                                                                <div className="flex items-center gap-2 text-[9px] font-label font-bold text-tertiary uppercase tracking-widest mb-3">
+                                                                <div className="flex items-center gap-2 text-[clamp(0.45rem,0.9vw,0.5625rem)] font-label font-bold text-tertiary uppercase tracking-widest mb-3">
                                                                     <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
                                                                     Trace Synthesis Answer
                                                                 </div>
-                                                                <p className="text-[13px] text-secondary leading-relaxed font-medium whitespace-pre-wrap">
+                                                                <p className="text-[clamp(0.65rem,1.3vw,0.8125rem)] text-secondary leading-relaxed font-medium whitespace-pre-wrap">
                                                                     {q.answer}
                                                                 </p>
                                                             </Card>
                                                             <div className="flex items-center gap-4 pl-4 border-l-2 border-accent-danger/20">
-                                                                <Button variant="secondary" size="sm" className="h-8 text-[10px] tracking-widest uppercase rounded-lg">
+                                                                <Button variant="secondary" size="sm" className="h-8 text-[clamp(0.5rem,1.0vw,0.625rem)] tracking-widest uppercase rounded-lg">
                                                                     Adjust Weights
                                                                 </Button>
-                                                                <Button variant="ghost" size="sm" className="h-8 text-[10px] tracking-widest uppercase rounded-lg text-accent-danger">
+                                                                <Button variant="ghost" size="sm" className="h-8 text-[clamp(0.5rem,1.0vw,0.625rem)] tracking-widest uppercase rounded-lg text-accent-danger">
                                                                     Purge Trace
                                                                 </Button>
                                                             </div>
@@ -205,7 +210,7 @@ export default function LowConfidenceTable() {
                             e.stopPropagation();
                             setLimit((prev) => prev + 10);
                         }}
-                        className="rounded-full h-10 px-8 text-[10px] tracking-widest uppercase"
+                        className="rounded-full h-10 px-8 text-[clamp(0.5rem,1.0vw,0.625rem)] tracking-widest uppercase"
                     >
                         Synchronize More ({queries.length} / {total})
                     </Button>

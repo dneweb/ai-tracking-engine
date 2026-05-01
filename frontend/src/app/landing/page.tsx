@@ -1,10 +1,10 @@
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Manrope, JetBrains_Mono } from "next/font/google";
 import { LandingPage } from "@/app/landing/LandingPage";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-plus-jakarta",
+  variable: "--font-manrope",
   display: "swap",
   preload: true,
 });
@@ -26,11 +26,11 @@ export const metadata = {
 export default function LandingRootPage() {
   return (
     <main
-      className={`${plusJakarta.variable} ${jetBrainsMono.variable}`}
+      className={`${manrope.variable} ${jetBrainsMono.variable}`}
       style={{ height: "100svh", overflow: "hidden" }}
     >
       <style>{`
-        .ke-root { font-family: var(--font-plus-jakarta, "Plus Jakarta Sans", system-ui, sans-serif); }
+        .ke-root { font-family: var(--font-manrope, "Manrope", system-ui, sans-serif); }
         .ke-terminal-body, .ke-terminal-title, .ke-feature-badge, .ke-plan-name { font-family: var(--font-jetbrains, "JetBrains Mono", monospace); }
       `}</style>
       <LandingPage />

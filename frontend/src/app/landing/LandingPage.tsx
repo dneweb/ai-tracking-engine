@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import "./landing-tokens.css";
 import "./landing-v2.css";
+import { GLSLHills } from "@/components/ui/glsl-hills";
 
 /* ─────────────────────────────────────────────────────────── */
 /*  TYPES                                                       */
@@ -121,7 +122,7 @@ function TerminalCard() {
       segments: [
         { text: "user: ", cls: "ke-term-user" },
         {
-          text: "How do we handle off-site data encryption for Tier-3 clients?",
+          text: "What is our policy on remote work equipment?",
           cls: "ke-term-text",
         },
       ],
@@ -151,8 +152,8 @@ function TerminalCard() {
       type: "engine",
       segments: [
         { text: "engine: ", cls: "ke-term-engine" },
-        { text: "Scanning ", cls: "ke-term-text" },
-        { text: "[SOP-SEC-2024]", cls: "ke-term-hl-violet" },
+        { text: "Searching ", cls: "ke-term-text" },
+        { text: "[Employee-Handbook-2024]", cls: "ke-term-hl-violet" },
         { text: "...", cls: "ke-term-text" },
       ],
     };
@@ -173,10 +174,10 @@ function TerminalCard() {
     const respLine: TermLine = {
       type: "response",
       segments: [
-        { text: "       According to Section 4.2, all Tier-3 data requires ", cls: "ke-term-text" },
-        { text: "AES-256", cls: "ke-term-hl-blue" },
-        { text: " at rest with ", cls: "ke-term-text" },
-        { text: "hardware-backed KMS", cls: "ke-term-hl-blue" },
+        { text: "       All full-time employees are eligible for a ", cls: "ke-term-text" },
+        { text: "$500 stipend", cls: "ke-term-hl-blue" },
+        { text: " for home office setup, renewable every ", cls: "ke-term-text" },
+        { text: "24 months", cls: "ke-term-hl-blue" },
         { text: ".", cls: "ke-term-text" },
       ],
     };
@@ -198,7 +199,7 @@ function TerminalCard() {
       type: "meta",
       segments: [
         {
-          text: "       Last updated by Sarah J. — 14 days ago.",
+          text: "       Source: Finance Section, Page 12. Updated 2 months ago.",
           cls: "ke-term-meta",
         },
       ],
@@ -343,7 +344,7 @@ function RadarViz() {
       />
       {/* Data points */}
       <circle cx="130" cy="55" r="3" fill="var(--ke-accent-purple)" opacity="0.8" />
-      <circle cx="80" cy="20"  r="2" fill="var(--ke-accent-blue)"   opacity="0.6" />
+      <circle cx="80" cy="20" r="2" fill="var(--ke-accent-blue)" opacity="0.6" />
       <circle cx="45" cy="115" r="2" fill="var(--ke-accent-violet)" opacity="0.6" />
     </svg>
   );
@@ -474,12 +475,12 @@ function ShaderCanvas({ isDark }: { isDark: boolean }) {
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
-    const uTime  = gl.getUniformLocation(prog, "uTime");
+    const uTime = gl.getUniformLocation(prog, "uTime");
     const uMouse = gl.getUniformLocation(prog, "uMouse");
-    const uDark  = gl.getUniformLocation(prog, "uDark");
+    const uDark = gl.getUniformLocation(prog, "uDark");
 
     const resize = () => {
-      canvas.width  = canvas.offsetWidth;
+      canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
@@ -530,21 +531,21 @@ function ThemeIcon({ isDark }: { isDark: boolean }) {
   if (isDark) {
     return (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" />
+        <line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
       </svg>
     );
   }
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
 }
@@ -625,25 +626,33 @@ export function LandingPage() {
 
   // ── Scroll-reveal observer ───────────────────────────────
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry, i) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
+            const target = entry.target as HTMLElement;
             const siblings = Array.from(
-              el.parentElement?.querySelectorAll("[data-ke-reveal]") ?? []
+              target.parentElement?.querySelectorAll("[data-ke-reveal]") ?? []
             );
-            const idx = siblings.indexOf(el);
-            setTimeout(() => el.classList.add("ke-in-view"), idx * 80);
-            observer.unobserve(el);
+            const idx = siblings.indexOf(target);
+            setTimeout(() => target.classList.add("ke-in-view"), idx * 80);
+            observer.unobserve(target);
           }
         });
       },
-      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+      {
+        threshold: 0.05,
+        root: container,
+        rootMargin: "0px 0px -50px 0px"
+      }
     );
 
-    const els = document.querySelectorAll("[data-ke-reveal]");
-    els.forEach((el) => observer.observe(el));
+    const reveals = container.querySelectorAll("[data-ke-reveal]");
+    reveals.forEach((el) => observer.observe(el));
+
     return () => observer.disconnect();
   }, []);
 
@@ -698,45 +707,72 @@ export function LandingPage() {
     };
   }, []);
 
-  // ── 3D card tilt ─────────────────────────────────────────
+  // ── High-performance 3D tilt ──────────────────────────
   useEffect(() => {
-    if (window.innerWidth <= 768) return;
+    if (typeof window === "undefined" || window.innerWidth <= 768) return;
 
-    const cards = document.querySelectorAll<HTMLElement>(".ke-feature-card");
+    const targets = Array.from(document.querySelectorAll<HTMLElement>(".ke-bento-card, .ke-device-frame"));
+    if (targets.length === 0) return;
 
-    const handlers: { el: HTMLElement; onMove: (e: MouseEvent) => void; onLeave: () => void }[] = [];
+    // Cache rects to avoid layout thrashing on every mousemove
+    const rects = targets.map(t => t.getBoundingClientRect());
 
-    cards.forEach((card) => {
-      const shine = card.querySelector<HTMLElement>(".ke-card-shine");
+    let mouseX = 0;
+    let mouseY = 0;
+    let rafId = 0;
 
-      const onMove = (e: MouseEvent) => {
-        const rect = card.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-        card.style.transform = `perspective(800px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) translateY(-6px)`;
-        if (shine) {
-          const px = ((e.clientX - rect.left) / rect.width) * 100;
-          const py = ((e.clientY - rect.top) / rect.height) * 100;
-          shine.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.12) 0%, transparent 60%)`;
-          shine.style.opacity = "1";
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+
+    const update = () => {
+      targets.forEach((el, i) => {
+        const rect = rects[i];
+        const isDashboard = el.classList.contains("ke-device-frame");
+
+        // Only calculate tilt if mouse is near the element (performance win)
+        const buffer = 200;
+        if (
+          mouseX > rect.left - buffer &&
+          mouseX < rect.right + buffer &&
+          mouseY > rect.top - buffer &&
+          mouseY < rect.bottom + buffer
+        ) {
+          const x = ((mouseX - rect.left) / rect.width - 0.5) * 2;
+          const y = ((mouseY - rect.top) / rect.height - 0.5) * 2;
+          const intensity = isDashboard ? 4 : 8;
+          el.style.transform = `perspective(1000px) rotateX(${-y * intensity}deg) rotateY(${x * intensity}deg) ${!isDashboard ? "translateY(-5px)" : ""}`;
+
+          const shine = el.querySelector<HTMLElement>(".ke-card-shine");
+          if (shine) {
+            const px = ((mouseX - rect.left) / rect.width) * 100;
+            const py = ((mouseY - rect.top) / rect.height) * 100;
+            shine.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(255,255,255,0.12) 0%, transparent 60%)`;
+            shine.style.opacity = "1";
+          }
+        } else {
+          el.style.transform = "";
+          const shine = el.querySelector<HTMLElement>(".ke-card-shine");
+          if (shine) shine.style.opacity = "0";
         }
-      };
+      });
+      rafId = requestAnimationFrame(update);
+    };
 
-      const onLeave = () => {
-        card.style.transform = "";
-        if (shine) shine.style.opacity = "0";
-      };
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    rafId = requestAnimationFrame(update);
 
-      card.addEventListener("mousemove", onMove);
-      card.addEventListener("mouseleave", onLeave);
-      handlers.push({ el: card, onMove, onLeave });
-    });
+    // Update rects on resize
+    const onResize = () => {
+      targets.forEach((t, i) => rects[i] = t.getBoundingClientRect());
+    };
+    window.addEventListener("resize", onResize);
 
     return () => {
-      handlers.forEach(({ el, onMove, onLeave }) => {
-        el.removeEventListener("mousemove", onMove);
-        el.removeEventListener("mouseleave", onLeave);
-      });
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -811,7 +847,7 @@ export function LandingPage() {
     >
       {/* ── Custom Cursor ─────────────────────────────────── */}
       <div className="ke-cursor-ring" aria-hidden="true" />
-      <div className="ke-cursor-dot"  aria-hidden="true" />
+      <div className="ke-cursor-dot" aria-hidden="true" />
 
       {/* ── Scroll Progress ───────────────────────────────── */}
       <div
@@ -828,7 +864,7 @@ export function LandingPage() {
         aria-label="Scroll to top"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <polyline points="18 15 12 9 6 15"/>
+          <polyline points="18 15 12 9 6 15" />
         </svg>
       </button>
 
@@ -907,7 +943,7 @@ export function LandingPage() {
           className="ke-theme-toggle"
           onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          style={{ marginTop: "16px" }}
+          style={{ marginTop: "1rem" }}
         >
           <ThemeIcon isDark={theme === "dark"} />
         </button>
@@ -915,332 +951,261 @@ export function LandingPage() {
 
       {/* ── HERO ──────────────────────────────────────────── */}
       <main>
-        <section className="ke-hero" aria-labelledby="ke-hero-h1">
-          {/* WebGL Shader */}
-          {/* WebGL shader — client only to avoid SSR mismatch */}
-          {mounted && <ShaderCanvas isDark={theme === "dark"} />}
-
-          {/* CSS Gradient fallback (always rendered, hidden when WebGL active) */}
-          <div className="ke-hero-gradient-fallback" aria-hidden="true" />
-
-          {/* Floating particles (dark, client only) */}
-          {mounted && theme === "dark" && particles.length > 0 && (
-            <div className="ke-particles" aria-hidden="true">
-              {particles.map((p) => (
-                <div
-                  key={p.id}
-                  className="ke-particle"
-                  style={{
-                    left: p.left,
-                    top: p.top,
-                    "--dur": p.dur,
-                    "--ty": p.ty,
-                    "--tx": p.tx,
-                    animationDelay: p.delay,
-                    opacity: p.opacity,
-                  } as React.CSSProperties}
-                />
-              ))}
-            </div>
-          )}
-
-          <div className="ke-hero-content">
-            {/* Badge */}
-            <div className="ke-badge" role="status">
-              <span className="ke-badge-dot" aria-hidden="true" />
-              Neural Memory V4.2 Live
-            </div>
-
-            {/* H1 */}
-            <h1 className="ke-hero-h1" id="ke-hero-h1">
-              Your Organization&apos;s
-              <br />
-              <span className="ke-gradient-text">Neural Memory.</span>
+        <section className="ke-hero relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
+          <GLSLHills theme={theme} />
+          <div className="space-y-6 pointer-events-none z-10 text-center absolute px-4">
+            <h1 className="font-semibold text-5xl md:text-7xl whitespace-pre-wrap leading-tight text-foreground">
+              <span className="italic text-4xl md:text-6xl font-thin block">Your Company's Brain, <br /> </span>
+              Always at Your Fingertips
             </h1>
-
-            {/* Subtext */}
-            <p className="ke-hero-sub">
-              Transform scattered documentation into a living, breathing knowledge ecosystem.
-              KnowledgeEngine curates, indexes, and surfaces intelligence before you even ask.
+            <p className="text-sm md:text-lg text-muted-foreground/80 max-w-2xl mx-auto">
+              Stop searching through endless folders and chats. KnowledgeEngine connects your team's tools to provide instant, accurate answers from your own data.
             </p>
-
-            {/* CTAs */}
-            <div className="ke-cta-group">
-              <button
-                className="ke-btn-primary"
-                onClick={handlePrimaryClick}
-                id="ke-cta-primary"
-              >
-                Start Mapping Intelligence
+            <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto">
+              <button className="ke-btn-primary px-8 py-3 rounded-full font-medium transition-all hover:scale-105" onClick={handlePrimaryClick}>
+                Get Started Free
               </button>
-              <button className="ke-btn-secondary" id="ke-cta-secondary">
-                Watch System Tour
+              <button className="ke-btn-secondary px-8 py-3 rounded-full font-medium transition-all hover:bg-foreground/5">
+                Watch How it Works
               </button>
             </div>
-
-            {/* Terminal */}
-            <TerminalCard />
           </div>
         </section>
+
+
+
 
         {/* ── STATS BAR ───────────────────────────────────── */}
-        <section className="ke-stats-bar" aria-label="Platform statistics">
-          <div className="ke-stats-inner">
-            {[
-              { num: 13.4, suffix: "%", label: "Active Knowledge Nodes" },
-              { num: 2,    suffix: "ms", label: "Latency P99.9", decimals: 0 },
-              { num: 68,   suffix: "M+", label: "Linked Vectors" },
-              { num: 0.4,  suffix: "x",  label: "Engineering Speed", decimals: 1 },
-            ].map((s) => (
-              <div key={s.label} className="ke-stat" data-ke-reveal>
-                <div className="ke-stat-num">
-                  <AnimatedCounter to={s.num} suffix={s.suffix} decimals={s.decimals ?? 1} />
+        <section className="ke-stats-bar" aria-label="Platform impact">
+          <div className="ke-stats-container">
+            <div className="ke-stats-inner">
+              {[
+                { num: 40, suffix: "%", label: "Faster Search Times" },
+                { num: 2, suffix: "hrs", label: "Saved per Employee/Week", decimals: 0 },
+                { num: 100, suffix: "%", label: "Data Privacy Guaranteed" },
+                { num: 15, suffix: "min", label: "Average Setup Time", decimals: 0 },
+              ].map((s) => (
+                <div key={s.label} className="ke-stat" data-ke-reveal>
+                  <div className="ke-stat-num">
+                    <AnimatedCounter to={s.num} suffix={s.suffix} decimals={s.decimals ?? 0} />
+                  </div>
+                  <div className="ke-stat-label">{s.label}</div>
                 </div>
-                <div className="ke-stat-label">{s.label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ── FEATURES ────────────────────────────────────── */}
+        {/* ── PROBLEM SECTION ─────────────────────────────── */}
+        <section className="ke-section ke-problem-section" id="problem">
+          {/* Animated Blobs for Liquid Effect */}
+          <div className="ke-liquid-blob ke-blob-1" aria-hidden="true" />
+          <div className="ke-liquid-blob ke-blob-2" aria-hidden="true" />
+
+          <div className="ke-section-inner" style={{ position: "relative", zIndex: 2 }}>
+            <h2 className="ke-section-h2 text-center mb-16" data-ke-reveal style={{ fontSize: "var(--ke-text-h2)", fontWeight: 800 }}>
+              The cost of <span className="ke-gradient-text">scattered information.</span>
+            </h2>
+            <div className="ke-problem-grid">
+              {[
+                { title: "The Search Trap", desc: "Teams spend hours every week digging through Slack, Notion, and email just to find one file." },
+                { title: "Outdated Answers", desc: "Using the wrong version of a document leads to mistakes that cost time and money." },
+                { title: "Lost Knowledge", desc: "When an employee leaves, their expertise often walks out the door with them." }
+              ].map((p, i) => (
+                <div key={i} className="ke-problem-card" data-ke-reveal>
+                  <div className="ke-problem-num">Step 0{i + 1}</div>
+                  <h3 className="ke-problem-h3">{p.title}</h3>
+                  <p className="ke-problem-p">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+
+        {/* ── MIND-BLOWING BENTO FEATURES ────────────────── */}
         <section id="features" className="ke-section" aria-labelledby="ke-features-h2">
-          <div className="ke-section-header" data-ke-reveal>
+          <div className="ke-section-header text-center mb-20" data-ke-reveal>
             <h2 id="ke-features-h2">
-              <span className="ke-sec-muted">Architected for</span>
+              <span className="ke-sec-muted">Engineered for</span>
               {" "}
-              <span className="ke-sec-accent">Logic.</span>
+              <span className="ke-sec-accent">Total Clarity.</span>
             </h2>
           </div>
 
-          <div className="ke-features-grid">
-            {/* SVG gradient for trace */}
-            <svg width="0" height="0" style={{ position: "absolute" }}>
-              <defs>
-                <linearGradient id="ke-trace-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="var(--ke-accent-purple)" />
-                  <stop offset="100%" stopColor="var(--ke-accent-blue)" />
-                </linearGradient>
-              </defs>
-            </svg>
-
-            {/* Featured card — Neural Knowledge Retrieval */}
-            <div
-              className="ke-feature-card ke-feature-card-featured"
-              data-ke-reveal
-              style={{ transitionDelay: "0ms" }}
-            >
-              <div className="ke-card-shine" aria-hidden="true" />
-              <div className="ke-featured-inner">
-                <div style={{ flex: 1 }}>
-                  <span className="ke-feature-badge">Core Engine</span>
-                  <h3 className="ke-feature-title" style={{ fontSize: "1.3rem", marginBottom: "12px" }}>
-                    Neural Knowledge Retrieval
-                  </h3>
-                  <p className="ke-feature-desc">
-                    Our proprietary RAG pipeline ensures the AI only speaks from your verified data.
-                    No hallucinations — just architecture-grade intelligence with sub-2ms latency.
-                  </p>
-                </div>
-                <div className="ke-featured-visual" aria-hidden="true">
-                  <RadarViz />
-                </div>
+          <div className="ke-bento-grid">
+            {/* Main Feature: AI Search (Span 2x2) */}
+            <div className="ke-bento-card ke-bento-main" data-ke-reveal>
+              <div className="ke-bento-visual">
+                <RadarViz />
+              </div>
+              <div className="ke-bento-content">
+                <span className="ke-feature-badge">Neural Search</span>
+                <h3 className="ke-feature-title">Instant AI Search</h3>
+                <p className="ke-feature-desc">
+                  Ask anything in plain English. Our engine retrieves exact answers from your documents, citing every source for 100% transparency.
+                </p>
               </div>
             </div>
 
-            {/* Feature cards */}
-            {[
-              {
-                badge: "Ingestion Engine",
-                title: "Automated Ingestion",
-                desc: "Connect Slack, Notion, GitHub, and local PDFs. The engine watches changes in real-time and keeps your knowledge graph fresh.",
-                icon: (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                  </svg>
-                ),
-                delay: 80,
-              },
-              {
-                badge: "Intelligence Layer",
-                title: "Gap Analysis",
-                desc: "Detect outdated, conflicting, or missing documentation automatically. Surface blind spots before they become bottlenecks.",
-                icon: (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
-                  </svg>
-                ),
-                delay: 160,
-              },
-              {
-                badge: "Compliance",
-                title: "Live Audit",
-                desc: "Real-time compliance scoring across all your knowledge assets. Always know your regulatory exposure.",
-                icon: (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <polyline points="9 12 11 14 15 10"/>
-                  </svg>
-                ),
-                delay: 240,
-              },
-            ].map((card) => (
-              <div
-                key={card.title}
-                className="ke-feature-card"
-                data-ke-reveal
-                style={{ transitionDelay: `${card.delay}ms` }}
-              >
-                <div className="ke-card-shine" aria-hidden="true" />
-                <span className="ke-feature-badge">{card.badge}</span>
-                <div className="ke-feature-icon">{card.icon}</div>
-                <h3 className="ke-feature-title">{card.title}</h3>
-                <p className="ke-feature-desc">{card.desc}</p>
+            {/* Sync Feature (Span 2x1) */}
+            <div className="ke-bento-card ke-bento-wide" data-ke-reveal>
+              <div className="ke-bento-visual">
+                <div className="ke-sync-visual">
+                  <div className="ke-sync-orbit">
+                    <div className="ke-sync-node" style={{ "--idx": 0 } as any}>G</div>
+                    <div className="ke-sync-node" style={{ "--idx": 1 } as any}>N</div>
+                    <div className="ke-sync-node" style={{ "--idx": 2 } as any}>S</div>
+                  </div>
+                  <div className="ke-sync-center">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-            ))}
+              <div className="ke-bento-content">
+                <span className="ke-feature-badge">Connections</span>
+                <h3 className="ke-feature-title">One-Click Sync</h3>
+                <p className="ke-feature-desc">
+                  Seamlessly connect Slack, Google Drive, and Notion. We keep your knowledge fresh in real-time.
+                </p>
+              </div>
+            </div>
+
+            {/* Health Feature */}
+            <div className="ke-bento-card" data-ke-reveal>
+              <div className="ke-bento-visual">
+                <div className="ke-health-monitor">
+                  <div className="ke-health-wave" />
+                  <div className="ke-health-stat">98% Health</div>
+                </div>
+              </div>
+              <div className="ke-bento-content">
+                <span className="ke-feature-badge">Insights</span>
+                <h3 className="ke-feature-title">Info Health</h3>
+                <p className="ke-feature-desc">
+                  Automatically flag outdated content and conflicts.
+                </p>
+              </div>
+            </div>
+
+            {/* Security Feature */}
+            <div className="ke-bento-card" data-ke-reveal>
+              <div className="ke-bento-visual">
+                <div className="ke-security-pulse">
+                  <div className="ke-pulse-circle" />
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue-ribbon-400)" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ke-bento-content">
+                <span className="ke-feature-badge">Privacy</span>
+                <h3 className="ke-feature-title">Private & Secure</h3>
+                <p className="ke-feature-desc">
+                  Enterprise-grade encryption. Your data never leaves your control.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* ── DASHBOARD / CURATION ────────────────────────── */}
+        {/* ── INTERACTIVE INTELLIGENCE CENTER ─────────────── */}
         <section id="pipeline" className="ke-dashboard-section" aria-labelledby="ke-dash-h2">
           <div className="ke-dashboard-inner">
-            <div className="ke-section-header" style={{ textAlign: "center", marginBottom: "56px" }} data-ke-reveal>
+            <div className="ke-section-header text-center mb-16" data-ke-reveal>
               <h2 id="ke-dash-h2">
-                Curation{" "}
-                <span className="ke-sec-accent">Redefined.</span>
+                Your Knowledge,{" "}
+                <span className="ke-sec-accent">Organized.</span>
               </h2>
+              <p className="ke-sec-p mx-auto max-w-2xl mt-4">
+                The Intelligence Center gives you a birds-eye view of your company's collective brain.
+              </p>
             </div>
 
-            <div style={{ position: "relative" }} data-ke-reveal>
+            <div className="ke-dashboard-visual-wrapper" data-ke-reveal>
               <div className="ke-device-frame">
-                {/* Synthetic dashboard UI as SVG (no external images) */}
-                <svg
-                  viewBox="0 0 1200 680"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="ke-device-screen"
-                  aria-label="KnowledgeEngine dashboard preview"
-                  role="img"
-                >
-                  <rect width="1200" height="680" fill="#0A0918"/>
+                <div className="ke-dash-ui">
                   {/* Sidebar */}
-                  <rect x="0" y="0" width="200" height="680" fill="rgba(255,255,255,0.03)"/>
-                  <rect x="0" y="0" width="200" height="1" fill="rgba(255,255,255,0.06)"/>
-                  {/* Logo area */}
-                  <text x="20" y="38" fill="url(#svgGrad)" fontSize="14" fontWeight="700" fontFamily="system-ui">KnowledgeEngine</text>
-                  {/* Nav items */}
-                  {[70, 105, 140, 175, 210].map((y, i) => (
-                    <g key={i}>
-                      <rect x="12" y={y} width="176" height="28" rx="8" fill={i === 0 ? "rgba(124,111,255,0.15)" : "transparent"}/>
-                      <rect x="24" y={y + 8} width="12" height="12" rx="3" fill={i === 0 ? "#7C6FFF" : "rgba(255,255,255,0.15)"}/>
-                      <rect x="44" y={y + 10} width={60 + i * 10} height="8" rx="4" fill={i === 0 ? "rgba(124,111,255,0.6)" : "rgba(255,255,255,0.12)"}/>
-                    </g>
-                  ))}
-                  {/* Main area */}
-                  <rect x="200" y="0" width="1000" height="56" fill="rgba(255,255,255,0.02)"/>
-                  <rect x="200" y="56" width="1000" height="1" fill="rgba(255,255,255,0.05)"/>
-                  {/* Topbar text */}
-                  <text x="224" y="34" fill="rgba(255,255,255,0.7)" fontSize="13" fontWeight="600" fontFamily="system-ui">Knowledge Graph — Overview</text>
-                  {/* Search bar */}
-                  <rect x="820" y="14" width="200" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
-                  <text x="838" y="32" fill="rgba(255,255,255,0.3)" fontSize="11" fontFamily="system-ui">Search knowledge…</text>
-                  {/* Avatar */}
-                  <circle cx="1060" cy="28" r="14" fill="url(#svgGrad2)"/>
-                  {/* Stat cards */}
-                  {[
-                    { x: 220, label: "Documents", value: "8,421", color: "#7C6FFF" },
-                    { x: 450, label: "Avg Accuracy", value: "98.4%", color: "#60A5FA" },
-                    { x: 680, label: "Gap Alerts", value: "12", color: "#A78BFA" },
-                    { x: 910, label: "Last Sync", value: "2m ago", color: "#34D399" },
-                  ].map((card) => (
-                    <g key={card.x}>
-                      <rect x={card.x} y="76" width="200" height="90" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5"/>
-                      <text x={card.x + 16} y="100" fill="rgba(255,255,255,0.4)" fontSize="10" fontFamily="system-ui" letterSpacing="1">{card.label.toUpperCase()}</text>
-                      <text x={card.x + 16} y="138" fill={card.color} fontSize="22" fontWeight="700" fontFamily="system-ui">{card.value}</text>
-                    </g>
-                  ))}
-                  {/* Chart area */}
-                  <rect x="220" y="186" width="600" height="260" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"/>
-                  <text x="240" y="212" fill="rgba(255,255,255,0.6)" fontSize="11" fontWeight="600" fontFamily="system-ui">Knowledge Coverage Over Time</text>
-                  {/* Chart bars */}
-                  {[40, 70, 55, 85, 65, 90, 78, 95, 72, 88, 82, 100].map((h, i) => (
-                    <g key={i}>
-                      <rect
-                        x={240 + i * 44}
-                        y={410 - h * 1.8}
-                        width="30"
-                        height={h * 1.8}
-                        rx="4"
-                        fill={`rgba(124,111,255,${0.3 + (i / 12) * 0.5})`}
-                      />
-                      <rect
-                        x={240 + i * 44}
-                        y={410 - h * 1.8}
-                        width="30"
-                        height="3"
-                        rx="2"
-                        fill="rgba(124,111,255,0.9)"
-                      />
-                    </g>
-                  ))}
-                  {/* Grid lines */}
-                  {[0.25, 0.5, 0.75, 1.0].map((f, i) => (
-                    <line key={i} x1="235" y1={410 - f * 180} x2="810" y2={410 - f * 180} stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>
-                  ))}
-                  {/* Right panel — top docs */}
-                  <rect x="840" y="186" width="350" height="260" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"/>
-                  <text x="860" y="212" fill="rgba(255,255,255,0.6)" fontSize="11" fontWeight="600" fontFamily="system-ui">Recent Knowledge Gaps</text>
-                  {[
-                    { label: "SOP-SEC-2024", status: "Outdated", c: "#F59E0B" },
-                    { label: "HR Onboarding v3", status: "42% Gap", c: "#EF4444" },
-                    { label: "Engineering Runbook", status: "Current", c: "#34D399" },
-                    { label: "Compliance Matrix", status: "Review", c: "#60A5FA" },
-                  ].map((row, i) => (
-                    <g key={i}>
-                      <rect x="855" y={228 + i * 48} width="320" height="36" rx="8" fill="rgba(255,255,255,0.02)"/>
-                      <circle cx="875" cy={246 + i * 48} r="5" fill={row.c}/>
-                      <text x="892" y={250 + i * 48} fill="rgba(255,255,255,0.7)" fontSize="11" fontFamily="system-ui">{row.label}</text>
-                      <rect x={1080} y={234 + i * 48} width="80" height="20" rx="10" fill={`${row.c}22`}/>
-                      <text x={1092} y={248 + i * 48} fill={row.c} fontSize="9" fontWeight="600" fontFamily="system-ui">{row.status}</text>
-                    </g>
-                  ))}
-                  {/* Bottom row */}
-                  <rect x="220" y="466" width="970" height="180" rx="12" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"/>
-                  <text x="240" y="492" fill="rgba(255,255,255,0.6)" fontSize="11" fontWeight="600" fontFamily="system-ui">Query Intelligence Feed</text>
-                  {[
-                    "How do Tier-3 clients handle off-site encryption? → AES-256 KMS required",
-                    "What's the SLA for incident response in EU regions? → 4h response, 24h resolution",
-                    "Are HR onboarding docs compliant with 2024 regulations? → 42% gap detected",
-                  ].map((q, i) => (
-                    <g key={i}>
-                      <rect x="236" y={504 + i * 44} width="930" height="32" rx="6" fill="rgba(255,255,255,0.02)"/>
-                      <circle cx="256" cy={520 + i * 44} r="4" fill="#7C6FFF"/>
-                      <text x="272" y={524 + i * 44} fill="rgba(255,255,255,0.55)" fontSize="10.5" fontFamily="system-ui">{q}</text>
-                    </g>
-                  ))}
-                  <defs>
-                    <linearGradient id="svgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#7C6FFF"/>
-                      <stop offset="100%" stopColor="#60A5FA"/>
-                    </linearGradient>
-                    <linearGradient id="svgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#7C6FFF"/>
-                      <stop offset="100%" stopColor="#A78BFA"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
+                  <aside className="ke-dash-sidebar">
+                    <div className="ke-dash-logo">KnowledgeEngine</div>
+                    <nav className="ke-dash-nav">
+                      {["Overview", "Data Sources", "Knowledge Graph", "Intelligence Feed", "Security"].map((item, i) => (
+                        <div key={item} className={`ke-dash-nav-item ${i === 0 ? "active" : ""}`}>
+                          <div className="ke-dash-nav-icon" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </nav>
+                  </aside>
 
-                {/* Floating chips */}
-                <div className="ke-chip ke-chip-1" aria-label="Insight: SOP Outdated">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                  Insight: SOP Outdated
-                </div>
-                <div className="ke-chip ke-chip-2" aria-label="99% Confidence">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  </svg>
-                  99% Confidence
+                  {/* Main Content */}
+                  <main className="ke-dash-main">
+                    <header className="ke-dash-header">
+                      <div className="ke-dash-breadcrumb">Intelligence Center / Overview</div>
+                      <div className="ke-dash-search-container">
+                        <div className="ke-dash-search-box">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+                          </svg>
+                          <span>Search knowledge...</span>
+                        </div>
+                      </div>
+                    </header>
+
+                    <div className="ke-dash-grid">
+                      {/* Stat Cards */}
+                      <div className="ke-dash-stats-row">
+                        {[
+                          { label: "DOCUMENTS", val: "12,482", color: "var(--color-blue-ribbon-400)" },
+                          { label: "ACCURACY", val: "99.2%", color: "var(--color-blue-ribbon-300)" },
+                          { label: "GAP ALERTS", val: "03", color: "var(--color-blue-ribbon-500)" },
+                        ].map(stat => (
+                          <div key={stat.label} className="ke-dash-stat-mini">
+                            <span className="ke-stat-mini-label">{stat.label}</span>
+                            <span className="ke-stat-mini-val" style={{ color: stat.color }}>{stat.val}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Main Chart Area */}
+                      <div className="ke-dash-chart-card">
+                        <div className="ke-card-header">Knowledge Coverage</div>
+                        <div className="ke-dash-bars">
+                          {[40, 70, 45, 90, 65, 80, 55, 95, 75, 100].map((h, i) => (
+                            <div key={i} className="ke-dash-bar" style={{ height: `${h}%` }}>
+                              <div className="ke-bar-fill" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Side Activity */}
+                      <div className="ke-dash-activity-card">
+                        <div className="ke-card-header">Recent Intelligence</div>
+                        <div className="ke-activity-list">
+                          {[
+                            "How do I request a vacation?",
+                            "What is our remote work policy?",
+                            "Budget for Q3 marketing?",
+                            "Lead for Project Phoenix?"
+                          ].map((text, i) => (
+                            <div key={i} className="ke-activity-item">
+                              <div className="ke-activity-dot" />
+                              <div className="ke-activity-text">{text}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="ke-verified-badge">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                          Source Verified
+                        </div>
+                      </div>
+                    </div>
+                  </main>
                 </div>
               </div>
             </div>
@@ -1260,7 +1225,7 @@ export function LandingPage() {
               <div
                 className="ke-billing-pill"
                 aria-hidden="true"
-                style={{ left: annual ? "calc(50% + 4px)" : "4px", width: annual ? "calc(50% - 4px)" : "calc(50% - 4px)" }}
+                style={{ left: annual ? "calc(50% + 0.25rem)" : "0.25rem", width: annual ? "calc(50% - 0.25rem)" : "calc(50% - 0.25rem)" }}
               />
               <button
                 className={`ke-billing-btn${!annual ? " active" : ""}`}
@@ -1330,20 +1295,20 @@ export function LandingPage() {
             <div className="ke-banner-blob ke-banner-blob-3" aria-hidden="true" />
             <div className="ke-cta-banner-content">
               <h2 className="ke-cta-h2" id="ke-cta-h2">
-                Ready to curate
+                Ready to find answers
                 <br />
-                your intelligence?
+                faster than ever?
               </h2>
               <p className="ke-cta-sub">
-                Join the next generation of knowledge-first organizations.
-                Deploy your engine in minutes, not months.
+                Join hundreds of teams who use KnowledgeEngine to stay organized and informed.
+                Get started today and turn your data into your greatest asset.
               </p>
               <a
                 href="/sign-in"
                 className="ke-cta-btn"
                 id="ke-request-demo"
               >
-                Request Demo Access
+                Get Started for Free
               </a>
             </div>
           </div>
@@ -1416,20 +1381,20 @@ export function LandingPage() {
             {/* Twitter */}
             <a href="#" aria-label="Twitter" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
             {/* LinkedIn */}
             <a href="#" aria-label="LinkedIn" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/>
-                <circle cx="4" cy="4" r="2"/>
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+                <circle cx="4" cy="4" r="2" />
               </svg>
             </a>
             {/* GitHub */}
             <a href="#" aria-label="GitHub" rel="noopener noreferrer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
             </a>
           </div>

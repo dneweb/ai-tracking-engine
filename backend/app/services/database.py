@@ -1,7 +1,17 @@
 """
 MongoDB database service.
-Provides both sync PyMongo collections (for reports) and async functions (for API routes).
+
+Row-Level Security (RLS) contract:
+  - Every function that reads or writes tenant data REQUIRES a non-empty org_id.
+  - _require_org_id() is called at the top of every such function and raises
+    RuntimeError if org_id is absent — this makes accidental cross-tenant
+    queries impossible, not just unlikely.
+
+Provides:
+  - Sync  PyMongo collections  (reports clustering, background jobs)
+  - Async Motor collections    (FastAPI route handlers)
 """
+
 from pymongo import MongoClient, DESCENDING
 from pymongo.collection import Collection
 import motor.motor_asyncio
@@ -17,29 +27,36 @@ import uuid
 
 load_dotenv()
 
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb+srv://deep_db_user:kZNVJJI89KHJsbLA@deep.yjgn8aa.mongodb.net/?appName=Deep")
-MONGODB_DATABASE = os.getenv("MONGODB_DATABASE", "ai_tracking")
+from .db_instance import sync_db as _sync_db, async_db as _async_db, MONGODB_URI
 
-# Get CA file from certifi to fix [SSL: CERTIFICATE_VERIFY_FAILED] on macOS
-ca = certifi.where()
+documents_collection:        Collection = _sync_db["documents"]
+queries_collection:          Collection = _sync_db["queries"]
+resolved_topics_collection:  Collection = _sync_db["resolved_topics"]
+users_collection:            Collection = _sync_db["users"]
 
-# ── Synchronous client (used by reports clustering, etc.) ──────────────────
-_sync_client = MongoClient(MONGODB_URI, tlsCAFile=ca)
-_sync_db = _sync_client[MONGODB_DATABASE]
-
-documents_collection: Collection = _sync_db["documents"]
-queries_collection: Collection = _sync_db["queries"]
-resolved_topics_collection: Collection = _sync_db["resolved_topics"]
-users_collection: Collection = _sync_db["users"]
-
-# ── Async Motor client (used by FastAPI route handlers) ─────────────────────
-_async_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI, tlsCAFile=ca)
-_async_db = _async_client[MONGODB_DATABASE]
-
-async_documents = _async_db["documents"]
-async_queries = _async_db["queries"]
+async_documents       = _async_db["documents"]
+async_queries         = _async_db["queries"]
 async_resolved_topics = _async_db["resolved_topics"]
-async_users = _async_db["users"]
+async_users           = _async_db["users"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RLS GUARD — DO NOT REMOVE
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _require_org_id(org_id: Optional[str], fn_name: str = "database") -> str:
+    """
+    Enforce that org_id is present before executing any tenant-scoped query.
+    This is the row-level security guard — it makes cross-tenant leaks impossible
+    by failing loudly rather than silently returning all-tenant data.
+    """
+    if not org_id or not str(org_id).strip():
+        raise RuntimeError(
+            f"[RLS VIOLATION] '{fn_name}' called without a valid org_id. "
+            "All tenant-scoped database operations require an org_id. "
+            "Ensure TenantMiddleware is running and the JWT contains 'org_id'."
+        )
+    return str(org_id).strip()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -47,33 +64,28 @@ async_users = _async_db["users"]
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _normalize(doc: dict, exclude_embedding: bool = False) -> dict:
-    """Rename _id → id, handle casing, and optionally strip the embedding field."""
+    """Rename _id → id, normalise casing, optionally strip embeddings."""
     if doc is None:
         return None
     doc = dict(doc)
-    
-    # 1. Standardize ID
+
     if "_id" in doc:
         doc["id"] = str(doc.pop("_id"))
     elif "id" in doc:
         doc["id"] = str(doc["id"])
-        
-    # 2. Standardize Category casing (Category -> category)
+
     if "category" not in doc and "Category" in doc:
         doc["category"] = doc.pop("Category")
     if "category" not in doc:
         doc["category"] = "Uncategorized"
-        
-    # 3. Strip embedding if requested
+
     if exclude_embedding:
         doc.pop("embedding", None)
-        
-    # 4. Ensure timestamps exist
-    if "updated_at" not in doc:
-        doc["updated_at"] = doc.get("created_at", datetime.utcnow().isoformat())
-    if "created_at" not in doc:
-        doc["created_at"] = doc.get("updated_at", datetime.utcnow().isoformat())
-        
+
+    now = datetime.utcnow().isoformat()
+    doc.setdefault("updated_at", doc.get("created_at", now))
+    doc.setdefault("created_at", doc.get("updated_at", now))
+
     return doc
 
 
@@ -81,17 +93,23 @@ def _normalize(doc: dict, exclude_embedding: bool = False) -> dict:
 # QUERY LOG OPERATIONS
 # ─────────────────────────────────────────────────────────────────────────────
 
-async def get_all_queries(user_email: Optional[str] = None) -> List[dict]:
-    """Return query logs ordered newest-first."""
+async def get_all_queries(
+    org_id: str,                           # REQUIRED — RLS enforced
+    user_email: Optional[str] = None,
+) -> List[dict]:
+    """Return query logs for an org, newest-first. org_id is mandatory."""
+    oid = _require_org_id(org_id, "get_all_queries")
     try:
-        filt = {}
+        filt: dict = {"org_id": oid}
         if user_email:
             filt["user_email"] = user_email
         cursor = async_queries.find(filt, {"embedding": 0}).sort("created_at", DESCENDING)
-        results = await cursor.to_list(length=None)
+        results = await cursor.to_list(length=1000)
         return [_normalize(r) for r in results]
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error fetching queries: {e}")
+        print(f"[DB] get_all_queries error: {e}")
         return []
 
 
@@ -99,14 +117,17 @@ async def add_query_log(
     question: str,
     answer: str,
     confidence: float,
+    org_id: str,                           # REQUIRED — RLS enforced
     retrieved_doc_id: Optional[str] = None,
     retrieved_doc_title: Optional[str] = None,
     category: Optional[str] = None,
     user_id: Optional[str] = None,
     user_email: Optional[str] = None,
     user_name: Optional[str] = None,
+    conversation_id: Optional[str] = None,
 ) -> Optional[dict]:
-    """Insert a query log record into MongoDB."""
+    """Insert a query log record. org_id is mandatory."""
+    oid = _require_org_id(org_id, "add_query_log")
     try:
         doc = {
             "_id": str(uuid.uuid4()),
@@ -119,13 +140,20 @@ async def add_query_log(
             "user_id": user_id,
             "user_email": user_email,
             "user_name": user_name,
+            "org_id": oid,
+            "conversation_id": conversation_id,
             "created_at": datetime.utcnow().isoformat(),
         }
         await async_queries.insert_one(doc)
-        print(f"✅ Query logged: '{question[:50]}' | confidence: {confidence:.2f} | doc: {retrieved_doc_title}")
+        print(
+            f"✅ Query logged: '{question[:50]}' | "
+            f"confidence: {confidence:.2f} | org: {oid}"
+        )
         return _normalize(dict(doc))
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error adding query log: {e}")
+        print(f"[DB] add_query_log error: {e}")
         return None
 
 
@@ -136,10 +164,12 @@ async def add_query_log(
 async def add_document(
     title: str,
     content: str,
+    org_id: str,                           # REQUIRED — RLS enforced
     category: Optional[str] = None,
     embedding: Optional[List[float]] = None,
 ) -> Optional[dict]:
-    """Insert a new document (with embedding) into MongoDB."""
+    """Insert a new document. org_id is mandatory."""
+    oid = _require_org_id(org_id, "add_document")
     try:
         doc = {
             "_id": str(uuid.uuid4()),
@@ -147,125 +177,159 @@ async def add_document(
             "content": content,
             "category": category,
             "embedding": embedding,
+            "org_id": oid,
             "created_at": datetime.utcnow().isoformat(),
             "updated_at": datetime.utcnow().isoformat(),
         }
         await async_documents.insert_one(doc)
         return _normalize(dict(doc), exclude_embedding=True)
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error adding document: {e}")
+        print(f"[DB] add_document error: {e}")
         return None
 
 
-async def get_all_documents() -> List[dict]:
-    """Return all documents without embeddings."""
+async def get_all_documents(org_id: str) -> List[dict]:
+    """Return all documents for an org (no embeddings). org_id is mandatory."""
+    oid = _require_org_id(org_id, "get_all_documents")
     try:
-        cursor = async_documents.find({}, {"embedding": 0}).sort("created_at", DESCENDING)
-        results = await cursor.to_list(length=None)
+        cursor = async_documents.find(
+            {"org_id": oid}, {"embedding": 0}
+        ).sort("created_at", DESCENDING)
+        results = await cursor.to_list(length=1000)
         return [_normalize(r) for r in results]
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error fetching documents: {e}")
+        print(f"[DB] get_all_documents error: {e}")
         return []
 
 
-async def get_document_by_id(doc_id: str) -> Optional[dict]:
+async def get_document_by_id(doc_id: str, org_id: str) -> Optional[dict]:
+    """Fetch a document by ID, scoped to org. org_id is mandatory."""
+    oid = _require_org_id(org_id, "get_document_by_id")
     try:
-        # Try string _id first, then ObjectId
-        doc = await async_documents.find_one({"_id": doc_id}, {"embedding": 0})
+        # Try string _id first
+        doc = await async_documents.find_one(
+            {"_id": doc_id, "org_id": oid}, {"embedding": 0}
+        )
         if not doc:
+            # Try ObjectId
             try:
-                doc = await async_documents.find_one({"_id": ObjectId(doc_id)}, {"embedding": 0})
+                doc = await async_documents.find_one(
+                    {"_id": ObjectId(doc_id), "org_id": oid}, {"embedding": 0}
+                )
             except Exception:
                 pass
         return _normalize(doc) if doc else None
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error fetching document: {e}")
+        print(f"[DB] get_document_by_id error: {e}")
         return None
 
 
-async def get_document_count() -> int:
-    """Return total document count."""
+async def get_document_count(org_id: str) -> int:
+    """Return document count scoped to org. org_id is mandatory."""
+    oid = _require_org_id(org_id, "get_document_count")
     try:
-        return await async_documents.count_documents({})
+        return await async_documents.count_documents({"org_id": oid})
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error getting document count: {e}")
+        print(f"[DB] get_document_count error: {e}")
         return 0
 
 
-async def delete_document(doc_id: str) -> bool:
+async def delete_document(doc_id: str, org_id: str) -> bool:
+    """Delete a document by ID, scoped to org. org_id is mandatory."""
+    oid = _require_org_id(org_id, "delete_document")
     try:
-        result = await async_documents.delete_one({"_id": doc_id})
+        result = await async_documents.delete_one({"_id": doc_id, "org_id": oid})
         if result.deleted_count == 0:
             try:
-                result = await async_documents.delete_one({"_id": ObjectId(doc_id)})
+                result = await async_documents.delete_one(
+                    {"_id": ObjectId(doc_id), "org_id": oid}
+                )
             except Exception:
                 pass
         return result.deleted_count > 0
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error deleting document {doc_id}: {e}")
+        print(f"[DB] delete_document {doc_id} error: {e}")
         return False
 
 
 async def update_document(
     doc_id: str,
+    org_id: str,                           # REQUIRED — RLS enforced
     title: Optional[str] = None,
     content: Optional[str] = None,
     category: Optional[str] = None,
     embedding: Optional[List[float]] = None,
 ) -> Optional[dict]:
+    """Update a document, scoped to org. org_id is mandatory."""
+    oid = _require_org_id(org_id, "update_document")
     try:
         data: dict = {"updated_at": datetime.utcnow().isoformat()}
-        if title is not None:
-            data["title"] = title
-        if content is not None:
-            data["content"] = content
-        if category is not None:
-            data["category"] = category
-        if embedding is not None:
-            data["embedding"] = embedding
+        if title is not None:     data["title"]     = title
+        if content is not None:   data["content"]   = content
+        if category is not None:  data["category"]  = category
+        if embedding is not None: data["embedding"] = embedding
 
-        # Try string _id first, then ObjectId
-        result = await async_documents.update_one({"_id": doc_id}, {"$set": data})
+        filt = {"_id": doc_id, "org_id": oid}
+        result = await async_documents.update_one(filt, {"$set": data})
         if result.matched_count == 0:
             try:
-                await async_documents.update_one({"_id": ObjectId(doc_id)}, {"$set": data})
+                filt["_id"] = ObjectId(doc_id)
+                await async_documents.update_one(filt, {"$set": data})
             except Exception:
                 pass
 
-        doc = await async_documents.find_one({"_id": doc_id}, {"embedding": 0})
+        # Re-fetch updated doc (no embedding)
+        doc = await async_documents.find_one({"_id": doc_id, "org_id": oid}, {"embedding": 0})
         if not doc:
             try:
-                doc = await async_documents.find_one({"_id": ObjectId(doc_id)}, {"embedding": 0})
+                doc = await async_documents.find_one(
+                    {"_id": ObjectId(doc_id), "org_id": oid}, {"embedding": 0}
+                )
             except Exception:
                 pass
         return _normalize(doc) if doc else None
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error updating document {doc_id}: {e}")
+        print(f"[DB] update_document {doc_id} error: {e}")
         return None
 
 
 async def search_similar_documents(
     query_embedding: List[float],
+    org_id: str,                           # REQUIRED — RLS enforced
     match_threshold: float = 0.1,
     match_count: int = 5,
 ) -> List[dict]:
     """
-    Optimized cosine-similarity search across all documents using in-memory numpy.
-    Filters documents in the database to reduce memory usage.
+    Cosine-similarity search across documents scoped to org.
+    org_id is mandatory — search will never bleed across tenants.
     """
+    oid = _require_org_id(org_id, "search_similar_documents")
     try:
-        # Fetch only documents with embeddings
         cursor = async_documents.find(
-            {"embedding": {"$exists": True}},
-            {"_id": 1, "title": 1, "content": 1, "category": 1, "embedding": 1}
+            {"embedding": {"$exists": True}, "org_id": oid},
+            {"_id": 1, "title": 1, "content": 1, "category": 1, "embedding": 1},
         )
-        all_docs = await cursor.to_list(length=None)
+        # to_list(length=None) can fail in some Motor versions; use a large limit
+        all_docs = await cursor.to_list(length=1000)
 
         if not all_docs:
+            print(f"[DB] No documents found for org_id: {oid}")
             return []
 
-        results = []
         query_vec = np.array(query_embedding, dtype=np.float64)
+        results = []
 
         for doc in all_docs:
             embedding_data = doc.get("embedding")
@@ -276,61 +340,93 @@ async def search_similar_documents(
                     continue
 
             doc_vec = np.array(embedding_data, dtype=np.float64)
-            similarity = np.dot(query_vec, doc_vec) / (np.linalg.norm(query_vec) * np.linalg.norm(doc_vec))
+            
+            # Dimension check to prevent crash if model changed
+            if query_vec.shape != doc_vec.shape:
+                print(f"[DB] Dimension mismatch: query({query_vec.shape}) vs doc({doc_vec.shape})")
+                continue
+
+            norm = np.linalg.norm(query_vec) * np.linalg.norm(doc_vec)
+            if norm == 0:
+                continue
+            similarity = float(np.dot(query_vec, doc_vec) / norm)
+            # Clip to [0.0, 1.0] to satisfy Pydantic validation (le=1.0)
+            similarity = max(0.0, min(1.0, similarity))
+
 
             if similarity >= match_threshold:
                 results.append({
-                    "id": str(doc["_id"]),
-                    "title": doc["title"],
-                    "content": doc["content"],
-                    "category": doc["category"],
+                    "id":         str(doc["_id"]),
+                    "title":      doc["title"],
+                    "content":    doc["content"],
+                    "category":   doc.get("category", "Uncategorized"),
                     "similarity": similarity,
                 })
 
-        # Sort results by similarity and return top matches
         results.sort(key=lambda x: x["similarity"], reverse=True)
         return results[:match_count]
 
+    except RuntimeError:
+        raise
     except Exception as e:
-        print(f"Error in search_similar_documents: {e}")
+        print(f"[DB] search_similar_documents error: {e}")
         return []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# USER OPERATIONS
+# USER OPERATIONS  (not tenant-scoped — users belong to Clerk orgs)
 # ─────────────────────────────────────────────────────────────────────────────
 
 async def sync_user(
     clerk_id: str,
     email: str,
     full_name: Optional[str] = None,
+    org_id:    Optional[str] = None,
 ) -> Optional[dict]:
-    """Upsert a user record into MongoDB."""
+    """
+    Sync a Clerk user with the backend database.
+    Preserves existing role and status to prevent overwrites from automated syncs.
+    """
     try:
         now = datetime.utcnow().isoformat()
+        
+        # We look for an existing record by clerk_id. 
+        # If we have an org_id context, we scope the lookup to that org.
+        filt = {"clerk_id": clerk_id}
+        if org_id:
+            filt["org_id"] = org_id
+            
+        existing = await async_users.find_one(filt)
+        
         user_doc = {
-            "clerk_id": clerk_id,
-            "email": email,
+            "clerk_id":  clerk_id,
+            "email":     email,
             "full_name": full_name,
             "updated_at": now,
         }
         
-        # Check if user exists
-        existing = await async_users.find_one({"clerk_id": clerk_id})
-        
+        if org_id:
+            user_doc["org_id"] = org_id
+
         if existing:
-            await async_users.update_one(
-                {"clerk_id": clerk_id},
-                {"$set": user_doc}
-            )
+            # Atomic update: only set the basic profile fields. 
+            # We explicitly do NOT overwrite role/status unless they are missing.
+            update_data = {"$set": user_doc}
+            
+            # If for some reason role/status is missing in DB but available from Clerk (future), 
+            # we could add $setOnInsert or similar logic, but for now we just maintain stability.
+            await async_users.update_one({"_id": existing["_id"]}, update_data)
             user_doc = {**existing, **user_doc}
         else:
-            user_doc["_id"] = str(uuid.uuid4())
+            # New user entry
+            user_doc["_id"]        = str(uuid.uuid4())
             user_doc["created_at"] = now
+            user_doc.setdefault("role", "viewer")   # Default for untagged syncs
+            user_doc.setdefault("status", "pending") # Default to pending until approved
             await async_users.insert_one(user_doc)
-            
-        print(f"✅ User synced: {email} ({clerk_id})")
+
+        print(f"✅ User synced: {email} ({clerk_id}) | Org: {org_id or 'none'}")
         return _normalize(user_doc)
     except Exception as e:
-        print(f"Error syncing user {clerk_id}: {e}")
+        print(f"[DB] sync_user {clerk_id} error: {e}")
         return None

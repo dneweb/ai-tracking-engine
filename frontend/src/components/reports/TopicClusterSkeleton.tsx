@@ -12,7 +12,7 @@ export default function TopicClusterSkeleton() {
                     <div className="h-4 w-32 bg-[var(--bg-primary)] rounded-lg"></div>
                     <div className="flex items-center gap-3">
                         <div className="h-3 w-20 bg-[var(--bg-primary)] rounded-lg"></div>
-                        <div className="flex-1 h-3 bg-[var(--bg-primary)]/50 rounded-full max-w-[200px]"></div>
+                        <div className="flex-1 h-3 bg-[var(--bg-primary)]/50 rounded-full max-w-[clamp(10.0rem,20.0vw,12.5rem)]"></div>
                     </div>
                 </div>
                 <div className="flex gap-2">

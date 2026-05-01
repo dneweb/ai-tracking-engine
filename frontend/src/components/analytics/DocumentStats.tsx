@@ -5,6 +5,7 @@ import { BarChart3, AlertCircle, ShieldAlert, Zap, ArrowRight, Activity, FileTex
 import { getDocumentUsage, getDocumentConfidence } from "@/lib/api";
 import type { DocumentUsageItem, DocumentConfidenceItem } from "@/lib/api";
 import { useAuth } from "@clerk/nextjs";
+import { useCurrentMember } from "@/hooks/useCurrentMember";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 export default function DocumentStats() {
     const { getToken } = useAuth();
+    const { member } = useCurrentMember();
     const [mostUsed, setMostUsed] = useState<DocumentUsageItem[]>([]);
     const [lowConfidence, setLowConfidence] = useState<DocumentConfidenceItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -20,9 +22,10 @@ export default function DocumentStats() {
         async function load() {
             try {
                 const token = await getToken();
+                const orgId = member?.org_id ?? "";
                 const [usage, confidence] = await Promise.all([
-                    getDocumentUsage(token || undefined),
-                    getDocumentConfidence(token || undefined),
+                    getDocumentUsage(token || undefined, orgId),
+                    getDocumentConfidence(token || undefined, orgId),
                 ]);
                 setMostUsed(usage.most_used || []);
                 setLowConfidence(confidence.low_confidence || []);
@@ -32,8 +35,10 @@ export default function DocumentStats() {
                 setLoading(false);
             }
         }
-        load();
-    }, [getToken]);
+        if (member) {
+            load();
+        }
+    }, [getToken, member]);
 
     const maxUsage = Math.max(...mostUsed.map((d) => d.count), 1);
 
@@ -41,7 +46,7 @@ export default function DocumentStats() {
         return (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {[0, 1].map((i) => (
-                    <Card key={i} variant="surface" className="h-[300px] animate-pulse">
+                    <Card key={i} variant="surface" className="h-[clamp(15.0rem,30.0vw,18.75rem)] animate-pulse">
                         <div className="h-4 w-40 bg-elevated rounded mb-6" />
                         <div className="space-y-4">
                             {[0, 1, 2, 3].map((j) => (
@@ -63,11 +68,11 @@ export default function DocumentStats() {
                         <div className="p-2 bg-accent-primary/10 rounded-xl border border-accent-primary/20">
                             <Activity className="w-4 h-4 text-accent-primary" />
                         </div>
-                        <h3 className="text-[11px] font-label font-bold text-primary uppercase tracking-[0.2em]">
+                        <h3 className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-label font-bold text-primary uppercase tracking-[0.2em]">
                             High Intensity Assets
                         </h3>
                    </div>
-                   <Badge variant="subtle" className="text-[9px] uppercase tracking-widest px-2">Top 5 Clusters</Badge>
+                   <Badge variant="soft" className="text-[clamp(0.45rem,0.9vw,0.5625rem)] uppercase tracking-widest px-2">Top 5 Clusters</Badge>
                 </div>
                 
                 <div className="space-y-6">
@@ -80,8 +85,8 @@ export default function DocumentStats() {
                                 key={doc.name} 
                                 className="space-y-2 group"
                             >
-                                <div className="flex items-center justify-between text-[11px] font-label font-bold uppercase tracking-wider">
-                                    <div className="flex items-center gap-2 max-w-[240px]">
+                                <div className="flex items-center justify-between text-[clamp(0.55rem,1.1vw,0.6875rem)] font-label font-bold uppercase tracking-wider">
+                                    <div className="flex items-center gap-2 max-w-[clamp(12.0rem,24.0vw,15.0rem)]">
                                         <FileText className="w-3.5 h-3.5 text-tertiary group-hover:text-accent-primary transition-colors" />
                                         <span className="text-secondary group-hover:text-primary truncate" title={doc.name}>{doc.name}</span>
                                     </div>
@@ -98,7 +103,7 @@ export default function DocumentStats() {
                             </motion.div>
                         ))
                     ) : (
-                        <div className="py-20 text-center text-tertiary font-label text-[10px] uppercase tracking-widest">
+                        <div className="py-20 text-center text-tertiary font-label text-[clamp(0.5rem,1.0vw,0.625rem)] uppercase tracking-widest">
                             No Asset Intensity Data
                         </div>
                     )}
@@ -112,11 +117,11 @@ export default function DocumentStats() {
                         <div className="p-2 bg-accent-danger/10 rounded-xl border border-accent-danger/20">
                             <ShieldAlert className="w-4 h-4 text-accent-danger" />
                         </div>
-                        <h3 className="text-[11px] font-label font-bold text-primary uppercase tracking-[0.2em]">
+                        <h3 className="text-[clamp(0.55rem,1.1vw,0.6875rem)] font-label font-bold text-primary uppercase tracking-[0.2em]">
                             System Integrity Risks
                         </h3>
                    </div>
-                   <Badge variant="subtle" className="bg-accent-danger/10 text-accent-danger border-accent-danger/20 text-[9px] uppercase tracking-widest px-2">Critical Delta</Badge>
+                   <Badge variant="soft" className="bg-accent-danger/10 text-accent-danger border-accent-danger/20 text-[clamp(0.45rem,0.9vw,0.5625rem)] uppercase tracking-widest px-2">Critical Delta</Badge>
                 </div>
 
                 <div className="space-y-3">
@@ -134,19 +139,19 @@ export default function DocumentStats() {
                                     <div className="min-w-0 flex-1 mr-6">
                                         <div className="flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-accent-danger shadow-[0_0_6px_var(--glow-danger)]" />
-                                            <p className="text-[13px] font-bold text-primary truncate group-hover:text-accent-danger transition-colors" title={doc.name}>
+                                            <p className="text-[clamp(0.65rem,1.3vw,0.8125rem)] font-bold text-primary truncate group-hover:text-accent-danger transition-colors" title={doc.name}>
                                                 {doc.name}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-4 mt-1.5">
-                                            <span className="text-[9px] font-label font-bold text-tertiary uppercase tracking-wider">{doc.query_count} Interactions</span>
+                                            <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-label font-bold text-tertiary uppercase tracking-wider">{doc.query_count} Interactions</span>
                                             <span className="text-tertiary/20 text-xs">|</span>
-                                            <span className="text-[9px] font-label font-bold text-accent-danger uppercase tracking-wider">Scoring Refinement Suggested</span>
+                                            <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-label font-bold text-accent-danger uppercase tracking-wider">Scoring Refinement Suggested</span>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
                                         <span className="text-lg font-label font-bold text-primary tabular-nums">{pct}%</span>
-                                        <span className="text-[8px] font-label font-bold text-tertiary uppercase tracking-widest">Accuracy</span>
+                                        <span className="text-[clamp(0.4rem,0.8vw,0.5rem)] font-label font-bold text-tertiary uppercase tracking-widest">Accuracy</span>
                                     </div>
                                 </motion.div>
                             );
@@ -156,7 +161,7 @@ export default function DocumentStats() {
                             <div className="inline-flex items-center justify-center w-12 h-12 bg-accent-secondary/10 rounded-xl border border-accent-secondary/20 mb-4">
                                 <Zap className="w-6 h-6 text-accent-secondary" />
                             </div>
-                            <p className="text-tertiary font-label text-[10px] uppercase tracking-widest">Neural Stability Maximized</p>
+                            <p className="text-tertiary font-label text-[clamp(0.5rem,1.0vw,0.625rem)] uppercase tracking-widest">Neural Stability Maximized</p>
                         </div>
                     )}
                 </div>

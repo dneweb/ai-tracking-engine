@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/context/ToastContext";
+import { useToast, ToastType, Toast } from "@/context/ToastContext";
 import { CheckCircle2, AlertCircle, X, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,9 +19,15 @@ export default function ToastContainer() {
     );
 }
 
-function ToastItem({ toast, onRemove }: { toast: { id: string, type: 'success'|'error', message: string }, onRemove: () => void }) {
-    const isSuccess = toast.type === "success";
-    const color = isSuccess ? "var(--success)" : "var(--danger)";
+function ToastItem({ toast, onRemove }: { toast: Toast, onRemove: () => void }) {
+    const config: Record<ToastType, { color: string, icon: any, label: string }> = {
+        success: { color: "var(--success)", icon: CheckCircle2, label: "Neural Sync Complete" },
+        error:   { color: "var(--danger)",  icon: AlertCircle,  label: "System Error Encountered" },
+        info:    { color: "var(--brand)",   icon: Info,         label: "Intelligence Update" },
+        warning: { color: "var(--warning)", icon: AlertCircle,  label: "Heuristic Caution" },
+    };
+
+    const { color, icon: Icon, label } = config[toast.type];
 
     return (
         <motion.div
@@ -34,7 +40,7 @@ function ToastItem({ toast, onRemove }: { toast: { id: string, type: 'success'|'
         >
             <div 
                 className={cn(
-                    "flex flex-col rounded-[24px] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] overflow-hidden transition-all duration-300",
+                    "flex flex-col rounded-[1.5rem] bg-[var(--card-bg)] border border-[var(--border-subtle)] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] overflow-hidden transition-all duration-300",
                     "hover:shadow-[0_30px_60px_-12px_rgba(0,0,0,0.25)] hover:border-[var(--brand-glow)]"
                 )}
             >
@@ -53,14 +59,14 @@ function ToastItem({ toast, onRemove }: { toast: { id: string, type: 'success'|'
                             color: color 
                         }}
                     >
-                        {isSuccess ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                        <Icon className="w-6 h-6" />
                     </div>
 
                     <div className="flex flex-col gap-0.5 flex-grow min-w-0 pr-2">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-60">
-                            {isSuccess ? "Neural Sync Complete" : "System Error Encountered"}
+                        <span className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-60">
+                            {label}
                         </span>
-                        <p className="text-[14px] font-semibold text-[var(--text-primary)] leading-relaxed truncate">
+                        <p className="text-[clamp(0.7rem,1.4vw,0.875rem)] font-semibold text-[var(--text-primary)] leading-relaxed truncate">
                             {toast.message}
                         </p>
                     </div>
@@ -74,7 +80,7 @@ function ToastItem({ toast, onRemove }: { toast: { id: string, type: 'success'|'
                 </div>
                 
                 {/* Progress Bar with cinematic feel */}
-                <div className="h-[3px] w-full bg-[var(--bg-secondary)]">
+                <div className="h-[0.1875rem] w-full bg-[var(--bg-secondary)]">
                     <motion.div 
                         initial={{ width: "100%" }}
                         animate={{ width: "0%" }}

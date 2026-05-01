@@ -165,7 +165,7 @@ export default function ExportButton({ queries, documents }: ExportButtonProps) 
         <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setOpen(!open)}
-                className="inline-flex items-center gap-2 px-6 py-2.5 font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95 text-[11px]"
+                className="inline-flex items-center gap-2 px-6 py-2.5 font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-95 text-[clamp(0.55rem,1.1vw,0.6875rem)]"
                 style={{
                     background: "var(--accent-primary)",
                     color: "var(--bg-base)",

@@ -50,17 +50,17 @@ export default function ReportFilters({
             {/* Time Period */}
             <div className="space-y-4 group">
                 <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                    <label className="flex items-center gap-2.5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
                         <Calendar className="w-3.5 h-3.5 text-[var(--brand)]" />
                         Temporal Window
                     </label>
-                    <span className="text-[9px] font-bold text-[var(--brand)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Configured</span>
+                    <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold text-[var(--brand)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Configured</span>
                 </div>
                 <div className="relative">
                     <select
                         value={days}
                         onChange={(e) => onDaysChange(Number(e.target.value))}
-                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] px-6 py-5 text-sm font-bold text-[var(--text-primary)] appearance-none focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all uppercase tracking-widest cursor-pointer"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[1.25rem] px-6 py-5 text-sm font-bold text-[var(--text-primary)] appearance-none focus:outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[var(--brand-soft)] transition-all uppercase tracking-widest cursor-pointer"
                     >
                         {TIME_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value} className="bg-[var(--card-bg)] text-[var(--text-primary)] py-4 font-bold">
@@ -75,11 +75,11 @@ export default function ReportFilters({
             {/* Confidence Threshold */}
             <div className="space-y-4 group">
                 <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                    <label className="flex items-center gap-2.5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
                         <Target className="w-3.5 h-3.5 text-[var(--warning)]" />
                         Precision Limit (%)
                     </label>
-                    <span className="text-[9px] font-bold text-[var(--warning)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Dynamic</span>
+                    <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold text-[var(--warning)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Dynamic</span>
                 </div>
                 <div className="relative">
                     <input
@@ -104,10 +104,10 @@ export default function ReportFilters({
                                 onThresholdChange(0);
                             }
                         }}
-                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--warning)] focus:ring-4 focus:ring-[var(--warning-soft)] transition-all tabular-nums"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[1.25rem] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--warning)] focus:ring-4 focus:ring-[var(--warning-soft)] transition-all tabular-nums"
                     />
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)]/40 uppercase">Match</span>
+                        <span className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)]/40 uppercase">Match</span>
                         <Zap className="w-3.5 h-3.5 text-[var(--warning)] opacity-40" />
                     </div>
                 </div>
@@ -116,11 +116,11 @@ export default function ReportFilters({
             {/* Min Cluster Size */}
             <div className="space-y-4 group">
                 <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2.5 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
+                    <label className="flex items-center gap-2.5 text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] pl-1">
                         <Layers className="w-3.5 h-3.5 text-[var(--success)]" />
                         Recurrence Min
                     </label>
-                    <span className="text-[9px] font-bold text-[var(--success)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Sensitivity</span>
+                    <span className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold text-[var(--success)] opacity-0 group-hover:opacity-100 transition-opacity uppercase">Sensitivity</span>
                 </div>
                 <div className="relative">
                     <input
@@ -149,10 +149,10 @@ export default function ReportFilters({
                                 onMinClusterSizeChange(1);
                             }
                         }}
-                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[20px] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--success)] focus:ring-4 focus:ring-[var(--success-soft)] transition-all tabular-nums"
+                        className="w-full bg-[var(--input-bg)] border border-[var(--border-subtle)] rounded-[1.25rem] pl-6 pr-16 py-5 text-sm font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--success)] focus:ring-4 focus:ring-[var(--success-soft)] transition-all tabular-nums"
                     />
                     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                        <span className="text-[10px] font-bold text-[var(--text-muted)]/40 uppercase">Hits</span>
+                        <span className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-bold text-[var(--text-muted)]/40 uppercase">Hits</span>
                         <Shield className="w-3.5 h-3.5 text-[var(--success)] opacity-40" />
                     </div>
                 </div>

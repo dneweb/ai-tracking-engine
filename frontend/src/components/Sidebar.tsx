@@ -15,6 +15,8 @@ import {
   BarChart3,
   ChevronRight,
   Zap,
+  Users,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +29,7 @@ const adminLinks = [
   { href: "/documents", label: "Knowledge Assets", icon: FileText,  desc: "Manage the vector base" },
   { href: "/analytics", label: "System Metrics",     icon: PieChart,  desc: "Performance analytics" },
   { href: "/reports",   label: "Insights & SOPs",     icon: BarChart3, desc: "SOP deficiency analysis" },
+  { href: "/dashboard/members", label: "Members & Teams", icon: Users, desc: "Manage team access" },
 ];
 
 interface SidebarProps {
@@ -35,11 +38,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarProps) {
-  const { signOut } = useClerk();
+  const { signOut, openUserProfile } = useClerk();
   const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const { isAdmin, isLoaded } = useRole();
+  const { isAdmin, isOwner, roleLabel, isLoaded } = useRole();
 
   const handleSignOut = async () => {
     await signOut();
@@ -55,34 +58,44 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
     <>
       <aside
         className={cn(
-          "sidebar",
+          "sidebar bg-[var(--surface-1)]/90 backdrop-blur-3xl !border-r-[var(--border-subtle)] shadow-[4px_0_24px_rgba(0,0,0,0.02)]",
           mobileOpen && "open"
         )}
       >
-        {/* Logo */}
-        <div className="sidebar-header h-[56px] min-h-[56px] flex items-center px-4 flex-shrink-0">
-          <Link href="/" className="flex items-center gap-3 group min-w-0" onClick={onMobileClose}>
+        {/* Logo Section */}
+        <div className="sidebar-header h-[clamp(4.2rem,8.4vw,5.25rem)] min-h-[clamp(4.2rem,8.4vw,5.25rem)] flex items-center px-6 max-lg:px-0 max-md:px-6 max-lg:justify-center max-md:justify-between flex-shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-2)]/30">
+          <Link href="/" className="flex items-center gap-4 max-lg:gap-0 max-md:gap-4 group min-w-0" onClick={onMobileClose}>
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-lg bg-[var(--brand)]"
+              className="w-11 h-11 max-lg:w-10 max-lg:h-10 max-md:w-11 max-md:h-11 rounded-[0.875rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--persian-green-600)] ring-1 ring-white/20 group-hover:scale-105 active:scale-[0.97] transition-transform"
             >
-              <Activity className="w-4 h-4 text-white relative z-10" />
+              <Activity className="w-6 h-6 text-white relative z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
-            <div className="brand-name min-w-0 leading-none">
-              <div className="text-[15px] font-display font-normal tracking-tight text-[var(--text-primary)]">
-                Nexus <span className="text-[var(--brand)]">AI</span>
+            <div className="brand-name min-w-0 flex flex-col max-lg:hidden max-md:flex">
+              <div className="text-[clamp(0.9rem,1.8vw,1.125rem)] font-bold tracking-tighter text-[var(--text-primary)] leading-none">
+                Nexus <span className="brand-gradient-text">AI.</span>
               </div>
-              <div className="label-caps mt-0.5 !text-[10px]">
+              <div className="label-caps mt-1.5 !text-[clamp(0.45rem,0.9vw,0.5625rem)] !tracking-[0.2em] opacity-60">
                 Neural Platform
               </div>
             </div>
           </Link>
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={onMobileClose}
+            className="hidden max-md:flex w-10 h-10 items-center justify-center rounded-xl bg-[var(--surface-3)]/50 border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--brand)] transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 py-5 px-3 space-y-6 overflow-y-auto scrollbar-hide pt-6">
+        <div className="flex-1 py-5 px-3 max-lg:px-2 max-md:px-3 space-y-6 max-lg:space-y-4 max-md:space-y-6 overflow-y-auto scrollbar-hide pt-6">
           {/* Core Section */}
-          <div className="space-y-0.5">
-            <div className="section-label label-caps px-2.5 mb-3 !text-[10px]">Neural Access</div>
+          <div className="space-y-0.5 max-lg:flex max-lg:flex-col max-lg:items-center max-md:block">
+            <div className="section-label label-caps px-2.5 mb-3 !text-[clamp(0.5rem,1.0vw,0.625rem)] max-lg:hidden max-md:block">Neural Access</div>
             {mainLinks.map((link) => (
               <SidebarLink
                 key={link.href}
@@ -95,8 +108,8 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
 
           {/* Administrator Section */}
           {isAdmin && (
-            <div className="space-y-0.5 pt-2">
-              <div className="section-label label-caps px-2.5 mb-3 !text-[10px]">Command & Control</div>
+            <div className="space-y-0.5 pt-2 max-lg:flex max-lg:flex-col max-lg:items-center max-md:block">
+              <div className="section-label label-caps px-2.5 mb-3 !text-[clamp(0.5rem,1.0vw,0.625rem)] max-lg:hidden max-md:block">Command & Control</div>
               {adminLinks.map((link) => (
                 <SidebarLink
                   key={link.href}
@@ -109,58 +122,65 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
           )}
         </div>
 
-        {/* Footer */}
-        <div className="sidebar-footer p-4 space-y-4 flex-shrink-0 border-t border-[var(--border-subtle)] bg-[var(--bg-primary)]">
-          {/* Status Badge */}
-          <div className="rounded-xl p-3 flex items-center justify-between gap-3 bg-[var(--brand-soft)] border border-[var(--brand-glow)] hover:border-[var(--brand)] transition-all group/status cursor-default">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-2 h-2 rounded-full bg-[var(--brand)] animate-pulse-dot shadow-[0_0_8px_var(--brand)] flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="label-caps !text-[9px] text-[var(--brand)] !tracking-[0.18em] truncate">
-                  Nexus Active
+        {/* Footer Area */}
+        <div className="sidebar-footer p-5 max-lg:p-3 max-md:p-5 space-y-5 max-lg:space-y-3 max-md:space-y-5 flex-shrink-0 border-t border-[var(--border-subtle)] bg-[var(--surface-2)]/40 backdrop-blur-xl max-lg:flex max-lg:flex-col max-lg:items-center max-md:block">
+          {/* Status Monitor */}
+          <div className="rounded-[1.25rem] p-4 max-lg:p-3 max-md:p-4 flex items-center justify-between gap-4 max-lg:justify-center max-md:justify-between bg-[var(--brand-soft)] border border-[var(--brand-glow)] hover:border-[var(--brand)] transition-all group/status cursor-pointer">
+            <div className="flex items-center gap-3 max-lg:gap-0 max-md:gap-3 min-w-0">
+              <div className="relative">
+                <div className="w-2.5 h-2.5 rounded-full bg-[var(--brand)] animate-pulse shadow-[0_0_12px_var(--brand)]" />
+                <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-[var(--brand)] animate-ping" />
+              </div>
+              <div className="flex flex-col min-w-0 sidebar-footer-status-text max-lg:hidden max-md:flex">
+                <div className="label-caps !text-[clamp(0.5rem,1.0vw,0.625rem)] text-[var(--brand)] !tracking-[0.15em] font-extrabold truncate">
+                  Nexus Online
                 </div>
-                <div className="label-caps !text-[8.5px] text-[var(--text-muted)] tracking-[0.1em] normal-case mt-0.5 truncate">
-                  v1.2.4 · Encrypted
+                <div className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold text-[var(--text-muted)] tracking-tight mt-0.5 truncate uppercase">
+                  Encrypted · v1.2.4
                 </div>
               </div>
             </div>
-            <Zap className="w-3.5 h-3.5 text-[var(--brand)] opacity-40 group-hover/status:opacity-100 transition-opacity" />
+            <Zap className="w-4 h-4 max-lg:hidden max-md:block text-[var(--brand)] opacity-40 group-hover/status:opacity-100 transition-opacity" />
           </div>
 
-          {/* User Card + Logout */}
-          <div className="flex flex-col gap-2">
-            <div
-              className="flex items-center gap-3 p-2 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] shadow-sm hover:border-[var(--border-strong)] transition-all"
+          {/* User & Session Control */}
+          <div className="flex flex-col gap-3 max-lg:gap-2 max-md:gap-3 max-lg:items-center max-md:items-stretch w-full">
+            <button
+              onClick={() => openUserProfile()}
+              className="flex items-center gap-4 max-lg:gap-0 max-md:gap-4 p-3 max-lg:p-2 max-md:p-3 max-lg:justify-center max-md:justify-start rounded-[1.375rem] max-lg:rounded-xl max-md:rounded-[1.375rem] bg-[var(--surface-1)] border border-[var(--border-subtle)] shadow-sm hover:shadow-md hover:border-[var(--brand)] transition-all duration-500 w-full text-left group overflow-hidden tablet-rail-center"
             >
-              <div
-                className="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-bold text-white shadow-md bg-[var(--brand)]"
-              >
-                {user?.firstName?.[0] || user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "U"}
+              <div className="relative flex-shrink-0">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[var(--brand)] to-[var(--persian-green-600)] rounded-[1.0rem] opacity-0 group-hover:opacity-20 blur-md transition-all" />
+                <div
+                  className="relative w-10 h-10 max-lg:w-9 max-lg:h-9 max-md:w-10 max-md:h-10 rounded-[0.875rem] flex-shrink-0 flex items-center justify-center text-[clamp(0.75rem,1.5vw,0.9375rem)] font-bold text-white shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--persian-green-600)] ring-2 ring-white/10 group-hover:scale-105 transition-transform"
+                >
+                  {user?.imageUrl ? (
+                    <img src={user.imageUrl} alt="" className="w-full h-full object-cover rounded-[0.875rem]" />
+                  ) : (
+                    user?.firstName?.[0] || user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "U"
+                  )}
+                </div>
               </div>
-              <div className="neural-mode-text flex-1 min-w-0">
-                <div className="text-[13px] font-semibold text-[var(--text-primary)] truncate">
+              <div className="neural-mode-text flex-1 min-w-0 max-lg:hidden max-md:block">
+                <div className="text-[clamp(0.7rem,1.4vw,0.875rem)] font-bold text-[var(--text-primary)] truncate leading-tight group-hover:text-[var(--brand)] transition-colors">
                   {user?.fullName || "User Instance"}
                 </div>
-                <div className="label-caps !text-[9px] mt-0.5 text-[var(--text-muted)]">
-                  {isAdmin ? "Administrator" : "System User"}
+                <div className="label-caps !text-[clamp(0.45rem,0.9vw,0.5625rem)] mt-1 text-[var(--brand)] font-extrabold tracking-widest">
+                  {roleLabel}
                 </div>
               </div>
-            </div>
+            </button>
 
-            {/* Persistent Terminate Session Action */}
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all border border-transparent text-[var(--danger)] hover:bg-[var(--danger-soft)] hover:border-[var(--danger-ring)] group/logout"
+              className="flex items-center justify-center gap-3 max-lg:gap-0 max-md:gap-3 w-full px-5 py-3 max-lg:p-3 max-md:px-5 max-md:py-3 text-[clamp(0.55rem,1.1vw,0.6875rem)] font-extrabold uppercase tracking-[0.2em] rounded-xl transition-all border border-transparent text-[var(--danger)] hover:bg-[var(--danger-soft)] hover:border-[var(--danger-ring)] group/logout active:scale-[0.97]"
             >
-              <LogOut className="w-3.5 h-3.5 group-hover/logout:-translate-x-0.5 transition-transform" />
-              Terminate Session
+              <LogOut className="w-4 h-4 group-hover/logout:-translate-x-1 transition-transform flex-shrink-0" />
+              <span className="collapse-btn-text max-lg:hidden">Disconnect</span>
             </button>
           </div>
         </div>
       </aside>
-
-      {/* Mobile Sidebar Overlay */}
-      <div className="sidebar-overlay" onClick={onMobileClose} />
     </>
   );
 }
@@ -171,35 +191,36 @@ function SidebarLink({ href, label, icon: Icon, active, onClick }: any) {
       href={href}
       onClick={onClick}
       className={cn(
-        "nav-item flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-[13px] font-medium transition-all group relative overflow-hidden",
+        "nav-item flex items-center gap-4 max-lg:gap-0 max-md:gap-4 px-4 py-3.5 max-lg:px-0 max-lg:justify-center max-md:px-4 max-md:justify-start max-lg:w-12 max-lg:h-12 max-md:w-full max-md:h-auto rounded-2xl text-[clamp(0.7rem,1.4vw,0.875rem)] font-bold transition-all duration-500 group relative overflow-hidden active:scale-[0.97]",
         active 
-          ? "bg-[var(--sidebar-item-active-bg)] text-[var(--sidebar-item-active-text)] border border-[var(--sidebar-border)]" 
-          : "text-[var(--text-secondary)] hover:bg-[var(--sidebar-item-hover)]"
+          ? "bg-[var(--surface-1)] text-[var(--brand)] border border-[var(--border-subtle)] shadow-[0_8px_32px_rgba(0,0,0,0.04)]" 
+          : "text-[var(--text-secondary)] hover:bg-[var(--brand-soft)] hover:text-[var(--brand)]"
       )}
     >
-      {/* Active glow bar */}
+      {/* Active glow effect */}
       {active && (
         <motion.div
-          layoutId="sidebar-active-bar"
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-[var(--brand)]"
+          layoutId="sidebar-active-glow"
+          transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
+          className="absolute inset-0 bg-gradient-to-r from-[var(--brand-soft)] to-transparent pointer-events-none"
         />
       )}
 
       <Icon
         className={cn(
-          "w-4 h-4 flex-shrink-0 transition-transform group-hover:scale-105",
+          "w-4 h-4 max-lg:w-5 max-lg:h-5 max-md:w-4 max-md:h-4 flex-shrink-0 transition-transform group-hover:scale-105",
           active ? "text-[var(--brand)]" : "text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]"
         )}
       />
 
       <span
-        className="nav-label flex-1 font-body text-[13px] whitespace-nowrap"
+        className="nav-label flex-1 font-body text-[clamp(0.65rem,1.3vw,0.8125rem)] whitespace-nowrap max-lg:hidden max-md:block"
       >
         {label}
       </span>
 
       {!active && (
-        <ChevronRight className="nav-label w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-30 group-hover:translate-x-0 transition-all" />
+        <ChevronRight className="nav-label w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-30 group-hover:translate-x-0 transition-all max-lg:hidden max-md:block" />
       )}
     </Link>
   );

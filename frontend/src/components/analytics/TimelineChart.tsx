@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, Minus, Zap, Activity } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+import { useCurrentMember } from "@/hooks/useCurrentMember";
 import { getTimelineData } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
@@ -44,7 +45,7 @@ function CustomTooltip({ active, payload, label }: any) {
     const count = payload[0].value ?? 0;
     return (
         <div className="glass border border-strong rounded-xl px-4 py-3 shadow-2xl backdrop-blur-xl">
-            <p className="text-[10px] font-label font-bold text-tertiary uppercase tracking-widest mb-1">{label} · SESSION</p>
+            <p className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold text-tertiary uppercase tracking-widest mb-1">{label} · SESSION</p>
             <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-accent-primary" />
                 <p className="text-sm font-bold text-primary">
@@ -59,6 +60,7 @@ const GRADIENT_ID = "neuralTimelineGradient";
 
 export default function TimelineChart() {
     const { getToken } = useAuth();
+    const { member } = useCurrentMember();
     const [timelineData, setTimelineData] = useState<TimelineEntry[]>([]);
     const [selectedPeriod, setSelectedPeriod] = useState<Period>("30");
     const [totalPeriod, setTotalPeriod] = useState(0);
@@ -69,7 +71,8 @@ export default function TimelineChart() {
         setLoading(true);
         try {
             const token = await getToken();
-            const data: TimelineResponse = await getTimelineData(days, token || undefined);
+            const orgId = member?.org_id ?? "";
+            const data: TimelineResponse = await getTimelineData(days, token || undefined, orgId);
             const formatted: TimelineEntry[] = data.timeline.map((entry) => ({
                 date: entry.date,
                 label: formatDate(entry.date),
@@ -83,11 +86,13 @@ export default function TimelineChart() {
         } finally {
             setLoading(false);
         }
-    }, [getToken]);
+    }, [getToken, member]);
 
     useEffect(() => {
-        fetchTimeline(selectedPeriod);
-    }, [selectedPeriod, fetchTimeline]);
+        if (member) {
+            fetchTimeline(selectedPeriod);
+        }
+    }, [selectedPeriod, fetchTimeline, member]);
 
     return (
         <div className="h-full flex flex-col pt-4">
@@ -95,11 +100,11 @@ export default function TimelineChart() {
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-6">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-label font-bold text-tertiary tracking-widest uppercase">Periodic Throughput</span>
+                        <span className="text-[clamp(0.5rem,1.0vw,0.625rem)] font-label font-bold text-tertiary tracking-widest uppercase">Periodic Throughput</span>
                         <div className="flex items-center gap-2 mt-1">
                             <span className="text-2xl font-label font-bold text-primary">{totalPeriod.toLocaleString()}</span>
                             <div className={cn(
-                                "flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md border",
+                                "flex items-center gap-1 text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold px-2 py-0.5 rounded-md border",
                                 trend >= 0 ? "text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20" : "text-accent-danger bg-accent-danger/10 border-accent-danger/20"
                             )}>
                                 {trend >= 0 ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
@@ -115,7 +120,7 @@ export default function TimelineChart() {
                             key={p}
                             onClick={() => setSelectedPeriod(p)}
                             className={cn(
-                                "h-full px-4 text-[9px] font-label font-bold uppercase tracking-widest rounded-lg transition-all",
+                                "h-full px-4 text-[clamp(0.45rem,0.9vw,0.5625rem)] font-label font-bold uppercase tracking-widest rounded-lg transition-all",
                                 selectedPeriod === p ? "bg-accent-primary text-white shadow-lg" : "text-tertiary hover:text-primary"
                             )}
                         >
@@ -133,7 +138,7 @@ export default function TimelineChart() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 flex items-center justify-center bg-base/50 z-10 backdrop-blur-[2px]"
+                            className="absolute inset-0 flex items-center justify-center bg-base/50 z-10 backdrop-blur-[0.125rem]"
                         >
                             <Loader2 className="w-8 h-8 text-accent-primary animate-spin" />
                         </motion.div>

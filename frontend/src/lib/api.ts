@@ -1,12 +1,15 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "/backend-api";
 
-function getHeaders(token?: string) {
+function getHeaders(token?: string, orgId?: string) {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (orgId) {
+        headers['X-Org-ID'] = orgId;
     }
     return headers;
 }
@@ -51,6 +54,7 @@ export interface QuestionResponse {
     // 0..100
     confidence: number;
     sources: Array<{ title: string; category: string; match: number }>;
+    conversation_id?: string;
 }
 
 export interface Query {
@@ -99,22 +103,25 @@ export async function askQuestion(
     question: string,
     top_k: number = 3,
     user?: UserContext,
-    token?: string
+    token?: string,
+    orgId?: string,
+    conversationId?: string,
 ): Promise<QuestionResponse> {
     const res = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
         body: JSON.stringify({
             question,
             top_k,
             user_id: user?.id,
             user_email: user?.email,
             user_name: user?.name,
+            conversation_id: conversationId ?? null,
         }),
     });
     if (!res.ok) throw new Error('Failed to ask question');
 
-    const raw = (await res.json()) as ApiQuestionResponse;
+    const raw = (await res.json()) as ApiQuestionResponse & { conversation_id?: string };
     console.log("[API] askQuestion raw response:", raw);
     return {
         answer: raw.answer,
@@ -124,14 +131,21 @@ export async function askQuestion(
             category: (s.category ?? "Unknown") as string,
             match: normalizeMatch01(s.match ?? s.similarity),
         })),
+        conversation_id: raw.conversation_id ?? undefined,
     };
 }
 
-export async function getQueries(userEmail?: string, token?: string): Promise<Query[]> {
+export async function getQueries(token: string, orgId: string, userEmail?: string): Promise<Query[]> {
     const url = userEmail
         ? `${API_BASE_URL}/queries?user_email=${encodeURIComponent(userEmail)}`
         : `${API_BASE_URL}/queries`;
-    const res = await fetch(url, { headers: getHeaders(token) });
+    const res = await fetch(url, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-Org-ID': orgId,
+            'Content-Type': 'application/json',
+        }
+    });
     if (!res.ok) throw new Error('Failed to fetch queries');
     const data = await res.json();
     console.log("[API] getQueries raw response:", data);
@@ -150,8 +164,14 @@ export async function getQueries(userEmail?: string, token?: string): Promise<Qu
     }));
 }
 
-export async function getDocuments(token?: string): Promise<Document[]> {
-    const res = await fetch(`${API_BASE_URL}/documents`, { headers: getHeaders(token) });
+export async function getDocuments(token: string, orgId: string): Promise<Document[]> {
+    const res = await fetch(`${API_BASE_URL}/documents`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'X-Org-ID': orgId,
+            'Content-Type': 'application/json',
+        }
+    });
     if (!res.ok) throw new Error('Failed to fetch documents');
     const data = await res.json();
     console.log("[API] getDocuments raw response:", data);
@@ -207,7 +227,7 @@ export interface TopicCluster {
             action: string;
             confidence: number;
         };
-        auto_sop_rewrite: string;
+        auto_sop_rewrite: string | Record<string, any>;
     };
 }
 
@@ -289,11 +309,11 @@ export async function analyzeTopicWithAI(payload: {
     samples: string[];
     question_count: number;
     related_documents: string[];
-}, token?: string): Promise<NonNullable<TopicCluster["llm_analysis"]>> {
+}, token?: string, orgId?: string): Promise<NonNullable<TopicCluster["llm_analysis"]>> {
     try {
         const res = await fetch(`${API_BASE_URL}/reports/analyze-topic`, {
             method: "POST",
-            headers: getHeaders(token),
+            headers: getHeaders(token, orgId),
             body: JSON.stringify(payload),
         });
         if (res.ok) {
@@ -330,13 +350,13 @@ export async function analyzeTopicWithAI(payload: {
 // ----------------------------
 // Reports API
 // ----------------------------
-export async function getSOPReport(filters: ReportFiltersParams, token?: string): Promise<SOPReport> {
+export async function getSOPReport(filters: ReportFiltersParams, token?: string, orgId?: string): Promise<SOPReport> {
     const params = new URLSearchParams({
         days: filters.days.toString(),
         confidence_threshold: filters.confidence_threshold.toString(),
         min_cluster_size: filters.min_cluster_size.toString(),
     });
-    const res = await fetch(`${API_BASE_URL}/reports/sop-updates?${params}`, { headers: getHeaders(token) });
+    const res = await fetch(`${API_BASE_URL}/reports/sop-updates?${params}`, { headers: getHeaders(token, orgId) });
     if (!res.ok) {
         let msg = "Failed to generate SOP report";
         try {
@@ -350,7 +370,7 @@ export async function getSOPReport(filters: ReportFiltersParams, token?: string)
     return data;
 }
 
-export async function exportSOPReportPdf(filters: ReportFiltersParams, token?: string): Promise<Blob> {
+export async function exportSOPReportPdf(filters: ReportFiltersParams, token?: string, orgId?: string): Promise<Blob> {
     const params = new URLSearchParams({
         days: filters.days.toString(),
         confidence_threshold: filters.confidence_threshold.toString(),
@@ -360,7 +380,7 @@ export async function exportSOPReportPdf(filters: ReportFiltersParams, token?: s
     const res = await fetch(`${API_BASE_URL}/reports/sop-updates/export-pdf?${params}`, {
         method: "GET",
         headers: {
-            ...getHeaders(token),
+            ...getHeaders(token, orgId),
             Accept: "application/pdf",
         },
     });
@@ -383,10 +403,10 @@ export type ResolveTopicPayload = {
     notes?: string;
 };
 
-export async function resolveTopic(payload: ResolveTopicPayload, token?: string): Promise<void> {
+export async function resolveTopic(payload: ResolveTopicPayload, token?: string, orgId?: string): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/reports/resolve-topic`, {
         method: "POST",
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
         body: JSON.stringify(payload),
     });
 
@@ -400,10 +420,10 @@ export async function resolveTopic(payload: ResolveTopicPayload, token?: string)
     }
 }
 
-export async function unresolveTopic(topicName: string, token?: string): Promise<void> {
+export async function unresolveTopic(topicName: string, token?: string, orgId?: string): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/reports/resolve-topic/${encodeURIComponent(topicName)}`, {
         method: "DELETE",
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
     });
 
     if (!res.ok) {
@@ -419,8 +439,8 @@ export async function unresolveTopic(topicName: string, token?: string): Promise
 // ----------------------------
 // Analytics Enhancement APIs
 // ----------------------------
-export async function getAnalyticsStats(days: number = 30, token?: string): Promise<AnalyticsStats> {
-    const res = await fetch(`${API_BASE_URL}/analytics/stats?days=${days}`, { headers: getHeaders(token) });
+export async function getAnalyticsStats(days: number = 30, token?: string, orgId?: string): Promise<AnalyticsStats> {
+    const res = await fetch(`${API_BASE_URL}/analytics/stats?days=${days}`, { headers: getHeaders(token, orgId) });
     if (!res.ok) throw new Error("Failed to fetch analytics stats");
     return res.json();
 }
@@ -431,7 +451,8 @@ export async function getLowConfidenceQueries(
     offset = 0,
     sortBy: "confidence" | "date" = "confidence",
     sortOrder: "asc" | "desc" = "asc",
-    token?: string
+    token?: string,
+    orgId?: string
 ): Promise<LowConfidenceResponse> {
     const params = new URLSearchParams({
         limit: limit.toString(),
@@ -440,33 +461,33 @@ export async function getLowConfidenceQueries(
         sort_by: sortBy,
         sort_order: sortOrder,
     });
-    const res = await fetch(`${API_BASE_URL}/analytics/low-confidence?${params}`, { headers: getHeaders(token) });
+    const res = await fetch(`${API_BASE_URL}/analytics/low-confidence?${params}`, { headers: getHeaders(token, orgId) });
     if (!res.ok) throw new Error("Failed to fetch low confidence queries");
     return res.json();
 }
 
-export async function getDocumentUsage(token?: string): Promise<{ most_used: DocumentUsageItem[] }> {
-    const res = await fetch(`${API_BASE_URL}/analytics/document-usage`, { headers: getHeaders(token) });
+export async function getDocumentUsage(token?: string, orgId?: string): Promise<{ most_used: DocumentUsageItem[] }> {
+    const res = await fetch(`${API_BASE_URL}/analytics/document-usage`, { headers: getHeaders(token, orgId) });
     if (!res.ok) throw new Error("Failed to fetch document usage");
     return res.json();
 }
 
-export async function getDocumentConfidence(token?: string): Promise<{ low_confidence: DocumentConfidenceItem[] }> {
-    const res = await fetch(`${API_BASE_URL}/analytics/document-confidence`, { headers: getHeaders(token) });
+export async function getDocumentConfidence(token?: string, orgId?: string): Promise<{ low_confidence: DocumentConfidenceItem[] }> {
+    const res = await fetch(`${API_BASE_URL}/analytics/document-confidence`, { headers: getHeaders(token, orgId) });
     if (!res.ok) throw new Error("Failed to fetch document confidence");
     return res.json();
 }
 
-export async function getTimelineData(days: string | number = 30, token?: string): Promise<TimelineResponse> {
-    const res = await fetch(`${API_BASE_URL}/analytics/timeline?days=${days}`, { headers: getHeaders(token) });
+export async function getTimelineData(days: string | number = 30, token?: string, orgId?: string): Promise<TimelineResponse> {
+    const res = await fetch(`${API_BASE_URL}/analytics/timeline?days=${days}`, { headers: getHeaders(token, orgId) });
     if (!res.ok) throw new Error("Failed to fetch timeline data");
     return res.json();
 }
 
-export async function uploadDocument(title: string, content: string, category: string, token?: string): Promise<Document> {
+export async function uploadDocument(title: string, content: string, category: string, token?: string, orgId?: string): Promise<Document> {
     const res = await fetch(`${API_BASE_URL}/documents`, {
         method: 'POST',
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
         body: JSON.stringify({ title, content, category }),
     });
     if (!res.ok) throw new Error('Failed to upload document');
@@ -480,18 +501,18 @@ export async function uploadDocument(title: string, content: string, category: s
         updated_at: String(d.updated_at ?? ""),
     };
 }
-export async function deleteDocument(id: string, token?: string): Promise<void> {
+export async function deleteDocument(id: string, token?: string, orgId?: string): Promise<void> {
     const res = await fetch(`${API_BASE_URL}/documents/${id}`, {
         method: 'DELETE',
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
     });
     if (!res.ok) throw new Error('Failed to delete document');
 }
 
-export async function updateDocument(id: string, title: string, content: string, category: string, token?: string): Promise<Document> {
+export async function updateDocument(id: string, title: string, content: string, category: string, token?: string, orgId?: string): Promise<Document> {
     const res = await fetch(`${API_BASE_URL}/documents/${id}`, {
         method: 'PUT',
-        headers: getHeaders(token),
+        headers: getHeaders(token, orgId),
         body: JSON.stringify({ title, content, category }),
     });
     if (!res.ok) throw new Error('Failed to update document');
@@ -505,11 +526,28 @@ export async function updateDocument(id: string, title: string, content: string,
         updated_at: String(d.updated_at ?? ""),
     };
 }
-export async function syncUser(clerk_id: string, email: string, fullName?: string, token?: string): Promise<void> {
-    const res = await fetch(`${API_BASE_URL}/users/sync`, {
-        method: 'POST',
-        headers: getHeaders(token),
-        body: JSON.stringify({ clerk_id, email, full_name: fullName }),
-    });
-    if (!res.ok) throw new Error('Failed to sync user');
+export async function syncUser(clerk_id: string, email: string, fullName?: string, token?: string, orgId?: string, retryCount = 0): Promise<void> {
+    if (!orgId && retryCount < 3) {
+        console.warn(`[API] syncUser: Missing orgId, retrying (${retryCount + 1}/3)...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return syncUser(clerk_id, email, fullName, token, orgId, retryCount + 1);
+    } else if (!orgId) {
+        throw new Error('orgId not provided after retries. User must select an organization before syncing.');
+    }
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/users/sync`, {
+            method: 'POST',
+            headers: getHeaders(token, orgId),
+            body: JSON.stringify({ clerk_id, email, full_name: fullName }),
+        });
+        if (!res.ok) {
+            const body = await res.text();
+            console.error(`[API] Failed to sync user: status ${res.status}, body: ${body}`);
+            throw new Error(`Failed to sync user: ${res.status}`);
+        }
+    } catch (err) {
+        console.error('[API] Error during sync user:', err);
+        throw err;
+    }
 }

@@ -41,6 +41,14 @@ export default function LayoutShell({
 
   const { isLoaded, userId } = useAuth();
 
+  useEffect(() => {
+    if (isLoaded && !userId && typeof window !== "undefined") {
+      localStorage.removeItem("nexus_active_org_id");
+      localStorage.removeItem("nexus_active_org_name");
+      localStorage.removeItem("nexus_active_org_slug");
+    }
+  }, [isLoaded, userId]);
+
   if (isAuthRoute) {
     return <>{children}</>;
   }
@@ -90,10 +98,10 @@ export default function LayoutShell({
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)", y: 0 }}
                 exit={{ opacity: 0, scale: 1.01, filter: "blur(12px)", y: -12 }}
                 transition={{ 
-                  duration: 0.8, 
-                  ease: [0.19, 1, 0.22, 1], // Cinematic Expo Out
-                  opacity: { duration: 0.4 },
-                  filter: { duration: 0.5 }
+                  duration: 0.5, 
+                  ease: [0, 0, 0.2, 1], // Rulebook Ease Out
+                  opacity: { duration: 0.3 },
+                  filter: { duration: 0.4 }
                 }}
                 className="w-full min-h-full"
               >
