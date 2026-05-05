@@ -108,7 +108,7 @@ export default function UploadModal({ isOpen, onClose, onSuccess, initialData }:
                                 <div className="px-10 py-10 md:px-16 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--surface-2)]/40 backdrop-blur-md">
                                     <div className="space-y-2 md:space-y-3">
                                         <div className="flex items-center gap-4 md:gap-5">
-                                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-[1.125rem] md:rounded-[1.5rem] bg-gradient-to-br from-[var(--brand)] to-[var(--persian-green-600)] flex items-center justify-center text-white shadow-xl shadow-[var(--brand-glow)]">
+                                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-[1.125rem] md:rounded-[1.5rem] bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-600)] flex items-center justify-center text-white shadow-xl shadow-[var(--brand-glow)]">
                                                 <Sparkles className="w-6 h-6 md:w-8 md:h-8" />
                                             </div>
                                             <h2 className="text-2xl md:text-5xl font-bold text-[var(--text-primary)] tracking-tight" style={{ fontFamily: "var(--font-display)" }}>

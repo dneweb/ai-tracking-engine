@@ -150,7 +150,7 @@ export default function DocumentsPage() {
 
           <button
             onClick={() => setIsUploadModalOpen(true)}
-            className="w-full sm:w-auto h-15 flex items-center justify-center gap-4 px-10 rounded-[1.375rem] text-[clamp(0.65rem,1.3vw,0.8125rem)] font-bold uppercase tracking-[0.2em] text-white bg-gradient-to-r from-[var(--brand)] to-[#8b5cf6] shadow-xl hover:shadow-[0_12px_32px_var(--brand-glow)] hover:-translate-y-1 transition-all duration-400 group"
+            className="w-full sm:w-auto h-15 flex items-center justify-center gap-4 px-10 rounded-[1.375rem] text-[clamp(0.65rem,1.3vw,0.8125rem)] font-bold uppercase tracking-[0.2em] text-white bg-gradient-to-r from-[var(--brand)] to-[var(--blue-ribbon-700)] shadow-xl hover:shadow-[0_12px_32px_var(--brand-glow)] hover:-translate-y-1 transition-all duration-400 group"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
             Inject Knowledge

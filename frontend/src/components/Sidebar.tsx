@@ -66,7 +66,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
         <div className="sidebar-header h-[clamp(4.2rem,8.4vw,5.25rem)] min-h-[clamp(4.2rem,8.4vw,5.25rem)] flex items-center px-6 max-lg:px-0 max-md:px-6 max-lg:justify-center max-md:justify-between flex-shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-2)]/30">
           <Link href="/" className="flex items-center gap-4 max-lg:gap-0 max-md:gap-4 group min-w-0" onClick={onMobileClose}>
             <div
-              className="w-11 h-11 max-lg:w-10 max-lg:h-10 max-md:w-11 max-md:h-11 rounded-[0.875rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--persian-green-600)] ring-1 ring-white/20 group-hover:scale-105 active:scale-[0.97] transition-transform"
+              className="w-11 h-11 max-lg:w-10 max-lg:h-10 max-md:w-11 max-md:h-11 rounded-[0.875rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-600)] ring-1 ring-white/20 group-hover:scale-105 active:scale-[0.97] transition-transform"
             >
               <Activity className="w-6 h-6 text-white relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -150,9 +150,9 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
               className="flex items-center gap-4 max-lg:gap-0 max-md:gap-4 p-3 max-lg:p-2 max-md:p-3 max-lg:justify-center max-md:justify-start rounded-[1.375rem] max-lg:rounded-xl max-md:rounded-[1.375rem] bg-[var(--surface-1)] border border-[var(--border-subtle)] shadow-sm hover:shadow-md hover:border-[var(--brand)] transition-all duration-500 w-full text-left group overflow-hidden tablet-rail-center"
             >
               <div className="relative flex-shrink-0">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[var(--brand)] to-[var(--persian-green-600)] rounded-[1.0rem] opacity-0 group-hover:opacity-20 blur-md transition-all" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-[var(--brand)] to-[var(--blue-ribbon-600)] rounded-[1.0rem] opacity-0 group-hover:opacity-20 blur-md transition-all" />
                 <div
-                  className="relative w-10 h-10 max-lg:w-9 max-lg:h-9 max-md:w-10 max-md:h-10 rounded-[0.875rem] flex-shrink-0 flex items-center justify-center text-[clamp(0.75rem,1.5vw,0.9375rem)] font-bold text-white shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--persian-green-600)] ring-2 ring-white/10 group-hover:scale-105 transition-transform"
+                  className="relative w-10 h-10 max-lg:w-9 max-lg:h-9 max-md:w-10 max-md:h-10 rounded-[0.875rem] flex-shrink-0 flex items-center justify-center text-[clamp(0.75rem,1.5vw,0.9375rem)] font-bold text-white shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-600)] ring-2 ring-white/10 group-hover:scale-105 transition-transform"
                 >
                   {user?.imageUrl ? (
                     <img src={user.imageUrl} alt="" className="w-full h-full object-cover rounded-[0.875rem]" />

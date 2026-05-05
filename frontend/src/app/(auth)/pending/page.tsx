@@ -124,7 +124,7 @@ export default function PendingPage() {
                 border: "1px solid rgba(99,102,241,0.2)",
               }}
             >
-              <Clock className="w-10 h-10" style={{ color: "#6366f1" }} />
+              <Clock className="w-10 h-10" style={{ color: "var(--brand)" }} />
             </div>
           </motion.div>
 
@@ -182,7 +182,7 @@ export default function PendingPage() {
             disabled={checking}
             className="w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 active:scale-[0.98]"
             style={{
-              background: "#6366f1",
+              background: "var(--brand)",
               color: "#fff",
             }}
             initial={{ opacity: 0, y: 8 }}
@@ -210,7 +210,7 @@ export default function PendingPage() {
               <a
                 href="/sign-up"
                 className="font-semibold hover:underline"
-                style={{ color: "#6366f1" }}
+                style={{ color: "var(--brand)" }}
               >
                 Start over →
               </a>

@@ -87,10 +87,10 @@ const slide: Variants = {
 const inputCls =
   "w-full px-4 py-3.5 rounded-2xl text-sm font-medium text-white bg-[#0a0a0f] " +
   "border border-white/8 placeholder:text-[#94a3b8]/50 outline-none " +
-  "focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 transition-all duration-300";
+  "focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition-all duration-300";
 
 const btnPrimary =
-  "w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-[#6366f1] " +
+  "w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-[var(--brand)] " +
   "hover:bg-[#5254cc] text-white transition-all duration-300 flex items-center " +
   "justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
 
@@ -159,7 +159,7 @@ function OtpInput({
           onChange={handleChange(i)}
           onKeyDown={handleKeyDown(i)}
           onPaste={handlePaste}
-          className="w-12 h-14 rounded-2xl text-center text-xl font-bold text-white bg-[#0a0a0f] border border-white/10 outline-none focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 transition-all"
+          className="w-12 h-14 rounded-2xl text-center text-xl font-bold text-white bg-[#0a0a0f] border border-white/10 outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition-all"
           autoFocus={i === 0}
         />
       ))}
@@ -191,7 +191,7 @@ function ChecklistItem({
             <CheckCircle2 className="w-6 h-6" style={{ color: "#10b981" }} />
           </motion.div>
         ) : active ? (
-          <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#6366f1" }} />
+          <Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--brand)" }} />
         ) : (
           <Circle className="w-5 h-5" style={{ color: "#94a3b8" }} />
         )}
@@ -629,7 +629,7 @@ export default function SignUpPage() {
               className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)" }}
             >
-              <Building2 className="w-4 h-4" style={{ color: "#6366f1" }} />
+              <Building2 className="w-4 h-4" style={{ color: "var(--brand)" }} />
             </div>
             <span className="text-white font-bold text-sm tracking-wide">Nexus AI</span>
           </div>
@@ -670,7 +670,7 @@ export default function SignUpPage() {
                         setMode(m);
                         goTo(2, 1);
                       }}
-                      className="flex flex-col items-start p-5 rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] hover:border-[#6366f1]/50 active:scale-[0.98]"
+                      className="flex flex-col items-start p-5 rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] hover:border-[var(--brand)]/50 active:scale-[0.98]"
                       style={{
                         background: "#0a0a0f",
                         border: "1px solid rgba(255,255,255,0.08)",
@@ -680,7 +680,7 @@ export default function SignUpPage() {
                         className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                         style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.25)" }}
                       >
-                        <Icon className="w-5 h-5" style={{ color: "#6366f1" }} />
+                        <Icon className="w-5 h-5" style={{ color: "var(--brand)" }} />
                       </div>
                       <p className="text-sm font-bold text-white leading-tight mb-1">{label}</p>
                       <p className="text-xs" style={{ color: "#94a3b8" }}>{sub}</p>
@@ -690,7 +690,7 @@ export default function SignUpPage() {
 
                 <p className="text-center text-sm" style={{ color: "#94a3b8" }}>
                   Already have an account?{" "}
-                  <a href="/sign-in" style={{ color: "#6366f1" }} className="font-semibold hover:underline">
+                  <a href="/sign-in" style={{ color: "var(--brand)" }} className="font-semibold hover:underline">
                     Sign in →
                   </a>
                 </p>
@@ -821,17 +821,17 @@ export default function SignUpPage() {
                     onClick={() => { setTerms((t) => !t); setS2Errors((p) => ({ ...p, terms: "" })); }}
                     className="flex-shrink-0 w-5 h-5 rounded-md mt-0.5 flex items-center justify-center transition-all"
                     style={{
-                      background: terms ? "#6366f1" : "transparent",
-                      border: `1.5px solid ${terms ? "#6366f1" : "rgba(255,255,255,0.2)"}`,
+                      background: terms ? "var(--brand)" : "transparent",
+                      border: `1.5px solid ${terms ? "var(--brand)" : "rgba(255,255,255,0.2)"}`,
                     }}
                   >
                     {terms && <Check className="w-3 h-3 text-white" />}
                   </div>
                   <span className="text-xs leading-relaxed" style={{ color: "#94a3b8" }}>
                     I agree to the{" "}
-                    <a href="#" style={{ color: "#6366f1" }} className="underline">Terms</a>
+                    <a href="#" style={{ color: "var(--brand)" }} className="underline">Terms</a>
                     {" "}and{" "}
-                    <a href="#" style={{ color: "#6366f1" }} className="underline">Privacy Policy</a>
+                    <a href="#" style={{ color: "var(--brand)" }} className="underline">Privacy Policy</a>
                   </span>
                 </label>
                 {s2Errors.terms && <p className="text-xs px-1" style={{ color: "#f87171" }}>{s2Errors.terms}</p>}
@@ -909,7 +909,7 @@ export default function SignUpPage() {
                       onClick={handleResend}
                       disabled={resendLoading}
                       className="text-xs font-semibold hover:underline disabled:opacity-50 flex items-center gap-1.5 mx-auto"
-                      style={{ color: "#6366f1" }}
+                      style={{ color: "var(--brand)" }}
                     >
                       {resendLoading && <RefreshCw className="w-3 h-3 animate-spin" />}
                       Resend code
@@ -945,7 +945,7 @@ export default function SignUpPage() {
                   {createOrgSlug && (
                     <p className="text-xs px-1 flex items-center gap-2" style={{ color: "#94a3b8" }}>
                       Workspace ID:{" "}
-                      <span className="font-bold" style={{ color: "#6366f1" }}>{createOrgSlug}</span>
+                      <span className="font-bold" style={{ color: "var(--brand)" }}>{createOrgSlug}</span>
                       {slugChecking && <Loader2 className="w-3 h-3 animate-spin" style={{ color: "#94a3b8" }} />}
                       {!slugChecking && slugAvailable === true && <Check className="w-3.5 h-3.5" style={{ color: "#10b981" }} />}
                       {!slugChecking && slugAvailable === false && <X className="w-3.5 h-3.5" style={{ color: "#ef4444" }} />}
@@ -1000,7 +1000,7 @@ export default function SignUpPage() {
                   {joinOrgSlug && (
                     <p className="text-xs px-1" style={{ color: "#94a3b8" }}>
                       Workspace ID:{" "}
-                      <span className="font-bold" style={{ color: "#6366f1" }}>{joinOrgSlug}</span>
+                      <span className="font-bold" style={{ color: "var(--brand)" }}>{joinOrgSlug}</span>
                       {orgSearching && <Loader2 className="w-3 h-3 animate-spin inline ml-2" style={{ color: "#94a3b8" }} />}
                     </p>
                   )}

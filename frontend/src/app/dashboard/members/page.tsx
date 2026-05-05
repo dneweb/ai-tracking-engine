@@ -186,7 +186,7 @@ function RejectPanel({
         placeholder="Reason (optional)"
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#0a0a0f] border border-white/8 outline-none focus:border-[#6366f1]/50 transition-all"
+        className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-[#0a0a0f] border border-white/8 outline-none focus:border-[var(--brand)]/50 transition-all"
       />
       <div className="flex gap-2">
         <button

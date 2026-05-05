@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-12 relative z-10">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center bg-gradient-to-br from-[var(--brand)] to-[#8b5cf6] text-white shadow-xl shadow-[var(--brand-glow)]">
+              <div className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-700)] text-white shadow-xl shadow-[var(--brand-glow)]">
                 <TrendingUp className="w-8 h-8" />
               </div>
               <div>

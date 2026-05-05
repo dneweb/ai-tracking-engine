@@ -436,7 +436,7 @@ export default function AskQuestionPage() {
                   onClick={() => handleAsk(undefined, query)}
                   disabled={loading || !query.trim()}
                   className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs tracking-widest uppercase text-white disabled:opacity-40 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 hover:shadow-lg"
-                  style={{ background: "linear-gradient(to right, var(--brand), #8b5cf6)" }}
+                  style={{ background: "linear-gradient(to right, var(--brand), var(--blue-ribbon-700))" }}
                 >
                   {loading ? "Processing..." : <>Initialize <span className="hidden sm:inline ml-1">Link</span> <ArrowRight className="w-4 h-4" /></>}
                 </button>

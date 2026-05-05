@@ -15,7 +15,7 @@ export function ThemeToggle() {
     >
       <motion.div
         layout
-        className="absolute inset-y-1 w-8 rounded-full z-0 shadow-lg bg-gradient-to-br from-[var(--brand)] to-[#8b5cf6]"
+        className="absolute inset-y-1 w-8 rounded-full z-0 shadow-lg bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-700)]"
         animate={{
           left: theme === "light" ? "0.25rem" : "calc(100% - 2.25rem)",
         }}

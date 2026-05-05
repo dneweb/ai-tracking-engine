@@ -73,10 +73,10 @@ const slideVariants: Variants = {
 const inputCls =
   "w-full px-4 py-3.5 rounded-2xl text-sm font-medium text-white bg-[#111118] " +
   "border border-white/8 placeholder:text-[#94a3b8]/50 outline-none " +
-  "focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 transition-all duration-300";
+  "focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition-all duration-300";
 
 const btnCls =
-  "w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-[#6366f1] " +
+  "w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-[var(--brand)] " +
   "hover:bg-[#5254cc] text-white transition-all duration-300 flex items-center " +
   "justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
 
@@ -643,7 +643,7 @@ export default function SignInPage() {
               className="w-9 h-9 rounded-xl flex items-center justify-center"
               style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)" }}
             >
-              <Building2 className="w-4 h-4" style={{ color: "#6366f1" }} />
+              <Building2 className="w-4 h-4" style={{ color: "var(--brand)" }} />
             </div>
             <span className="text-white font-bold text-sm tracking-wide">Nexus AI</span>
           </div>
@@ -682,7 +682,7 @@ export default function SignInPage() {
                   {orgSlug && (
                     <p className="text-xs px-1" style={{ color: "#94a3b8" }}>
                       Workspace:{" "}
-                      <span className="font-bold" style={{ color: "#6366f1" }}>
+                      <span className="font-bold" style={{ color: "var(--brand)" }}>
                         {orgSlug}
                       </span>
                     </p>
@@ -696,7 +696,7 @@ export default function SignInPage() {
                   >
                     {step1Error}{" "}
                     {step1Error.includes("sign up") && (
-                      <a href="/sign-up" style={{ color: "#6366f1" }} className="underline">
+                      <a href="/sign-up" style={{ color: "var(--brand)" }} className="underline">
                         Sign up
                       </a>
                     )}
@@ -715,7 +715,7 @@ export default function SignInPage() {
 
                 <p className="text-center text-sm" style={{ color: "#94a3b8" }}>
                   New here?{" "}
-                  <a href="/sign-up" style={{ color: "#6366f1" }} className="font-semibold hover:underline">
+                  <a href="/sign-up" style={{ color: "var(--brand)" }} className="font-semibold hover:underline">
                     Create an organisation →
                   </a>
                 </p>
@@ -887,7 +887,7 @@ export default function SignInPage() {
                       onClick={() => { handleForgotPassword(); setResetSuccess(false); }}
                       disabled={forgotLoading}
                       className="text-xs font-semibold hover:underline transition-opacity disabled:opacity-50"
-                      style={{ color: "#6366f1" }}
+                      style={{ color: "var(--brand)" }}
                     >
                       {forgotLoading ? "Sending…" : "Forgot password?"}
                     </button>

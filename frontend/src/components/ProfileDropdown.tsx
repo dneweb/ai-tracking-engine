@@ -47,10 +47,10 @@ export function ProfileDropdown() {
           </div>
           <div className="relative flex-shrink-0">
             <div className={cn(
-              "absolute -inset-1 bg-gradient-to-r from-[var(--brand)] to-[#ec4899] rounded-[1.125rem] transition duration-500 blur-md",
+              "absolute -inset-1 bg-gradient-to-r from-[var(--brand)] to-[var(--blue-ribbon-700)] rounded-[1.125rem] transition duration-500 blur-md",
               isOpen ? "opacity-100 scale-110" : "opacity-20 group-hover:opacity-100"
             )} />
-            <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-[0.75rem] sm:rounded-[1.0rem] flex items-center justify-center text-[clamp(0.75rem,1.5vw,0.9rem)] font-bold text-white shadow-xl bg-gradient-to-br from-[var(--brand)] to-[#8b5cf6] ring-2 ring-[var(--surface-1)] group-hover:scale-105 transition-all cursor-pointer overflow-hidden">
+            <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-[0.75rem] sm:rounded-[1.0rem] flex items-center justify-center text-[clamp(0.75rem,1.5vw,0.9rem)] font-bold text-white shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-700)] ring-2 ring-[var(--surface-1)] group-hover:scale-105 transition-all cursor-pointer overflow-hidden">
               {user.imageUrl ? (
                 <img src={user.imageUrl} alt={user.fullName || "User"} className="w-full h-full object-cover" />
               ) : (
@@ -92,7 +92,7 @@ export function ProfileDropdown() {
                   </div>
                   
                   <div className="flex items-center gap-4 mb-4 relative z-10">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--brand)] to-[#8b5cf6] flex items-center justify-center text-white font-bold text-xl shadow-xl ring-4 ring-white/10 overflow-hidden">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-700)] flex items-center justify-center text-white font-bold text-xl shadow-xl ring-4 ring-white/10 overflow-hidden">
                       {user.imageUrl ? (
                         <img src={user.imageUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
