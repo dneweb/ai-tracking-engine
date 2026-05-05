@@ -3,8 +3,8 @@ import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect, useCallback } from "react";
 import { useOrgId } from "@/hooks/useOrgId";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "/backend-api";
+// Always proxy through Next.js → /backend-api/:path* → Render /api/:path*
+const API_BASE = "/backend-api";
 
 export interface Conversation {
   conversation_id: string;

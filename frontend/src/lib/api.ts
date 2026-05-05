@@ -1,5 +1,9 @@
+// Always use /backend-api on client (proxied by Next.js to Render backend's /api/ prefix).
+// On the server (SSR), fall back to the direct Render URL with /api prefix.
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "/backend-api";
+  typeof window !== "undefined"
+    ? "/backend-api"
+    : (process.env.NEXT_PUBLIC_API_URL ?? "https://ai-tracking-engine.onrender.com/api").replace(/\/$/, "");
 
 function getHeaders(token?: string, orgId?: string) {
     const headers: Record<string, string> = {

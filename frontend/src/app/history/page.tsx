@@ -119,7 +119,7 @@ function ConversationRow({
   const [confirmed, setConfirmed] = useState(false);
   const { getToken } = useAuth();
   const { member } = useCurrentMember();
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") || "/backend-api";
+  const API_BASE = "/backend-api"; // Always proxy through Next.js → Render /api/:path*
 
   const loadMessages = useCallback(async () => {
     if (messages.length > 0) return;

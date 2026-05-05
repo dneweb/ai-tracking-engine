@@ -8,8 +8,12 @@
  *  - Typed return: { data, error, status } — never throws
  */
 
-const API_BASE =
-  (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+// intelligent URL construction: use the /backend-api proxy path
+// In browser: /backend-api/:path* → proxied by Next.js → Render /api/:path*
+// On server (SSR): direct to Render with /api prefix as fallback
+const API_BASE = typeof window !== "undefined"
+  ? `${window.location.origin}/backend-api`
+  : (process.env.NEXT_PUBLIC_API_URL ?? "https://ai-tracking-engine.onrender.com/api").replace(/\/$/, "");
 
 // Explicitly log the API URL being used to the console on load (helps debugging production)
 if (typeof window !== "undefined") {

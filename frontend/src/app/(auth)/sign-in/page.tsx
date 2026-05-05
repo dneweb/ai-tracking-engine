@@ -196,13 +196,28 @@ export default function SignInPage() {
       // Get the SignIn resource from clerk.client
       const clientSignIn = (clerk as any).client.signIn;
 
-      // ALWAYS create a fresh sign-in to avoid strategy conflicts from forgot password flows
-      console.log("[Sign-in] Creating fresh sign-in for:", email);
-      const signInAttempt = await clientSignIn.create({
-        identifier: email,
-      });
+      // NEW LOGIC: Check if existing sign-in supports password strategy before reusing
+      // This avoids conflict when coming back from a "Forgot password" flow (which uses reset_password_email_code)
+      const isExistingSameEmail = clientSignIn?.identifier === email;
+      const isExistingNeedsFirstFactor = clientSignIn?.status === "needs_first_factor";
+      const supportsPassword = clientSignIn?.supportedFirstFactors?.some(
+        (factor: any) => factor.strategy === "password"
+      );
 
-      console.log("[Sign-in] Create result - status:", signInAttempt.status, "identifier:", signInAttempt.identifier);
+      let signInAttempt;
+      if (isExistingSameEmail && isExistingNeedsFirstFactor && supportsPassword) {
+        // Safe to reuse - supports password
+        console.log("[Sign-in] Reusing existing sign-in (supports password)");
+        signInAttempt = clientSignIn;
+      } else {
+        // Create fresh - incompatible or from reset_password flow
+        console.log("[Sign-in] Creating fresh sign-in (existing incompatible or none)");
+        signInAttempt = await clientSignIn.create({
+          identifier: email,
+        });
+      }
+
+      console.log("[Sign-in] Auth result - status:", signInAttempt.status, "identifier:", signInAttempt.identifier);
 
       // Check status and proceed accordingly
       let result: any;
@@ -210,14 +225,14 @@ export default function SignInPage() {
       if (signInAttempt.status === "needs_first_factor") {
         // Status is correct - attempt password authentication
         console.log("[Sign-in] Attempting first factor with password strategy");
-        result = await clientSignIn.attemptFirstFactor({
+        result = await signInAttempt.attemptFirstFactor({
           strategy: "password",
           password,
         });
         console.log("[Sign-in] First factor result - status:", result.status);
       } else {
-        // Different status - use as-is
-        console.log("[Sign-in] Skipping first factor - using create result with status:", signInAttempt.status);
+        // Different status (e.g. complete, needs_second_factor, etc.) - use as-is
+        console.log("[Sign-in] Skipping first factor - using current status:", signInAttempt.status);
         result = signInAttempt;
       }
 
