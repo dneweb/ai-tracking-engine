@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     mistral_model: str = "mistral-small-latest"
     groq_model: str = "llama-3.3-70b-versatile"
+    allowed_origins: str = "http://localhost:3000"
 
     # App settings
     app_name: str = "AI Tracking Engine"
