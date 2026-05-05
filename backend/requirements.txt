@@ -13,4 +13,5 @@ resend==2.23.0
 PyPDF2>=3.0.0
 slowapi==0.1.9
 PyJWT==2.8.0
+cryptography==42.0.5
 nest-asyncio==1.6.0
