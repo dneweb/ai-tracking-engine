@@ -73,9 +73,19 @@ app.add_middleware(TenantMiddleware)
 # Configure CORS — added LAST so it executes FIRST.
 # This ensures every request (including OPTIONS preflight) gets
 # Access-Control-Allow-Origin headers before anything else runs.
+
+# Build robust origin list
+raw_origins = [origin.strip() for origin in settings.allowed_origins.split(",")]
+# Remove trailing slashes and filter empty
+clean_origins = [o.rstrip("/") for o in raw_origins if o]
+
+# Automatically include common Vercel domains to be helpful
+clean_origins.append("https://ai-tracking-engine.vercel.app")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",")],
+    allow_origins=clean_origins,
+    allow_origin_regex=r"https://ai-tracking-engine-.*\.vercel\.app", # Allow all Vercel preview/branch deploys
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
