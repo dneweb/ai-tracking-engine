@@ -11,6 +11,11 @@
 const API_BASE =
   (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
+// Explicitly log the API URL being used to the console on load (helps debugging production)
+if (typeof window !== "undefined") {
+  console.log(`[System] Initialized API Client with BASE: ${API_BASE}`);
+}
+
 export interface ApiResult<T> {
   data: T | null;
   error: string | null;
