@@ -39,7 +39,7 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (ope
         >
           <div style={{ position: 'absolute', width: '1px', height: '1px', padding: '0', margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', borderWidth: '0' }}>
             <Dialog.Title>Global Command Palette</Dialog.Title>
-            <Dialog.Description>Search and navigate through the neural tracking engine interface.</Dialog.Description>
+            <Dialog.Description>Search and navigate through the Memora neural intelligence interface.</Dialog.Description>
           </div>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

@@ -157,16 +157,30 @@
 }
 
 .ke-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: linear-gradient(135deg, var(--ke-accent-purple), var(--ke-accent-blue));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+  font-weight: 850;
+  letter-spacing: -0.03em;
   text-decoration: none;
-  font-family: "Manrope", sans-serif;
-  transition: opacity 0.3s ease;
+  font-family: "Newsreader", serif;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.ke-nav-logo:hover {
+  transform: scale(1.02);
+}
+
+.ke-nav-logo img {
+  height: clamp(2rem, 4vw, 2.75rem);
+  width: auto;
+  filter: drop-shadow(0 4px 12px rgba(var(--ke-accent-blue-rgb), 0.25));
 }
 
 .ke-nav-links {
@@ -2008,9 +2022,12 @@
 }
 
 .ke-dash-logo {
-  font-weight: 800;
-  font-size: 0.9rem;
+  font-weight: 850;
+  font-size: 1.1rem;
   margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   background: linear-gradient(135deg, #7C6FFF, #60A5FA);
   -webkit-background-clip: text;
   background-clip: text;
@@ -2219,4 +2236,26 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+.ke-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "Newsreader", serif;
+  font-size: 1.75rem;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  color: var(--ke-text-primary);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.ke-footer-logo:hover {
+  opacity: 0.8;
+}
+
+.ke-footer-logo img {
+  height: 2.5rem;
+  width: auto;
 }

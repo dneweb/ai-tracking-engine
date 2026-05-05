@@ -875,7 +875,8 @@ export function LandingPage() {
         style={{ transition: "transform 0.35s cubic-bezier(0.23,1,0.32,1), height 0.4s cubic-bezier(0.23,1,0.32,1), background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease" }}
       >
         <a href="#ke-top" className="ke-nav-logo" onClick={(e) => { e.preventDefault(); scrollTo("ke-top"); }}>
-          KnowledgeEngine
+          <img src="/logo.svg" alt="Memora" className="brightness-100 invert-0 dark:brightness-0 dark:invert" />
+          Memora
         </a>
 
         <ul className="ke-nav-links" role="list">
@@ -959,7 +960,7 @@ export function LandingPage() {
               Always at Your Fingertips
             </h1>
             <p className="text-sm md:text-lg text-muted-foreground/80 max-w-2xl mx-auto">
-              Stop searching through endless folders and chats. KnowledgeEngine connects your team's tools to provide instant, accurate answers from your own data.
+              Stop searching through endless folders and chats. Memora connects your team's tools to provide instant, accurate answers from your own data.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto">
               <button className="ke-btn-primary px-8 py-3 rounded-full font-medium transition-all hover:scale-105" onClick={handlePrimaryClick}>
@@ -1129,7 +1130,10 @@ export function LandingPage() {
                 <div className="ke-dash-ui">
                   {/* Sidebar */}
                   <aside className="ke-dash-sidebar">
-                    <div className="ke-dash-logo">KnowledgeEngine</div>
+                    <div className="ke-dash-logo">
+                      <img src="/logo.svg" alt="" className="w-6 h-6 brightness-100 invert-0 dark:brightness-0 dark:invert" />
+                      Memora
+                    </div>
                     <nav className="ke-dash-nav">
                       {["Overview", "Data Sources", "Knowledge Graph", "Intelligence Feed", "Security"].map((item, i) => (
                         <div key={item} className={`ke-dash-nav-item ${i === 0 ? "active" : ""}`}>
@@ -1300,7 +1304,7 @@ export function LandingPage() {
                 faster than ever?
               </h2>
               <p className="ke-cta-sub">
-                Join hundreds of teams who use KnowledgeEngine to stay organized and informed.
+                Join hundreds of teams who use Memora to stay organized and informed.
                 Get started today and turn your data into your greatest asset.
               </p>
               <a
@@ -1321,7 +1325,8 @@ export function LandingPage() {
           {/* Logo column */}
           <div>
             <a href="#ke-top" className="ke-footer-logo" onClick={(e) => { e.preventDefault(); scrollTo("ke-top"); }}>
-              KnowledgeEngine
+              <img src="/logo.svg" alt="" className="brightness-100 invert-0 dark:brightness-0 dark:invert" />
+              Memora
             </a>
             <p className="ke-footer-tagline">
               Building the architectural foundation for the age of autonomous knowledge management.
@@ -1375,7 +1380,7 @@ export function LandingPage() {
         {/* Bottom bar */}
         <div className="ke-footer-bottom">
           <p className="ke-footer-copy">
-            © 2024 KnowledgeEngine AI. Architecting Intelligence.
+            © 2024 Memora AI. Architecting Intelligence.
           </p>
           <div className="ke-footer-social">
             {/* Twitter */}

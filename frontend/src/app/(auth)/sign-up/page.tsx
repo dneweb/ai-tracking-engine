@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Sign-Up Page — KnowledgeEngine (Nexus AI)
+ * Sign-Up Page — Memora (Memora)
  *
  * 5-step flow:
  *   Step 1  →  Choose path: "Create org" | "Join org"
@@ -625,13 +625,14 @@ export default function SignUpPage() {
         >
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.3)" }}
-            >
-              <Building2 className="w-4 h-4" style={{ color: "var(--brand)" }} />
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--brand-glow)] overflow-hidden p-1.5 shadow-sm">
+              <img 
+                src="/logo.svg" 
+                alt="Memora Logo" 
+                className="w-full h-full object-contain brightness-0 invert" 
+              />
             </div>
-            <span className="text-white font-bold text-sm tracking-wide">Nexus AI</span>
+            <span className="text-white font-bold text-sm tracking-wide">Memora</span>
           </div>
 
           <AnimatePresence mode="wait" custom={dir}>
@@ -642,7 +643,7 @@ export default function SignUpPage() {
                 <div>
                   <h1 className="text-2xl font-bold text-white mb-1.5">Get started.</h1>
                   <p className="text-sm" style={{ color: "#94a3b8" }}>
-                    How would you like to use Nexus AI?
+                    How would you like to use Memora?
                   </p>
                 </div>
 

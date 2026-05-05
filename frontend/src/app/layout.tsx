@@ -41,8 +41,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus AI | Neural Intelligence Platform",
-  description: "Enterprise SOP Query Engine powered by neural RAG — Ask, Analyze, and Automate your knowledge base.",
+  title: "Memora | Neural Intelligence Engine",
+  description: "Memora is a powerful neural intelligence platform that connects your team's collective knowledge for instant, accurate insights.",
 };
 
 export default function RootLayout({

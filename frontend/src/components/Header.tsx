@@ -39,7 +39,7 @@ export default function Header({ onMobileMenuClick }: HeaderProps) {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const meta = PAGE_META[pathname] ?? { title: "Nexus AI", subtitle: "Neural Intelligence Platform" };
+  const meta = PAGE_META[pathname] ?? { title: "Memora", subtitle: "Neural Intelligence Platform" };
 
   return (
     <header className="topbar glass sticky top-0 px-4 sm:px-8 h-[var(--topbar-height)] border-b border-[var(--border-subtle)] z-[100] transition-all">
@@ -63,11 +63,24 @@ export default function Header({ onMobileMenuClick }: HeaderProps) {
           transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] }}
           className="flex flex-col min-w-0"
         >
-          <h1 className="text-[clamp(0.85rem,1.8vw,1.125rem)] md:text-[clamp(1.0rem,2.0vw,1.25rem)] font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-2 truncate">
-            <span className="sm:inline">{meta.title.split(" ").slice(0, -1).join(" ")}</span>{" "}
-            <span className="brand-gradient-text">
-              {meta.title.split(" ").at(-1)}
-            </span>
+          <h1 className="text-[clamp(0.85rem,1.8vw,1.125rem)] md:text-[clamp(1.0rem,2.0vw,1.25rem)] font-extrabold tracking-tight text-[var(--text-primary)] flex items-center gap-3 truncate">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[var(--brand-soft)] border border-[var(--brand-glow)] overflow-hidden p-1.5 shadow-sm group-hover:scale-105 transition-transform">
+              <img 
+                src="/logo.svg" 
+                alt="Memora Logo" 
+                className="w-full h-full object-contain brightness-100 invert-0 dark:brightness-0 dark:invert" 
+              />
+            </div>
+            {meta.title === "Memora" ? (
+              <span className="brand-gradient-text">Memora</span>
+            ) : (
+              <>
+                <span className="sm:inline">{meta.title.split(" ").slice(0, -1).join(" ")}</span>{" "}
+                <span className="brand-gradient-text">
+                  {meta.title.split(" ").at(-1)}
+                </span>
+              </>
+            )}
           </h1>
           <div className="hidden sm:flex items-center gap-2 mt-1">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand)] animate-pulse" />

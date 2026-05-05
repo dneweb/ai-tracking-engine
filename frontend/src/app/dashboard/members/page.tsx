@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Members & Approvals Page — KnowledgeEngine (Nexus AI)
+ * Members & Approvals Page — Memora (Memora)
  * Route: /dashboard/members
  *
  * Visible to: owner and admin only.

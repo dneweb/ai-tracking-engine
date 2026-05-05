@@ -18,9 +18,9 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "KnowledgeEngine — Your Organization's Neural Memory",
+  title: "Memora — Your Organization's Neural Memory",
   description:
-    "Transform scattered documentation into a living knowledge ecosystem. KnowledgeEngine curates, indexes, and surfaces intelligence with sub-2ms latency.",
+    "Transform scattered documentation into a living knowledge ecosystem. Memora curates, indexes, and surfaces intelligence with sub-2ms latency.",
 };
 
 export default function LandingRootPage() {

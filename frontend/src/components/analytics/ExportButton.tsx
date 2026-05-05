@@ -97,7 +97,7 @@ export default function ExportButton({ queries, documents }: ExportButtonProps) 
 
             doc.setFontSize(18);
             doc.setTextColor(80, 80, 80);
-            doc.text("AI Tracking Engine — Analytics Report", 14, 20);
+            doc.text("Memora — Analytics Report", 14, 20);
 
             doc.setFontSize(10);
             doc.setTextColor(120, 120, 120);

@@ -66,14 +66,14 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
         <div className="sidebar-header h-[clamp(4.2rem,8.4vw,5.25rem)] min-h-[clamp(4.2rem,8.4vw,5.25rem)] flex items-center px-6 max-lg:px-0 max-md:px-6 max-lg:justify-center max-md:justify-between flex-shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-2)]/30">
           <Link href="/" className="flex items-center gap-4 max-lg:gap-0 max-md:gap-4 group min-w-0" onClick={onMobileClose}>
             <div
-              className="w-11 h-11 max-lg:w-10 max-lg:h-10 max-md:w-11 max-md:h-11 rounded-[0.875rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-600)] ring-1 ring-white/20 group-hover:scale-105 active:scale-[0.97] transition-transform"
+              className="w-11 h-11 max-lg:w-10 max-lg:h-10 max-md:w-11 max-md:h-11 rounded-[0.875rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-xl bg-gradient-to-br from-[var(--brand)] to-[var(--blue-ribbon-600)] ring-1 ring-white/20 group-hover:scale-105 active:scale-[0.97] transition-transform p-2"
             >
-              <Activity className="w-6 h-6 text-white relative z-10" />
+              <img src="/logo.svg" alt="Memora Logo" className="w-full h-full object-contain relative z-10 brightness-0 invert" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
             <div className="brand-name min-w-0 flex flex-col max-lg:hidden max-md:flex">
               <div className="text-[clamp(0.9rem,1.8vw,1.125rem)] font-bold tracking-tighter text-[var(--text-primary)] leading-none">
-                Nexus <span className="brand-gradient-text">AI.</span>
+                Memora <span className="brand-gradient-text">AI.</span>
               </div>
               <div className="label-caps mt-1.5 !text-[clamp(0.45rem,0.9vw,0.5625rem)] !tracking-[0.2em] opacity-60">
                 Neural Platform
@@ -133,7 +133,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: SidebarPr
               </div>
               <div className="flex flex-col min-w-0 sidebar-footer-status-text max-lg:hidden max-md:flex">
                 <div className="label-caps !text-[clamp(0.5rem,1.0vw,0.625rem)] text-[var(--brand)] !tracking-[0.15em] font-extrabold truncate">
-                  Nexus Online
+                  Memora Online
                 </div>
                 <div className="text-[clamp(0.45rem,0.9vw,0.5625rem)] font-bold text-[var(--text-muted)] tracking-tight mt-0.5 truncate uppercase">
                   Encrypted · v1.2.4

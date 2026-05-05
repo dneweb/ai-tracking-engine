@@ -1,5 +1,5 @@
 /**
- * Typed API client for KnowledgeEngine backend.
+ * Typed API client for Memora backend.
  *
  * Features:
  *  - Dev-mode logging for every request + response

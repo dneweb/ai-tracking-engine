@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Pending Approval Page — KnowledgeEngine (Nexus AI)
+ * Pending Approval Page — Memora (Memora)
  *
  * Shown after a join request is submitted.
  * Lets the user poll their approval status.
