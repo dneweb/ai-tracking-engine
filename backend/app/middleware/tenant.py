@@ -22,18 +22,18 @@ _current_org_id: ContextVar[str] = ContextVar("current_org_id")
 # These routes handle their own auth / are genuinely public.
 EXCLUDED_PATHS: frozenset[str] = frozenset({
     # Public auth flow
-    "/auth/org-check",
-    "/auth/org-available",
-    "/auth/org-lookup",
-    "/auth/verify-membership",
-    "/auth/register-owner",
-    "/auth/register-member",
-    "/auth/validate-signin",
+    "/api/auth/org-check",
+    "/api/auth/org-available",
+    "/api/auth/org-lookup",
+    "/api/auth/verify-membership",
+    "/api/auth/register-owner",
+    "/api/auth/register-member",
+    "/api/auth/validate-signin",
     # Auth-managed (JWT handled inside route)
-    "/auth/approve-request",
-    "/auth/members-list",
-    "/auth/pending-requests",
-    "/auth/remove-member",
+    "/api/auth/approve-request",
+    "/api/auth/members-list",
+    "/api/auth/pending-requests",
+    "/api/auth/remove-member",
     # System / infra
     "/health",
     "/docs",

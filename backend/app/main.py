@@ -96,14 +96,14 @@ app.add_middleware(
 # ============================================================================
 
 # Documents API (NEW - handles document upload and retrieval)
-app.include_router(documents.router)
-app.include_router(queries.router)
-app.include_router(analytics.router)  # Analytics - timeline chart
-app.include_router(reports.router)    # Reports - SOP updates
-app.include_router(auth.router)       # User sync
-app.include_router(members_router, prefix="/members", tags=["members"])
-app.include_router(auth_flow_router, prefix="/auth", tags=["auth"])
-app.include_router(conversations_router, tags=["conversations"])
+app.include_router(documents.router, prefix="/api")
+app.include_router(queries.router, prefix="/api")
+app.include_router(analytics.router, prefix="/api")  # Analytics - timeline chart
+app.include_router(reports.router, prefix="/api")    # Reports - SOP updates
+app.include_router(auth.router, prefix="/api")       # User sync
+app.include_router(members_router, prefix="/api/members", tags=["members"])
+app.include_router(auth_flow_router, prefix="/api/auth", tags=["auth"])
+app.include_router(conversations_router, prefix="/api", tags=["conversations"])
 
 
 # ============================================================================
