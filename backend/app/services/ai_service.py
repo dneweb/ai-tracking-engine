@@ -1,7 +1,5 @@
-import json
 import httpx
 import asyncio
-from sentence_transformers import SentenceTransformer
 from app.config import get_settings
 import numpy as np
 from typing import List, Any, Dict, Optional, Tuple
@@ -9,27 +7,10 @@ from typing import List, Any, Dict, Optional, Tuple
 settings = get_settings()
 
 MISTRAL_CHAT_URL = "https://api.mistral.ai/v1/chat/completions"
+MISTRAL_EMBED_URL = "https://api.mistral.ai/v1/embeddings"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-# Global variable to store the model instance
-_embedding_model = None
-_model_lock = asyncio.Lock()
-
-async def get_model() -> SentenceTransformer:
-    """
-    Lazy-load the model only when it's first requested.
-    Uses asyncio.Lock to prevent multiple concurrent loads.
-    Loads in a separate thread to avoid blocking the event loop.
-    """
-    global _embedding_model
-    async with _model_lock:
-        if _embedding_model is None:
-            print("Loading local embedding model (all-MiniLM-L6-v2)...", flush=True)
-            s = get_settings()
-            # Run blocking SentenceTransformer init in a thread
-            _embedding_model = await asyncio.to_thread(SentenceTransformer, s.embedding_model)
-            print("✅ Embedding model loaded and ready.", flush=True)
-        return _embedding_model
+# Local model loading removed to save memory and CPU
 
 async def _completion_mistral(
     messages: List[Dict[str, str]],
@@ -102,27 +83,61 @@ async def _chat_with_fallback(
 
 async def get_embedding(text: str) -> List[float]:
     """
-    Convert text to vector using local model (FREE!)
-    Returns: List of 384 numbers representing the text meaning
+    Convert text to vector using Mistral API (Professional & Light-weight)
+    Returns: List of 1024 numbers representing the text meaning
     """
     try:
-        model = await get_model()
-        # model.encode is CPU heavy, run in thread
-        embedding = await asyncio.to_thread(model.encode, text)
-        return embedding.tolist()
+        s = get_settings()
+        body = {
+            "model": "mistral-embed",
+            "input": [text]
+        }
+        
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                MISTRAL_EMBED_URL,
+                headers={
+                    "Authorization": f"Bearer {s.mistral_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=body,
+                timeout=30.0,
+            )
+            r.raise_for_status()
+            data = r.json()
+            return data["data"][0]["embedding"]
     except Exception as e:
         print(f"Embedding error: {e}")
         return []
 
 async def get_embeddings_batch(texts: List[str]) -> List[List[float]]:
     """
-    Convert multiple texts to vectors at once (faster)
+    Convert multiple texts to vectors at once using Mistral API
     """
+    if not texts:
+        return []
     try:
-        model = await get_model()
-        # model.encode is CPU heavy, run in thread
-        embeddings = await asyncio.to_thread(model.encode, texts)
-        return embeddings.tolist()
+        s = get_settings()
+        body = {
+            "model": "mistral-embed",
+            "input": texts
+        }
+        
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                MISTRAL_EMBED_URL,
+                headers={
+                    "Authorization": f"Bearer {s.mistral_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=body,
+                timeout=60.0,
+            )
+            r.raise_for_status()
+            data = r.json()
+            # Sort by index to ensure order
+            sorted_data = sorted(data["data"], key=lambda x: x["index"])
+            return [item["embedding"] for item in sorted_data]
     except Exception as e:
         print(f"Batch embedding error: {e}")
         return []

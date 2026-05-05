@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     debug: bool = True
 
     # Model settings
-    embedding_model: str = "all-MiniLM-L6-v2"  # Local, free
+    embedding_model: str = "mistral-embed"  # API-based, light-weight
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

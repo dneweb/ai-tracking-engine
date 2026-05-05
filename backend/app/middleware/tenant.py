@@ -40,6 +40,11 @@ EXCLUDED_PATHS: frozenset[str] = frozenset({
     "/openapi.json",
     "/redoc",
     "/api/users/sync",
+    # Test endpoints
+    "/api/test-embedding",
+    "/api/test-search",
+    "/api/test",
+    "/api/test-groq",
 })
 
 

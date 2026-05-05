@@ -1,20 +1,17 @@
-from sentence_transformers import SentenceTransformer
-import numpy as np
+from app.services.ai_service import get_embedding
 
-# This runs locally, no API key needed, completely free
-model = SentenceTransformer('all-MiniLM-L6-v2')
+async def generate_embedding(text: str) -> list:
+    """
+    Convert text to vector embedding using API (Mistral)
+    """
+    return await get_embedding(text)
 
-def generate_embedding(text: str) -> list:
-    """Convert text to vector embedding using local model"""
-    embedding = model.encode(text, normalize_embeddings=True)
-    return embedding.tolist()
-
-def search_similar_documents(query_text: str, documents_collection, top_k: int = 3):
+async def search_similar_documents(query_text: str, documents_collection, top_k: int = 3):
     """
     Search for similar documents using vector similarity
     Falls back to text search if vector search is not available
     """
-    query_embedding = generate_embedding(query_text)
+    query_embedding = await generate_embedding(query_text)
     
     try:
         # MongoDB Atlas Vector Search

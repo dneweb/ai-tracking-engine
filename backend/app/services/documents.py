@@ -1,4 +1,4 @@
-from app.services.database import documents_collection
+from app.services.database import async_documents
 from app.services.embeddings import generate_embedding
 from datetime import datetime, timezone
 import uuid
@@ -22,7 +22,7 @@ def extract_text_from_txt(file_bytes: bytes) -> str:
     return file_bytes.decode("utf-8", errors="ignore").strip()
 
 
-def upload_document(
+async def upload_document(
     title: str,
     content_text: str,
     category: str,
@@ -36,7 +36,7 @@ def upload_document(
     if not org_id or not str(org_id).strip():
         raise ValueError("[RLS] upload_document requires a non-empty org_id")
 
-    embedding = generate_embedding(content_text)
+    embedding = await generate_embedding(content_text)
 
     document = {
         "_id":         str(uuid.uuid4()),
@@ -49,7 +49,7 @@ def upload_document(
         "created_at":  datetime.now(timezone.utc).isoformat(),
     }
 
-    documents_collection.insert_one(document)
+    await async_documents.insert_one(document)
     return {"status": "success", "id": document["_id"], "title": title}
 
 

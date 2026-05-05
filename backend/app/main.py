@@ -13,7 +13,6 @@ from app.routers.members import router as members_router
 # from app.routers.users import router as users_router  # DELETED - consolidated into app.api.auth
 from app.routers.auth_flow import router as auth_flow_router
 from app.routers.conversations import router as conversations_router
-from app.services.ai_service import get_model
 from app.services.rate_limiter import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -183,7 +182,7 @@ async def test_embedding():
         "text": text,
         "embedding_length": len(embedding),
         "first_5_values": embedding[:5] if embedding else [],
-        "model": "all-MiniLM-L6-v2 (local, free)"
+        "model": "mistral-embed (API, light-weight)"
     }
 
 
