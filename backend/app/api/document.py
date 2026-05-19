@@ -29,6 +29,7 @@ from app.models.document import (
     DocumentList,
 )
 from app.services.database import (
+    _async_db,
     add_document,
     get_all_documents,
     get_document_by_id,
@@ -53,6 +54,22 @@ async def create_document(
     Generates an embedding automatically from the content.
     """
     try:
+        # Enforce dynamic plan ingestion limits
+        current_docs = await _async_db.documents.count_documents({"org_id": org_id})
+        org_settings = await _async_db.org_settings.find_one({"org_id": org_id})
+        max_docs = 10
+        if org_settings:
+            max_docs = org_settings.get("max_documents", 10)
+
+        if current_docs >= max_docs:
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "status": "error",
+                    "message": f"Document limit reached. Your plan allows up to {max_docs} documents. Please upgrade your plan."
+                },
+            )
+
         embedding = await get_embedding(document.content)
         if not embedding:
             return JSONResponse(

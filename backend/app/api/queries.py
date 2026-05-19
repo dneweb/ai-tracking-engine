@@ -17,7 +17,7 @@ from typing import Optional
 
 from app.models.document import RAGQueryResponse, RAGQueryRequest
 from app.services.rag_service import answer_question
-from app.services.database import get_all_queries
+from app.services.database import _async_db, get_all_queries
 from app.services.clerk_auth import (
     get_current_user,
     require_permission,
@@ -47,6 +47,23 @@ async def query_documents(
         clerk_id = user.get("user_id")
         conv_id = query.conversation_id
 
+        # Enforce dynamic plan query limits
+        org_settings = await _async_db.org_settings.find_one({"org_id": org_id})
+        max_queries = 100
+        queries_used = 0
+        if org_settings:
+            max_queries = org_settings.get("max_queries_per_month", 100)
+            queries_used = org_settings.get("queries_used_this_month", 0)
+
+        if queries_used >= max_queries:
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "status": "error",
+                    "detail": f"Monthly query limit reached ({queries_used}/{max_queries}). Please upgrade your plan to continue."
+                },
+            )
+
         # If no conversation_id provided, create new one
         if not conv_id:
             conv = await create_conversation(
@@ -74,6 +91,12 @@ async def query_documents(
             org_id=org_id,           # mandatory — RLS enforced in DB layer
             conversation_id=conv_id,
             conversation_history=history,
+        )
+
+        # Atomically increment queries used count inside MongoDB
+        await _async_db.org_settings.update_one(
+            {"org_id": org_id},
+            {"$inc": {"queries_used_this_month": 1}}
         )
 
         # Update conversation metadata after successful message

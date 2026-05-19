@@ -275,6 +275,33 @@
   transform: scale(0.97);
 }
 
+.ke-nav-signin-btn {
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  border-radius: 6.25rem;
+  background: transparent;
+  color: var(--ke-text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--ke-border-mid);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  margin-right: 0.5rem;
+}
+
+.ke-nav-signin-btn:hover {
+  background: rgba(var(--ke-accent-purple-rgb), 0.08);
+  border-color: var(--ke-accent-purple);
+  transform: scale(1.03);
+}
+
+.ke-nav-signin-btn:active {
+  transform: scale(0.97);
+}
+
 /* HAMBURGER */
 .ke-hamburger {
   display: none;
@@ -382,6 +409,7 @@
 
   .ke-nav-links,
   .ke-nav-cta,
+  .ke-nav-signin-btn,
   .ke-theme-toggle {
     display: none;
   }

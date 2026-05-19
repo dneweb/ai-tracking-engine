@@ -13,6 +13,7 @@ from app.routers.members import router as members_router
 # from app.routers.users import router as users_router  # DELETED - consolidated into app.api.auth
 from app.routers.auth_flow import router as auth_flow_router
 from app.routers.conversations import router as conversations_router
+from app.routers.stripe_billing import router as stripe_router
 from app.services.rate_limiter import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -104,6 +105,7 @@ app.include_router(auth.router)       # User sync
 app.include_router(members_router, prefix="/api/members", tags=["members"])
 app.include_router(auth_flow_router, prefix="/api/auth", tags=["auth"])
 app.include_router(conversations_router, tags=["conversations"])
+app.include_router(stripe_router, prefix="/api/stripe", tags=["stripe"])
 
 
 # ============================================================================

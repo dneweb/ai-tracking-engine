@@ -235,7 +235,7 @@ async def register_owner(body: RegisterOwnerRequest) -> dict:
             "plan": "trial",
             "max_documents": 10,
             "max_members": 5,
-            "max_queries_per_month": 100,
+            "max_queries_per_month": 20,
             "queries_used_this_month": 0,
             "created_at": now,
             "updated_at": now,
@@ -523,6 +523,19 @@ async def approve_request(
     now = datetime.utcnow()
 
     if body.action == "approved":
+        # Enforce dynamic plan seats limits
+        active_members = await _async_db.users.count_documents({"org_id": org_id, "status": "approved"})
+        org_settings = await _async_db.org_settings.find_one({"org_id": org_id})
+        max_seats = 5
+        if org_settings:
+            max_seats = org_settings.get("max_members", 5)
+
+        if active_members >= max_seats:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Member seats limit reached. Your plan allows up to {max_seats} team seats. Please upgrade your plan."
+            )
+
         # Insert into users
         try:
             await _async_db.users.insert_one({

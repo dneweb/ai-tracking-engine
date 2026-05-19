@@ -13,7 +13,7 @@ Role Hierarchy (lowest → highest):
 """
 
 import os
-from fastapi import HTTPException, status, Depends
+from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 import jwt as pyjwt
@@ -149,6 +149,7 @@ async def verify_token(token: str) -> dict:
 # ── User Extraction ───────────────────────────────────────────────────────────
 
 async def get_current_user(
+    request: Request,
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict:
     """
@@ -171,15 +172,17 @@ async def get_current_user(
 
     email = payload.get("email", "")
     
-    # ── 1. Resolve org_id from context or JWT ────────────────────────────────
+    # ── 1. Resolve org_id from context, request header, or JWT ───────────────
     # We prefer the context (middleware resolved) as it handles X-Org-ID headers
     from app.middleware.tenant import get_current_org_id
     try:
         org_id = get_current_org_id()
     except:
-        # Fallback to JWT if called outside tenant-scoped route (like /users/sync)
-        metadata = payload.get("public_metadata", {})
-        org_id = payload.get("org_id") or metadata.get("org_id")
+        # Fallback to request header, then JWT if called outside tenant-scoped route (like /users/sync)
+        org_id = request.headers.get("X-Org-ID")
+        if not org_id:
+            metadata = payload.get("public_metadata", {})
+            org_id = payload.get("org_id") or metadata.get("org_id")
 
     # ── 2. Resolve Role from Database (Primary) ──────────────────────────────
     # This is critical to avoid "JWT Lag" where Clerk hasn't updated the session

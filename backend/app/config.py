@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     # Model settings
     embedding_model: str = "mistral-embed"  # API-based, light-weight
 
+    # Stripe configuration
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+    stripe_price_id_starter: str = ""
+    stripe_price_id_pro: str = ""
+    stripe_price_id_business: str = ""
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 @lru_cache()

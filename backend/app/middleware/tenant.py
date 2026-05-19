@@ -45,6 +45,11 @@ EXCLUDED_PATHS: frozenset[str] = frozenset({
     "/api/test-search",
     "/api/test",
     "/api/test-groq",
+    # Stripe billing
+    "/api/stripe/webhook",
+    "/api/stripe/create-checkout-session",
+    "/api/stripe/create-portal-session",
+    "/api/stripe/subscription-status",
 })
 
 

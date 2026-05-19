@@ -17,6 +17,7 @@ import {
   Zap,
   Users,
   X,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const adminLinks = [
   { href: "/analytics", label: "System Metrics",     icon: PieChart,  desc: "Performance analytics" },
   { href: "/reports",   label: "Insights & SOPs",     icon: BarChart3, desc: "SOP deficiency analysis" },
   { href: "/dashboard/members", label: "Members & Teams", icon: Users, desc: "Manage team access" },
+  { href: "/dashboard/billing", label: "Billing & Plans", icon: CreditCard, desc: "Manage subscription plans" },
 ];
 
 interface SidebarProps {

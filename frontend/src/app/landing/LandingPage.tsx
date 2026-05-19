@@ -804,20 +804,18 @@ export function LandingPage() {
   const plans = [
     {
       id: "starter",
-      name: "Starter",
-      monthly: "$499",
-      yearly: "$399",
-      features: ["Up to 500 Documents", "10 Team Members", "Standard Connectors", "Basic Gap Analysis"],
+      name: "Basic Plan",
+      monthly: "₹4,999",
+      features: ["Up to 10 documents capacity", "Access for 5 team members", "20 neural queries per month", "Standard ingestion connectors"],
       cta: "Begin Ingestion",
       ctaStyle: "outline" as const,
       cardClass: "",
     },
     {
       id: "growth",
-      name: "Growth",
-      monthly: "$1,299",
-      yearly: "$1,039",
-      features: ["Unlimited Documents", "Enterprise Connectors", "Real-Time Gap Analysis", "Dedicated AI Support", "Priority SLA"],
+      name: "Growth Plan",
+      monthly: "₹11,999",
+      features: ["Up to 100 documents capacity", "Access for 25 team members", "5,000 neural queries per month", "Standard connectors & realtime updates", "Collaborative pipeline sharing"],
       cta: "Scale Intelligence",
       ctaStyle: "solid" as const,
       cardClass: "ke-plan-card-growth",
@@ -825,10 +823,9 @@ export function LandingPage() {
     },
     {
       id: "enterprise",
-      name: "Enterprise",
-      monthly: "Custom",
-      yearly: "Custom",
-      features: ["Dedicated Clusters", "Custom Fine-tuning", "White-glove Onboarding", "High-compliance Orgs", "Custom SLA"],
+      name: "Business Plan",
+      monthly: "₹24,999",
+      features: ["Up to 1,000 documents capacity", "Access for 100 team members", "50,000 neural queries per month", "Enterprise connectors & priority updates", "Dedicated support SLA"],
       cta: "Talk to Strategy",
       ctaStyle: "outline" as const,
       cardClass: "ke-plan-card-enterprise",
@@ -890,11 +887,6 @@ export function LandingPage() {
               </a>
             </li>
           ))}
-          <li>
-            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollTo("cta"); }}>
-              Demo
-            </a>
-          </li>
         </ul>
 
         <div className="ke-nav-actions">
@@ -907,11 +899,16 @@ export function LandingPage() {
             <ThemeIcon isDark={theme === "dark"} />
           </button>
           <a
-            href="#cta"
-            className="ke-nav-cta"
-            onClick={(e) => { e.preventDefault(); scrollTo("cta"); }}
+            href="/sign-in"
+            className="ke-nav-signin-btn"
           >
-            Request Demo
+            Sign In
+          </a>
+          <a
+            href="/sign-up"
+            className="ke-nav-cta"
+          >
+            Sign Up
           </a>
           <button
             className={`ke-hamburger${mobileOpen ? " open" : ""}`}
@@ -931,20 +928,26 @@ export function LandingPage() {
         aria-hidden={!mobileOpen}
         onClick={() => setMobileOpen(false)}
       >
-        {["features", "pipeline", "pricing", "demo"].map((id) => (
+        {(["features", "pipeline", "pricing"] as const).map((id) => (
           <a
             key={id}
             href={`#${id}`}
-            onClick={(e) => { e.preventDefault(); scrollTo(id === "demo" ? "cta" : id); }}
+            onClick={(e) => { e.preventDefault(); scrollTo(id); }}
           >
             {id.charAt(0).toUpperCase() + id.slice(1)}
           </a>
         ))}
+        <a href="/sign-in" style={{ marginTop: "1rem" }}>
+          Sign In
+        </a>
+        <a href="/sign-up" className="ke-nav-cta" style={{ marginTop: "0.5rem" }}>
+          Sign Up
+        </a>
         <button
           className="ke-theme-toggle"
           onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
           aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          style={{ marginTop: "1rem" }}
+          style={{ marginTop: "1.5rem" }}
         >
           <ThemeIcon isDark={theme === "dark"} />
         </button>
@@ -963,9 +966,13 @@ export function LandingPage() {
               Stop searching through endless folders and chats. Memora connects your team's tools to provide instant, accurate answers from your own data.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto">
-              <button className="ke-btn-primary px-8 py-3 rounded-full font-medium transition-all hover:scale-105" onClick={handlePrimaryClick}>
+              <a
+                href="/sign-up"
+                className="ke-btn-primary px-8 py-3 rounded-full font-medium transition-all hover:scale-105 text-center flex items-center justify-center"
+                style={{ textDecoration: 'none' }}
+              >
                 Get Started Free
-              </button>
+              </a>
               <button className="ke-btn-secondary px-8 py-3 rounded-full font-medium transition-all hover:bg-foreground/5">
                 Watch How it Works
               </button>
@@ -1219,36 +1226,10 @@ export function LandingPage() {
         {/* ── PRICING ─────────────────────────────────────── */}
         <section id="pricing" className="ke-pricing-section" aria-labelledby="ke-pricing-h2">
           <div data-ke-reveal>
-            <h2 id="ke-pricing-h2" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: "var(--ke-text-h2)", fontWeight: 800, letterSpacing: "-0.03em", margin: 0 }}>
+            <h2 id="ke-pricing-h2" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: "var(--ke-text-h2)", fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 2rem 0" }}>
               Predictable{" "}
               <span className="ke-sec-accent">Scale.</span>
             </h2>
-
-            {/* Billing toggle */}
-            <div className="ke-billing-toggle" role="group" aria-label="Billing cycle">
-              <div
-                className="ke-billing-pill"
-                aria-hidden="true"
-                style={{ left: annual ? "calc(50% + 0.25rem)" : "0.25rem", width: annual ? "calc(50% - 0.25rem)" : "calc(50% - 0.25rem)" }}
-              />
-              <button
-                className={`ke-billing-btn${!annual ? " active" : ""}`}
-                onClick={() => handleBillingToggle(false)}
-                aria-pressed={!annual}
-              >
-                Monthly
-              </button>
-              <button
-                className={`ke-billing-btn${annual ? " active" : ""}`}
-                onClick={() => handleBillingToggle(true)}
-                aria-pressed={annual}
-              >
-                Yearly
-                <span className={`ke-yearly-badge${annual ? " show" : ""}`}>
-                  Save 20%
-                </span>
-              </button>
-            </div>
           </div>
 
           <div className="ke-pricing-grid">
@@ -1266,10 +1247,8 @@ export function LandingPage() {
                 )}
                 <div className="ke-plan-name">{plan.name}</div>
                 <div className={`ke-plan-price${priceFlipping ? " flipping" : ""}`}>
-                  {annual ? plan.yearly : plan.monthly}
-                  {plan.monthly !== "Custom" && (
-                    <span className="ke-plan-period">/mo</span>
-                  )}
+                  {plan.monthly}
+                  <span className="ke-plan-period">/mo</span>
                 </div>
                 <div className="ke-plan-divider" aria-hidden="true" />
                 <ul className="ke-plan-features" aria-label={`${plan.name} features`}>
@@ -1280,12 +1259,14 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  className={`ke-plan-cta${plan.ctaStyle === "solid" ? " ke-plan-cta-solid" : " ke-plan-cta-outline"}`}
+                <a
+                  href="/sign-up"
+                  className={`ke-plan-cta${plan.ctaStyle === "solid" ? " ke-plan-cta-solid" : " ke-plan-cta-outline"} text-center flex items-center justify-center`}
+                  style={{ textDecoration: 'none' }}
                   id={`ke-plan-${plan.id}`}
                 >
                   {plan.cta}
-                </button>
+                </a>
               </div>
             ))}
           </div>
@@ -1308,7 +1289,7 @@ export function LandingPage() {
                 Get started today and turn your data into your greatest asset.
               </p>
               <a
-                href="/sign-in"
+                href="/sign-up"
                 className="ke-cta-btn"
                 id="ke-request-demo"
               >

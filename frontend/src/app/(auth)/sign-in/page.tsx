@@ -567,6 +567,10 @@ export default function SignInPage() {
       setResetError("New password must be at least 8 characters.");
       return;
     }
+    if (!orgData) {
+      setResetError("Organisation context lost. Please restart the sign-in flow.");
+      return;
+    }
     if (!signIn) return;
     setResetLoading(true);
     setResetError("");
@@ -579,8 +583,80 @@ export default function SignInPage() {
       });
 
       if (result.status === "complete") {
-        // Log the user in immediately
-        await setActive({ session: result.createdSessionId });
+        // Activate Clerk session
+        const sessionId = result.createdSessionId;
+        await setActive({ session: sessionId });
+
+        // Get user ID - use client.sessions as it is populated immediately
+        let clerkUserId = "";
+
+        // Polling loop for robust extraction
+        const deadline = Date.now() + 3000;
+        while (!clerkUserId && Date.now() < deadline) {
+          const activeSession = (clerk as any).client?.sessions?.find((s: any) => s.id === sessionId);
+          clerkUserId = activeSession?.user?.id || (clerk as any).user?.id || "";
+          if (!clerkUserId) {
+            await new Promise(r => setTimeout(r, 200));
+          }
+        }
+
+        if (!clerkUserId) {
+          setResetError(
+            "Session created but user ID not found. " +
+            "Please refresh and try again."
+          );
+          setResetLoading(false);
+          return;
+        }
+
+        // Validate org membership
+        const {
+          data: vData,
+          error: vError,
+          status: vStatus
+        } = await apiCall<ValidateSigninResponse>(
+          "/auth/validate-signin",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              clerk_id: clerkUserId,
+              org_slug: orgData.org_slug,
+            }),
+          }
+        );
+
+        if (vError) {
+          if (vStatus === 403 || vStatus === 404) {
+            try { await signOut(); } catch { }
+          }
+
+          if (vStatus === 403 && vError.includes("pending")) {
+            router.push("/pending");
+            return;
+          }
+          if (vStatus === 403 && vError.includes("rejected")) {
+            setResetError("Your request was rejected. Contact your admin.");
+          } else if (vStatus === 403) {
+            setResetError("You are not authorised for this organisation.");
+          } else if (vStatus === 404) {
+            setResetError("Organisation not found. Contact support.");
+          } else {
+            setResetError(vError || "Validation failed. Please try again.");
+          }
+          setResetLoading(false);
+          return;
+        }
+
+        if (vData && vData.redirect_to === "/pending") {
+          router.push("/pending");
+          return;
+        }
+
+        if (vData?.org_id) {
+          localStorage.setItem("nexus_active_org_id", vData.org_id);
+          localStorage.setItem("nexus_active_org_name", vData.org_name || "");
+          localStorage.setItem("nexus_active_org_slug", orgData.org_slug);
+        }
 
         // Clear all flow state
         setForgotSent(false);
@@ -590,9 +666,11 @@ export default function SignInPage() {
         setPassword("");
         setResetSuccess(true);
 
-        // Show success message and allow them to sign in normally
-        // Don't auto-redirect to avoid confusion
-        return;
+        goTo(3, 1);
+        setTimeout(() => {
+          window.location.href = getRedirectForRole(vData?.role ?? "user");
+        }, 1200);
+
       } else {
         throw new Error(`Status: ${result.status}. Please try again.`);
       }
@@ -610,6 +688,86 @@ export default function SignInPage() {
   };
 
   if (!isLoaded) return null;
+
+  if (userId) {
+    const handleGoToDashboard = () => {
+      window.location.href = "/dashboard";
+    };
+
+    const handleSignOut = async () => {
+      try {
+        await signOut();
+        localStorage.removeItem("nexus_active_org_id");
+        localStorage.removeItem("nexus_active_org_name");
+        localStorage.removeItem("nexus_active_org_slug");
+        window.location.href = "/sign-in";
+      } catch (err) {
+        console.error("Sign out error:", err);
+      }
+    };
+
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: "#0a0a0f" }}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="relative w-full max-w-md">
+          <div
+            className="rounded-[2.0rem] p-8 md:p-10 overflow-hidden"
+            style={{
+              background: "#111118",
+              border: "1px solid rgba(255,255,255,0.06)",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div className="flex items-center gap-3 mb-10">
+              <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--brand-soft)] border border-[var(--brand-glow)] overflow-hidden p-1.5 shadow-sm">
+                <img 
+                  src="/logo.svg" 
+                  alt="Memora Logo" 
+                  className="w-full h-full object-contain brightness-0 invert" 
+                />
+              </div>
+              <span className="text-white font-bold text-sm tracking-wide">Memora</span>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-2xl font-bold text-white mb-1.5">Already signed in</h1>
+                <p style={{ color: "#94a3b8" }} className="text-sm">
+                  You are currently signed in as <span className="font-semibold text-white">{user?.primaryEmailAddress?.emailAddress || "your account"}</span>.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleGoToDashboard}
+                  className="w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-[var(--brand)] hover:bg-[#5254cc] text-white transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  Go to Dashboard
+                </button>
+
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-3.5 rounded-2xl text-sm font-bold tracking-wide bg-white/5 hover:bg-white/10 border border-white/8 text-white transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── Render ─────────────────────────────────────────────────────────────────
 

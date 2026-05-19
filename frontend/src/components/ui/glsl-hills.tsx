@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 interface GLSLHillsProps {
@@ -20,6 +20,7 @@ const GLSLHills = ({
 }: GLSLHillsProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hasWebGL, setHasWebGL] = useState(true);
 
   const planeRef = useRef<any>(null);
 
@@ -189,17 +190,17 @@ const GLSLHills = ({
       }
     }
 
-    // Three.js setup
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: false, alpha: true });
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-    const clock = new THREE.Clock();
-    const plane = new Plane();
-    planeRef.current = plane;
+    let renderer: THREE.WebGLRenderer;
+    let scene: THREE.Scene;
+    let camera: THREE.PerspectiveCamera;
+    let clock: THREE.Clock;
+    let plane: Plane;
+    let requestID: number;
+    let isInitialized = false;
 
     const resize = () => {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas || !renderer || !camera) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -208,38 +209,98 @@ const GLSLHills = ({
     };
 
     const render = () => {
+      if (!plane || !clock || !renderer || !scene || !camera) return;
       plane.render(clock.getDelta());
       renderer.render(scene, camera);
     };
 
-    let requestID: number;
     const renderLoop = () => {
       render();
       requestID = requestAnimationFrame(renderLoop);
     };
 
-    const init = () => {
+    try {
+      // Three.js setup
+      renderer = new THREE.WebGLRenderer({ 
+        canvas: canvasRef.current, 
+        antialias: false, 
+        alpha: true,
+        failIfMajorPerformanceCaveat: false 
+      });
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+      clock = new THREE.Clock();
+      plane = new Plane();
+      planeRef.current = plane;
+
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setClearColor(0x000000, 0);
       camera.position.set(0, 16, cameraZ);
       camera.lookAt(new THREE.Vector3(0, 28, 0));
       scene.add(plane.mesh);
+      
       window.addEventListener('resize', resize);
       resize();
       renderLoop();
-    };
-
-    init();
+      isInitialized = true;
+    } catch (err) {
+      console.warn('[WebGL] Renderer initialization failed:', err);
+      setHasWebGL(false);
+    }
 
     return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(requestID);
-      renderer.dispose();
-      plane.mesh.geometry.dispose();
-      (plane.mesh.material as THREE.RawShaderMaterial).dispose();
-      planeRef.current = null;
+      if (isInitialized) {
+        window.removeEventListener('resize', resize);
+        cancelAnimationFrame(requestID);
+        if (renderer) renderer.dispose();
+        if (plane && plane.mesh) {
+          if (plane.mesh.geometry) plane.mesh.geometry.dispose();
+          if (plane.mesh.material) {
+            (plane.mesh.material as THREE.RawShaderMaterial).dispose();
+          }
+        }
+        planeRef.current = null;
+      }
     };
   }, [cameraZ, planeSize, speed]);
+
+  if (!hasWebGL) {
+    return (
+      <div 
+        ref={containerRef} 
+        style={{ 
+          position: 'relative', 
+          width, 
+          height,
+          background: theme === 'dark' 
+            ? 'radial-gradient(circle at 50% 50%, #101c36 0%, #030a16 100%)'
+            : 'radial-gradient(circle at 50% 50%, #f0f7ff 0%, #e0efff 100%)',
+          overflow: 'hidden'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: theme === 'dark'
+              ? 'radial-gradient(circle at 30% 30%, rgba(45, 143, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(22, 65, 146, 0.15) 0%, transparent 60%)'
+              : 'radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(186, 230, 253, 0.1) 0%, transparent 60%)',
+            animation: 'pulse 15s ease-in-out infinite alternate',
+          }}
+        />
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes pulse {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
+          }
+        `}} />
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} style={{ position: 'relative', width, height }}>
